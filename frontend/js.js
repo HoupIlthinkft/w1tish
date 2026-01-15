@@ -1,10 +1,3 @@
-let registration = document.getElementById("registration");
-let sign_in = document.getElementById("sign_in");
-let error_text = document.getElementById("error");
-
-sign_in.addEventListener("click", sign_in_account);
-registration.addEventListener("click", registration_account);
-
 function sign_in_account() {
     if (document.getElementsByClassName("main").item(0).id == "main_sign_in"){
         let username = document.getElementById("input_username").value;
@@ -21,6 +14,8 @@ function sign_in_account() {
     }
     else {create_sign_in_container()}
 }
+
+
 
 function registration_account() {
     if (document.getElementsByClassName("main").item(0).id == "main_registration"){
@@ -117,6 +112,7 @@ function create_registration_container() {
 function activate_btn() {
     registration = document.getElementById("registration");
     sign_in = document.getElementById("sign_in");
+    error_text = document.getElementById("error");
 
     sign_in.addEventListener("click", sign_in_account);
     registration.addEventListener("click", registration_account);

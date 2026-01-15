@@ -35,23 +35,23 @@ async function login(username, password) {
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refresh_token", data.refresh_token);
 
-        getProtectedData()
+        getProtectedData(localStorage.getItem("accessToken"))
     }
-    
-    
 }
 
-async function getProtectedData() {
+async function getProtectedData(token) {
     const response = await fetch('http://localhost:8000/user/data', {
+        method: "POST",
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
-        }
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token })
     });
 
     if (response.status === 401) {
         console.log("Нужно обновить токен (refresh)");
     // Здесь вызывается функция обновления токена через куку
-        refreshToken()
+        refreshToken(localStorage.getItem("refresh_token"))
     } else if (response.status === 422) {
         console.log("Виноват фронтендер")
     } else if (response.status === 500) {
@@ -62,11 +62,14 @@ async function getProtectedData() {
     }
 }
 
-async function refreshToken() {
+async function refreshToken(refresh_token) {
     const response = await fetch('http://localhost:8000/update_token', {
+        method: "POST",
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem("refresh_token")}`
-        }
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refresh_token })
+        
     });
 
     if (response.status === 500) {
@@ -78,5 +81,7 @@ async function refreshToken() {
     // Сохраняем access token только в памяти приложения
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refresh_token", data.refresh_token);
+
+        getProtectedData(localStorage.getItem("accessToken"))
     }
 }
