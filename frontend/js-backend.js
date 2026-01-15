@@ -1,3 +1,19 @@
+async function registration(username, email, password) {
+    const response = await fetch('http://127.0.0.1:8000/reg', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, email, password })
+    })
+    
+    if (response.status === 200) {
+        login(username, password)
+    } else {
+        console.log("Ошибка: ", response.status)
+    }
+}
+
 async function login(username, password) {
     const response = await fetch('http://127.0.0.1:8000/auth', {
         method: 'POST',
@@ -9,7 +25,8 @@ async function login(username, password) {
     if (response.status === 422) {
         console.log("Виноват фронтендер")
     } else if (response.status === 404) { 
-        registration_account()
+        error_text.textContent = "Вы не зарегистрированы"
+        create_registration_container()
     } else if (response.status === 505) {
         console.log("Виноват бэкэндер")
     } else {
@@ -17,6 +34,8 @@ async function login(username, password) {
     // Сохраняем access token только в памяти приложения
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refresh_token", data.refresh_token);
+
+        getProtectedData()
     }
     
     
