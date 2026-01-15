@@ -1,5 +1,3 @@
-let accessToken = null;
-
 async function login(username, password) {
     const response = await fetch('http://127.0.0.1:8000/auth', {
         method: 'POST',
@@ -17,8 +15,8 @@ async function login(username, password) {
     } else {
         const data = await response.json();
     // Сохраняем access token только в памяти приложения
-        accessToken = data.access_token;
-        refresh_token = data.refresh_token
+        localStorage.setItem("accessToken", data.access_token);
+        localStorage.setItem("refresh_token", data.refresh_token);
     }
     
     
@@ -27,7 +25,7 @@ async function login(username, password) {
 async function getProtectedData() {
     const response = await fetch('http://localhost:8000/user/data', {
         headers: {
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
         }
     });
 
@@ -48,16 +46,18 @@ async function getProtectedData() {
 async function refreshToken() {
     const response = await fetch('http://localhost:8000/update_token', {
         headers: {
-            'Authorization': `Bearer ${refresh_token}`
+            'Authorization': `Bearer ${localStorage.getItem("refresh_token")}`
         }
     });
 
     if (response.status === 500) {
         console.log("Виноват бэкэндер")
+    } else if (response.status === 401) {
+        sign_in_account()
     } else {
         const data = await response.json();
     // Сохраняем access token только в памяти приложения
-        accessToken = data.access_token;
-        refresh_token = data.refresh_token
+        localStorage.setItem("accessToken", data.access_token);
+        localStorage.setItem("refresh_token", data.refresh_token);
     }
 }
