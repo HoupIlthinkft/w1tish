@@ -1,13 +1,108 @@
-.main {
-    margin-top: 300px;
+@font-face {
+    font-family: 'Inter';
+    src: url(font/Inter-V.ttf);
+}
+
+body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
-    align-content: center;
+    background-color: #7E7E7E;
+}
+
+#header_name {
+    color: #FFFFFF;
+    font-size: 160pt;
+    font-family: Inter;
+}
+
+#content_main {
+    width: 477px;
+    background-color: #D9D9D9;
+    border-radius: 25px;
+}
+
+#header {
+    font-size: 48pt;
+    font-family: Inter;
+    margin-top: 41px;
+    margin-bottom: 11px;
+    text-align: center;
 }
 
 #error {
+    text-align: center;
     color: red;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Inter;
 }
+
+.main, #content_main {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.entry {
+    font-family: Inter;
+    font-size: 16pt;
+    background-color: #FFFFFF;
+    border-radius: 35px;
+    height: 51px;   
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-left: 15px;
+    padding-right: 10px;
+}
+
+.entry + .entry {
+    margin-top: 30px;
+}
+
+.entry::placeholder {
+    font-size: 14pt;
+    color: #707070;
+    align-items: start;
+    
+}
+
+.entry:focus {
+    outline: #FFFFFF;
+    font-size: 16pt;
+    padding-left: 15px;
+    padding-right: 10px;
+}
+
+#reset_password {
+    font-family: Inter;
+    padding-top: 10px;
+    cursor: pointer;
+    text-align: end;
+    margin-right: 20px;
+}
+
+.btn {
+    font-family: Inter;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 35px;
+    padding-right: 35px;
+    align-self: center;
+    color: #5E5E5E;
+    font-size: 20pt;
+    margin-bottom: 30px;
+    background-color: #D9D9D9;
+    border-color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.active {
+    margin-top: 20px;
+    border-radius: 30px;
+    background-color: #FFFFFF;
+    color: #000000;
+    text-decoration: none;
+}
+
+
+

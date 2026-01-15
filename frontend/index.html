@@ -7,12 +7,17 @@
     <link rel="stylesheet" href="css.css">
 </head>
 <body>
-    <div id="main_sign_in" class="main">
-        <h1 id="error"></h1>
-        <input type="text" id="input_username" placeholder="Имя пользователя">
-        <input type="password" id="input_password" placeholder="Пароль" autocomplete="current-password">
-        <input type="button" id="sign_in" value="Войти в аккаунт">
-        <input type="button" id="registration" value="Зарегистрироваться">
+    <div id="header_name">W1tish</div>
+    <div id="content_main">
+        <div id="header">Вход</div>
+        <div id="main_sign_in" class="main">
+            <h1 id="error"></h1>
+            <input type="text" class="entry" id="input_username" placeholder="Username">
+            <input type="password" class="entry" id="input_password" placeholder="Password" autocomplete="current-password">
+            <p id="reset_password">Забыл пароль?</p>
+            <input type="button" class="active btn" id="sign_in" value="Войти">
+            <button type="button" class="btn" id="registration" >Зарегистрироваться</button>
+        </div>
     </div>
 </body>
 <script src="js-backend.js"></script>

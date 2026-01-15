@@ -47,26 +47,43 @@ function create_sign_in_container() {
     new_main_div.className = "main";
     parent.insertBefore(new_main_div, document.getElementsByClassName("main").item(0));
     parent.removeChild(document.getElementsByClassName("main").item(1));
+
+    header = document.getElementById("header")
+    header.textContent = "Вход"
+
     error_h = document.createElement("h1");
     error_h.id = "error";
+
     username_input = document.createElement("input");
     username_input.type = "text";
     username_input.id = "input_username";
-    username_input.placeholder = "Имя пользователя";
+    username_input.className = "entry"
+    username_input.placeholder = "Username";
+
     password_input = document.createElement("input");
     password_input.type = "password";
     password_input.id = "input_password";
-    password_input.placeholder = "Пароль";
+    password_input.className = "entry"
+    password_input.placeholder = "Password";
     password_input.autocomplete = "current-password";
+
+    reset_password_btn = document.createElement("p");
+    reset_password_btn.id = "reset_password";
+    reset_password_btn.textContent = "Забыл пароль?";
+
     sign_in_btn = document.createElement("input");
     sign_in_btn.type = "button";
     sign_in_btn.id = "sign_in";
-    sign_in_btn.value = "Войти в аккаунт";
+    sign_in_btn.className = "active btn"
+    sign_in_btn.value = "Войти";
+
     registration_btn = document.createElement("input");
     registration_btn.type = "button";
     registration_btn.id = "registration";
+    registration_btn.className = "btn"
     registration_btn.value = "Зарегистрироваться";
-    new_main_div.append(error_h, username_input, password_input, sign_in_btn, registration_btn);
+
+    new_main_div.append(error_h, username_input, password_input, reset_password_btn, sign_in_btn, registration_btn);
     activate_btn();
 }
 
@@ -77,34 +94,51 @@ function create_registration_container() {
     new_main_div.className = "main";
     parent.insertBefore(new_main_div, document.getElementsByClassName("main").item(0));
     parent.removeChild(document.getElementsByClassName("main").item(1));
+
+    header = document.getElementById("header")
+    header.textContent = "Регистрация"
+
     error_h = document.createElement("h1");
     error_h.id = "error";
+
     username_input = document.createElement("input");
     username_input.type = "text";
     username_input.id = "input_username";
-    username_input.placeholder = "Имя пользователя";
+    username_input.className = "entry"
+    username_input.placeholder = "Username";
+
     email_input = document.createElement("input");
     email_input.type ="email";
     email_input.id = "input_email";
+    email_input.className = "entry"
     email_input.placeholder = "E-mail";
+
     password_input = document.createElement("input");
     password_input.type = "password";
     password_input.id = "input_password";
-    password_input.placeholder = "Пароль";
+    password_input.className = "entry"
+    password_input.placeholder = "Password";
     password_input.autocomplete = "new-password";
+
     password_confirmation_input = document.createElement("input");
     password_confirmation_input.type = "password";
     password_confirmation_input.id = "confirmation_input_password";
-    password_confirmation_input.placeholder = "Повторите пароль";
+    password_confirmation_input.className = "entry"
+    password_confirmation_input.placeholder = "Confirmation password";
     password_confirmation_input.autocomplete = "new-password";
+
     sign_in_btn = document.createElement("input");
     sign_in_btn.type = "button";
     sign_in_btn.id = "sign_in";
+    sign_in_btn.className = "btn"
     sign_in_btn.value = "Войти в аккаунт";
+
     registration_btn = document.createElement("input");
     registration_btn.type = "button";
     registration_btn.id = "registration";
+    registration_btn.className = "active btn"
     registration_btn.value = "Зарегистрироваться";
+
     new_main_div.append(error_h, username_input, email_input, password_input, password_confirmation_input, registration_btn, sign_in_btn);
     activate_btn();
 }
