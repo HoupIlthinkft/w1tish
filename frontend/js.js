@@ -9,7 +9,7 @@ function sign_in_account() {
         if (password.length >= 8) {
             if (password.toLowerCase() != password) {
                 if (password.toUpperCase() != password) {
-                    console.log(username, password);
+                    console.log(username, password);         //TODO отправлять на эндпоинт для авторизации(:8000/auth), принимать jwt токены(refresh и access) и сохранять их в localStorage 
                 }else {console.log("Нету символа(ов) нижнего регистра")}
             }else {console.log("Нету символа(ов) вернего регистра")}
         } else {console.log("Длина меньше 8")}
@@ -57,7 +57,7 @@ function registration_account() {
             if (password.toLowerCase() != password) {
                 if (password.toUpperCase() != password) {
                     if (password == password_confirmation) {
-                        console.log(username, email, password)
+                        console.log(username, email, password)          //TODO добавить регулярное выражение для проверки валидности email
                     } else {console.log("Пароли не совпадают")}
                 }else {console.log("Нету символа(ов) нижнего регистра")}
             }else {console.log("Нету символа(ов) вернего регистра")}
