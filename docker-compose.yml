@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:17
+    volumes:
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
+      - "./data/postgres_data:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: users_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: backend/.
+
+  frontend:
+    build: frontend/.
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
