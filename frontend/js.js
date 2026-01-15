@@ -1,29 +1,36 @@
-const main_div = document.getElementById("main");
-const registration = document.getElementById("registration");
-const sign_in = document.getElementById("sign_in");
+let registration = document.getElementById("registration");
+let sign_in = document.getElementById("sign_in");
 sign_in.addEventListener("click", sign_in_account);
 registration.addEventListener("click", registration_account);
 function sign_in_account() {
-    if (main_div.className == "main_sign_in"){
+    if (document.getElementsByClassName("main").item(0).id == "main_sign_in"){
         let username = document.getElementById("input_username").value;
         let password = document.getElementById("input_password").value;
-        console.log(username, password);
+        if (password.length >= 8) {
+            if (password.toLowerCase() != password) {
+                if (password.toUpperCase() != password) {
+                    console.log(username, password);
+                }else {console.log("Нету символа(ов) нижнего регистра")}
+            }else {console.log("Нету символа(ов) вернего регистра")}
+        } else {console.log("Длина меньше 8")}
+        
     }
     else {
-        parent = main_div.parentNode;
+        parent = document.getElementsByClassName("main").item(0).parentNode;
         new_main_div = document.createElement("div")
-        new_main_div.id = "main"
-        new_main_div.className = "main_sign_in"
-        parent.insertBefore(new_main_div, main_div)
-        parent.removeChild(main_div)
+        new_main_div.id = "main_sign_in"
+        new_main_div.className = "main"
+        parent.insertBefore(new_main_div, document.getElementsByClassName("main").item(0))
+        parent.removeChild(document.getElementById("main_registration"))
         username_input = document.createElement("input")
         username_input.type = "text"
         username_input.id = "input_username"
         username_input.placeholder = "Имя пользователя"
         password_input = document.createElement("input")
-        password_input.type = "text"
+        password_input.type = "password"
         password_input.id = "input_password"
         password_input.placeholder = "Пароль"
+        password_input.autocomplete = "current-password"
         sign_in_btn = document.createElement("input")
         sign_in_btn.type = "button"
         sign_in_btn.id = "sign_in"
@@ -33,45 +40,54 @@ function sign_in_account() {
         registration_btn.id = "registration"
         registration_btn.value = "Зарегистрироваться"
         new_main_div.append(username_input, password_input, sign_in_btn, registration_btn)
-
+        registration = document.getElementById("registration");
+        sign_in = document.getElementById("sign_in");
+        sign_in.addEventListener("click", sign_in_account);
+        registration.addEventListener("click", registration_account);
     }
 }
 
 function registration_account() {
-    if (main_div.className == "main_registration"){
-        let username = document.getElementById("input_username")
-        let email = document.getElementById("input_email")
-        let password = document.getElementById("input_password")
-        let password_confirmation = getElementById("input_password_confirmation")
-        if (length(password) >= 8) {
+    if (document.getElementsByClassName("main").item(0).id == "main_registration"){
+        let username = document.getElementById("input_username").value
+        let email = document.getElementById("input_email").value
+        let password = document.getElementById("input_password").value
+        let password_confirmation = document.getElementById("confirmation_input_password").value
+        if (password.length >= 8) {
             if (password.toLowerCase() != password) {
                 if (password.toUpperCase() != password) {
                     if (password == password_confirmation) {
                         console.log(username, email, password)
-                    }
-                }
-            }
-        } 
+                    } else {console.log("Пароли не совпадают")}
+                }else {console.log("Нету символа(ов) нижнего регистра")}
+            }else {console.log("Нету символа(ов) вернего регистра")}
+        } else {console.log("Длина меньше 8")}
     }
     else {
-        parent = main_div.parentNode;
+        parent = document.getElementsByClassName("main").item(0).parentNode;
         new_main_div = document.createElement("div")
-        new_main_div.id = "main"
-        new_main_div.className = "main_registration"
-        parent.insertBefore(new_main_div, main_div)
-        parent.removeChild(main_div)
+        new_main_div.id = "main_registration"
+        new_main_div.className = "main"
+        parent.insertBefore(new_main_div, document.getElementsByClassName("main").item(0))
+        parent.removeChild(document.getElementById("main_sign_in"))
         username_input = document.createElement("input")
         username_input.type = "text"
         username_input.id = "input_username"
         username_input.placeholder = "Имя пользователя"
         email_input = document.createElement("input")
-        email_input.type = "text"
+        email_input.type = "email"
         email_input.id = "input_email"
         email_input.placeholder = "E-mail"
         password_input = document.createElement("input")
-        password_input.type = "text"
+        password_input.type = "password"
         password_input.id = "input_password"
         password_input.placeholder = "Пароль"
+        password_input.autocomplete = "new-password"
+        password_confirmation_input = document.createElement("input")
+        password_confirmation_input.type = "password"
+        password_confirmation_input.id = "confirmation_input_password"
+        password_confirmation_input.placeholder = "Повторите пароль"
+        password_confirmation_input.autocomplete = "new-password"
         sign_in_btn = document.createElement("input")
         sign_in_btn.type = "button"
         sign_in_btn.id = "sign_in"
@@ -80,6 +96,10 @@ function registration_account() {
         registration_btn.type = "button"
         registration_btn.id = "registration"
         registration_btn.value = "Зарегистрироваться"
-        new_main_div.append(username_input, email_input, password_input, registration_btn, sign_in_btn)
+        new_main_div.append(username_input, email_input, password_input, password_confirmation_input, registration_btn, sign_in_btn)
+        registration = document.getElementById("registration");
+        sign_in = document.getElementById("sign_in");
+        sign_in.addEventListener("click", sign_in_account);
+        registration.addEventListener("click", registration_account);
     }
 }
