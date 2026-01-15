@@ -10,7 +10,7 @@ function sign_in_account() {
         if (password.length >= 8) {
             if (password.toLowerCase() != password) {
                 if (password.toUpperCase() != password) {
-                    console.log(username, password);         //TODO отправлять на эндпоинт для авторизации(:8000/auth), принимать jwt токены(refresh и access) и сохранять их в localStorage 
+                            login(username, password)//TODO отправлять на эндпоинт для авторизации(:8000/auth), принимать jwt токены(refresh и access) и сохранять их в localStorage 
                 }else {error_text.textContent = "Нету символа(ов) нижнего регистра в пароле"}
             }else {error_text.textContent = "Нету символа(ов) верхнего регистра в пароле"}
         } else {error_text.textContent = "Длина пароля меньше 8"}
