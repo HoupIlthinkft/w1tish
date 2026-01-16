@@ -71,7 +71,7 @@ async def get_user_data(token: ResponseData):
 
 @app.post("/update_token")
 async def update_token(token: RefreshTokens):
-    if token.refresh_token.startswith("refresh_token_"):
+    if token.refresh_token.startswith("refresh_token_") and len(token.refresh_token) > 20:
         now_time = round(datetime.now().timestamp())
         if int(token.refresh_token[-10:]) + 120 > now_time:
             return {"access_token": f"access_token_{now_time}",
