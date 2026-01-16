@@ -145,10 +145,10 @@ div.W1tish p {
 
 @keyframes xxx {
     0% {
-        transform: translateY(0px);
+        transform: translateY(0em);
     }
     100% {
-        transform: translateY(-139px);
+        transform: translateY(-1.225em);
     }
 }
 
