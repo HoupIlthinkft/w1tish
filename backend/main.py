@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from errors import UserExistError
-from pydantic import BaseModel
 from datetime import datetime
+from models import AuthRequest, RegisterRequest, ResponseData, RefreshTokens
+from auth_methods import register_new
 
 app = FastAPI()
 
@@ -13,21 +14,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-class AuthRequest(BaseModel):
-    username: str
-    password: str
-
-class RegisterRequest(BaseModel):
-    username: str
-    password: str
-    email: str
-
-class ResponseData(BaseModel):
-    token: str
-
-class refreshTokens(BaseModel):
-    refresh_token: str
 
 @app.post("/auth")
 async def authenticate(auth_request: AuthRequest):
@@ -77,7 +63,7 @@ async def get_user_data(token: ResponseData):
         )
 
 @app.post("/update_token")
-async def update_token(token: refreshTokens):
+async def update_token(token: RefreshTokens):
     if token.refresh_token.startswith("refresh_token_"):
         now_time = round(datetime.now().timestamp())
         if int(token.refresh_token[-10:]) + 120 > now_time:
