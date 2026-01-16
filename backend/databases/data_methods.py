@@ -19,9 +19,7 @@ async def add_user_data(user_id: int, username: str, session) -> None:
     try:
         new_user_data = usersDataBase(
             id=user_id,
-            username=username,
-            avatar_url="https://sneg.top/uploads/posts/2023-06/1688086311_sneg-top-p-ava-obichnaya-seraya-instagram-5.jpg",
-            chats=""
+            username=username
         )
         session.add(new_user_data)
         await session.commit()
