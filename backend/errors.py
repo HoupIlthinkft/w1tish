@@ -7,8 +7,5 @@ class UserNotFoundError(BaseException):
 class WrongPasswordError(BaseException):
     pass
 
-class InvalidRefreshToken(BaseException):
-    pass
-
-class InvalidAccessToken(BaseException):
+class InvalidTokenError(BaseException):
     pass

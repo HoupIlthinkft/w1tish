@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 
-from errors import UserExistError, UserNotFoundError, WrongPasswordError, InvalidAccessToken
+from errors import UserExistError, UserNotFoundError, WrongPasswordError, InvalidTokenError
 from models import AuthRequest, RegisterRequest, ResponseData, RefreshTokens
 
 from databases.auth_methods import register_new, auth_user
@@ -74,7 +74,7 @@ async def register(register_request: RegisterRequest, db = Depends(get_async_db)
 async def get_user_data_by_token(token: ResponseData, db = Depends(get_async_db)):
     try:
         is_token_valid = await validate_token(token.token)
-    except InvalidAccessToken:
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Invalid access token"
@@ -91,19 +91,17 @@ async def get_user_data_by_token(token: ResponseData, db = Depends(get_async_db)
 
 @app.post("/update_token")
 async def update_token(token: RefreshTokens):
-    if token.refresh_token.startswith("refresh_token_") and len(token.refresh_token) > 20:
-        now_time = round(datetime.now().timestamp())
-        if int(token.refresh_token[-10:]) + 120 > now_time:
-            return {"access_token": f"access_token_{now_time}",
-                    "refresh_token": f"refresh_token_{now_time}"
-                }
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token expired"
-        )
-    else:
+    try:
+        is_token_valid = await refresh_tokens(token.token)
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="Invalid refresh token"
         )
-    
+    if is_token_valid is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token expired"
+        )
+    else:
+        return await refresh_tokens(token.token)

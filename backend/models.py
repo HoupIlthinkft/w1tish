@@ -13,4 +13,4 @@ class ResponseData(BaseModel):
     token: str
 
 class RefreshTokens(BaseModel):
-    refresh_token: str
+    token: str

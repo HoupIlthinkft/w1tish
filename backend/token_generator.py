@@ -3,7 +3,7 @@ from functools import wraps
 from cryptography.fernet import Fernet, InvalidToken
 from os import getenv
 from json import loads, dumps, JSONDecodeError
-from errors import InvalidRefreshToken, InvalidAccessToken
+from errors import InvalidTokenError
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 
@@ -33,7 +33,7 @@ async def refresh_tokens(refresh_token: str) -> dict | None:
         decrypted_token = loads(decrypted_token)
 
     except (JSONDecodeError, InvalidToken):
-        raise InvalidRefreshToken()
+        raise InvalidTokenError()
     
     return await loop.run_in_executor(
         _executor,
@@ -53,7 +53,7 @@ async def validate_token(token: str) -> int | None:
         decrypted_token = loads(decrypted_token)
 
     except (JSONDecodeError, InvalidToken):
-        raise InvalidAccessToken()
+        raise InvalidTokenError()
     
     if decrypted_token.get("expires_at") < int(datetime.now().timestamp()):
         return None
