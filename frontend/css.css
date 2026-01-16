@@ -140,12 +140,15 @@ div.W1tish p {
     color: #777777;
     font-family: Inter;
     font-size: 8vw;
-    animation: xxx 200s linear infinite both;
+    animation: xxx 8s linear infinite both;
 }
 
 @keyframes xxx {
-    from {
-        transform: translateY(-2000vh);
+    0% {
+        transform: translateY(0vh);
+    }
+    100% {
+        transform: translateY(-51vh);
     }
 }
 
