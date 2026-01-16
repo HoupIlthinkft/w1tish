@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import (
     Column,
@@ -21,9 +22,9 @@ class usersDataBase(Base):
     __tablename__ = "users_data"
     
     id = Column(Integer, nullable=False, primary_key=True, index=True)
-    username = Column(String, nullable=False)
+    nickname = Column(String, nullable=False)
     avatar_url = Column(String, nullable=True)
-    chats = Column(String, nullable=True)
+    chats = Column(JSONB, nullable=True)
 
 
 # -> pass & login (/auth) 200(новые токены) 422(виноват фронтэндер) 404(виноват пользователь) 500(виноват бэкэндер)

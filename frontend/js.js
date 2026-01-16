@@ -28,7 +28,7 @@ function registration_account() {
                 if (password.toUpperCase() != password) {
                     if (password == password_confirmation) {
                         if (email.checkValidity()) {
-                            registration(username, email.value, password)
+                            register_user(username, email.value, password);
                             error_text.textContent = ""
                         } else {error_text.textContent = "Электронная почта не валидна"}       
                     } else {error_text.textContent = "Пароли не совпадают"}

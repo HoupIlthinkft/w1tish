@@ -10,20 +10,19 @@ async def register_new(username: str, email: str, password: str, session) -> Non
         new_user = usersBase(
             username=username,
             email=email,
-            password_hash=sha256(password.encode().hexdigest())
+            password_hash=sha256(password.encode()).hexdigest()
         )
 
         session.add(new_user)
         await session.commit()
         await session.refresh(new_user)
+        await add_user_data(new_user.id, username, session)
 
         return new_user.id
     
     except IntegrityError:
         await session.rollback()
         raise UserExistError()
-    
-    # base avatar https://sneg.top/uploads/posts/2023-06/1688086311_sneg-top-p-ava-obichnaya-seraya-instagram-5.jpg
 
 
 async def check_user(username: str, session) -> bool:

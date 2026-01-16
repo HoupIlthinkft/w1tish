@@ -1,16 +1,17 @@
-async function registration(username, email, password) {
+async function register_user(username, email, password) {
     const response = await fetch('http://127.0.0.1:8000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
     });
     
-    if (response.status === 200) {                      //при регестрации бекенд сразу возвращает токены!
-        //await login(username, password)
+    if (response.status === 200) {
 
         const data = await response.json();
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refreshToken", data.refresh_token);
+
+        window.location.replace("app.html"); 
 
     } else {                                            //TODO обработай ошибку 409 (пользователь уже существует)
         console.log("Ошибка: ", response.status)
@@ -34,35 +35,40 @@ async function login(username, password) {
     } else if (response.status === 500) {
         console.log("Виноват бэкэндер");
 
-    } else {                            // статус 200 обрабатывай отдельно, а в этом блоке только ошибки
-                                        // TODO обработай ошибку 401 (неверный логин или пароль)
+    } else if (response.status === 200) {                            
         const data = await response.json();
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refreshToken", data.refresh_token);
 
-        await getProtectedData();
+        window.location.replace("app.html");
+    } else { //TODO обработай 401 (неправильный логин или пароль)
+        console.log("Error", response.status)
     }
 }
 
 async function getProtectedData() {
     const accessToken = localStorage.getItem("accessToken");
+    if (refreshToken != null) {
 
-    const response = await fetch('http://localhost:8000/user/data', {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 'token': accessToken })
-    });
+        const response = await fetch('http://localhost:8000/user/data', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'token': accessToken })
+        });
 
-    if (response.status === 401 || response.status === 422) { 
-        console.log("Нужно обновить токен (refresh)");
-        await refreshToken();
+        if (response.status === 401 || response.status === 422) { 
+            console.log("Нужно обновить токен (refresh)");
+            await refreshToken();
 
-    } else if (response.status === 500) {
-        console.log("Виноват бэкэндер")
+        } else if (response.status === 500) {
+            console.log("Виноват бэкэндер")
 
+        } else {
+            const data = await response.json();
+            console.log(data);
+        }
     } else {
-        const data = await response.json();
-        console.log(data);
+        await refreshToken();
     }
 }
 
@@ -86,5 +92,6 @@ async function refreshToken() {
             // TODO сделай функцию которая будет показывать ошибку на фронте
         }
     }
+    if (window.location.pathname != "/index.html") window.location.replace("index.html");
     create_sign_in_container();
 }
