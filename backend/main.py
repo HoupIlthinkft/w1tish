@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from errors import UserExistError
 from pydantic import BaseModel
 from random import randint
 from datetime import datetime
@@ -18,7 +19,12 @@ class AuthRequest(BaseModel):
     username: str
     password: str
 
-class DataResponse(BaseModel):
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
+    email: str
+
+class ResponseData(BaseModel):
     token: str
 
 class refreshTokens(BaseModel):
@@ -30,9 +36,20 @@ async def authenticate(auth_request: AuthRequest):
         return {"access_token": f"access_token_{round(datetime.now().timestamp())}", "refresh_token": f"refresh_token_{randint(1000, 9999)}"}
     else:
         raise HTTPException(status_code=404, detail="User not found")
+    
+@app.post("/register")
+async def register(register_request: RegisterRequest):
+    try:
+        await register_new(
+            register_request.username,
+            register_request.email,
+            register_request.password
+        )
+    except UserExistError:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
 
 @app.post("/user/data")
-async def get_user_data(token: DataResponse):
+async def get_user_data(token: ResponseData):
     if token.token.startswith("access_token_"):
         if int(token.token[-10:]) + 60 > round(datetime.now().timestamp()):
             return {"username": "PubertatUser3001", "avatar_url": "https://i.pinimg.com/originals/1b/76/e5/1b76e560086418af972c33ae6369b163.jpg"}
@@ -47,3 +64,4 @@ async def update_token(token: refreshTokens):
         return {"access_token": f"access_token_{round(datetime.now().timestamp())}", "refresh_token": f"refresh_token_{randint(1000, 9999)}"}
     else:
         raise HTTPException(status_code=422, detail="Invalid refresh token format")
+    
