@@ -8,7 +8,7 @@ from models import AuthRequest, RegisterRequest, ResponseData, RefreshTokens
 from databases.auth_methods import register_new, auth_user
 from databases.data_methods import get_user_data
 from databases.engine import engine, get_async_db
-from token_generator import generate_tokens, refresh_tokens, validate_token, cipher
+from token_generator import create_tokens, refresh_tokens, validate_token, cipher
 
 
 
@@ -38,7 +38,7 @@ async def authentificate(auth_request: AuthRequest, db = Depends(get_async_db)):
             detail="Wrong password or login"
         )
     if user:
-        return await generate_tokens(user.id)
+        return await create_tokens(user.id)
     else:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -62,7 +62,7 @@ async def register(register_request: RegisterRequest, db = Depends(get_async_db)
         )
     
     if user_id:
-        return await generate_tokens(user_id)
+        return await create_tokens(user_id)
     else:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -73,7 +73,7 @@ async def register(register_request: RegisterRequest, db = Depends(get_async_db)
 @app.post("/user/data")
 async def get_user_data_by_token(token: ResponseData, db = Depends(get_async_db)):
     try:
-        is_token_valid = await validate_token(token.access_token)
+        is_token_valid = await validate_token(token.token)
     except InvalidAccessToken:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
