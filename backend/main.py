@@ -121,7 +121,7 @@ async def update_token(token: RefreshTokens):
         return await refresh_tokens(token.token)
     
 
-@app.post("/messages/add")
+@app.post("/messages/add")  # TODO добавить аутентификацию
 async def add_new_messages(messages: list[dict], collection = Depends(get_messages_collection)):
     try:
         await add_messages(messages, collection)
@@ -132,7 +132,7 @@ async def add_new_messages(messages: list[dict], collection = Depends(get_messag
         )
     return {"detail": "Messages added successfully"}
 
-@app.get("/messages/{chat_id}")
+@app.get("/messages/{chat_id}") # TODO добавить аутентификацию
 async def get_messages(
     chat_id: str,
     limit: int = 50,
@@ -141,3 +141,5 @@ async def get_messages(
 ):
     messages = await get_messages_by_chat(chat_id, collection, limit, offset)
     return {"messages": messages}
+
+# TODO добавить доставку сообщений в реальном времени через WebSocket
