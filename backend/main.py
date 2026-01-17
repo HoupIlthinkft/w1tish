@@ -8,7 +8,7 @@ from databases.data_base.auth_methods import register_new, auth_user
 from databases.data_base.data_methods import get_user_data
 from databases.messages_base.methods import add_messages, get_messages_by_chat
 
-from token_generator import create_tokens, refresh_tokens, validate_token
+from utils.token_generator import create_tokens, refresh_tokens, validate_token
 
 from models import (
     AuthRequest,
