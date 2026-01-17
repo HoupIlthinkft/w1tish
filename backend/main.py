@@ -1,13 +1,29 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from errors import UserExistError, UserNotFoundError, WrongPasswordError, InvalidTokenError
-from models import AuthRequest, RegisterRequest, ResponseData, RefreshTokens
+from databases.data_base.engine import get_async_db
+from databases.messages_base.engine import get_messages_collection
 
 from databases.data_base.auth_methods import register_new, auth_user
 from databases.data_base.data_methods import get_user_data
-from databases.data_base.engine import engine, get_async_db
-from token_generator import create_tokens, refresh_tokens, validate_token, cipher
+from databases.messages_base.methods import add_messages, get_messages_by_chat
+
+from token_generator import create_tokens, refresh_tokens, validate_token
+
+from models import (
+    AuthRequest,
+    RegisterRequest,
+    ResponseData,
+    RefreshTokens
+)
+
+from errors import (
+    UserExistError,
+    UserNotFoundError,
+    WrongPasswordError,
+    InvalidTokenError,
+    InvalidMessagesError
+)
 
 
 
@@ -87,7 +103,6 @@ async def get_user_data_by_token(token: ResponseData, db = Depends(get_async_db)
         return await get_user_data(is_token_valid, db)
         
 
-
 @app.post("/update_token")
 async def update_token(token: RefreshTokens):
     try:
@@ -104,3 +119,25 @@ async def update_token(token: RefreshTokens):
         )
     else:
         return await refresh_tokens(token.token)
+    
+
+@app.post("/messages/add")
+async def add_new_messages(messages: list[dict], collection = Depends(get_messages_collection)):
+    try:
+        await add_messages(messages, collection)
+    except InvalidMessagesError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="Invalid messages format"
+        )
+    return {"detail": "Messages added successfully"}
+
+@app.get("/messages/{chat_id}")
+async def get_messages(
+    chat_id: str,
+    limit: int = 50,
+    offset: int = 0,
+    collection = Depends(get_messages_collection)
+):
+    messages = await get_messages_by_chat(chat_id, collection, limit, offset)
+    return {"messages": messages}

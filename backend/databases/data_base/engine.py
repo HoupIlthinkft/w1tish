@@ -9,19 +9,19 @@ NAME = getenv("DB_NAME", "users_db")
 
 DATABASE_URL = f"postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}/{NAME}"
 
-engine = create_async_engine(
+_engine = create_async_engine(
     DATABASE_URL,
     echo=True,
     pool_size=20,
     max_overflow=10,
 )
 
-AsyncSessionLocal = async_sessionmaker(
-    engine,
+_AsyncSessionLocal = async_sessionmaker(
+    _engine,
     class_=AsyncSession,
     expire_on_commit=False,
 )
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
-    async with AsyncSessionLocal() as session:
+    async with _AsyncSessionLocal() as session:
         yield session

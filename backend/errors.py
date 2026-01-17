@@ -9,3 +9,6 @@ class WrongPasswordError(BaseException):
 
 class InvalidTokenError(BaseException):
     pass
+
+class InvalidMessagesError(BaseException):
+    pass
