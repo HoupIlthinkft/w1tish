@@ -1,5 +1,5 @@
 from pymongo.collection import Collection
-from errors import InvalidMessagesError
+from backend.errors import InvalidMessagesError
 
 async def add_messages(messages: list[dict], collection: Collection) -> None:
     if not all("chat_id" in message and "content" in message and "created_at" in message for message in messages):

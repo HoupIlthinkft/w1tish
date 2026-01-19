@@ -1,8 +1,7 @@
-from databases.data_base.models import usersDataBase
+from backend.databases.data_base.models import usersDataBase
 from sqlalchemy import select
-from errors import UserNotFoundError
+from backend.errors import UserNotFoundError, UserExistError
 from sqlalchemy.exc import IntegrityError
-from errors import UserExistError
 
 async def get_user_data(user_id: int, session) -> usersDataBase:
     query = await session.execute(

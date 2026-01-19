@@ -1,5 +1,5 @@
 async function register_user(username, email, password) {
-    const response = await fetch('http://127.0.0.1:8000/register', {
+    const response = await fetch('http://127.0.0.1/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
@@ -19,7 +19,7 @@ async function register_user(username, email, password) {
 }
 
 async function login(username, password) {
-    const response = await fetch('http://127.0.0.1:8000/auth', {
+    const response = await fetch('http://127.0.0.1/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -50,7 +50,7 @@ async function getProtectedData() {
     const accessToken = localStorage.getItem("accessToken");
     if (refreshToken != null) {
 
-        const response = await fetch('http://localhost:8000/user/data', {
+        const response = await fetch('http://localhost/data/user', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'token': accessToken })
@@ -76,7 +76,7 @@ async function refreshToken() {
     const refreshToken = localStorage.getItem("refreshToken");
 
     if (refreshToken != null) {
-        const response = await fetch('http://localhost:8000/update_token', {
+        const response = await fetch('http://localhost/api/update_token', {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 'token': refreshToken })

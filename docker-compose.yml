@@ -21,8 +21,8 @@ services:
       - "./data/mongo/mongo_data:/data/db"
     ports:
           - "27017:27017"
-  backend:
-    build: backend/.
+  app:
+    build: .
     environment:
       - JWT_SECRET=${JWT_SECRET:-supersecretkey}
 
@@ -34,10 +34,6 @@ services:
       - MONGO_USER=${MONGO_USER:-admin}
       - MONGO_PASS=${MONGO_PASS:-admin}
       - MONGO_HOST=${MONGO_HOST:-messagebase}
-    ports:
-      - "8000:8000"
-  frontend:
-    build: frontend/.
     ports:
       - "80:80"
 
