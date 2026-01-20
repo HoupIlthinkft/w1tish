@@ -17,7 +17,6 @@ from backend.errors import (
 )
 
 api_key_header = APIKeyHeader(name="Access-Token", auto_error=False)
-
 async def get_userid_from_header(token: str = Security(api_key_header)):
     try:
         return await get_userid_by_token(token)
@@ -35,7 +34,7 @@ async def get_userid_from_header(token: str = Security(api_key_header)):
 
 data_router = APIRouter(prefix="/data")
 
-@data_router.post("/user")
+@data_router.get("/user")
 async def get_user_data_by_token(
     user_id = Depends(get_userid_from_header),
     db = Depends(get_async_db)
@@ -87,9 +86,15 @@ async def create_new_chat(
     chat: ChatCreateModel,
     user_id = Depends(get_userid_from_header),
     session = Depends(get_async_db)
-):
+):  
+    if len(chat.members) > 7 or len(chat.members) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid members count. Allowed 2 - 7"
+        )
     try:
-        return await add_chat(user_id, chat.members, session)
+        chat_id = await add_chat(user_id, chat.members, session)
+        return {"chat_id": chat_id}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

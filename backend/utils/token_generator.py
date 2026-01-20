@@ -1,14 +1,14 @@
 from asyncio import get_running_loop
-from cryptography.fernet import Fernet, InvalidToken
+import jwt
 from os import getenv
-from json import loads, dumps, JSONDecodeError
 from backend.errors import InvalidTokenError, ExpiredTokenError
 from concurrent.futures import ProcessPoolExecutor
-from datetime import datetime
+import datetime
 
 
 
-cipher = Fernet(getenv("JWT_SECRET", "error"))
+secret = getenv("JWT_SECRET", "error")
+algorithm = "HS256"
 _executor = ProcessPoolExecutor()
 
 
@@ -23,62 +23,56 @@ async def create_tokens(userid: int) -> dict:
 
 async def refresh_tokens(refresh_token: str) -> dict | None:
     loop = get_running_loop()
-    try:
-        decrypted_token = await loop.run_in_executor(
-            _executor,
-            cipher.decrypt,
-            refresh_token
-        )
-        decrypted_token = loads(decrypted_token)
-
-    except (JSONDecodeError, InvalidToken):
-        raise InvalidTokenError()
-    
-    if decrypted_token.get("expires_at") <= int(datetime.now().timestamp()):
-        raise ExpiredTokenError()
+    decrypted_token = await loop.run_in_executor(
+        _executor,
+        decrypt_token,
+        refresh_token
+    )
     
     return await loop.run_in_executor(
         _executor,
         generate_tokens,
-        decrypted_token.get("userid")
+        decrypted_token.get("id")
     )
 
 
 async def get_userid_by_token(token: str) -> int | None:
     loop = get_running_loop()
-    try:
-        decrypted_token = await loop.run_in_executor(
-            _executor,
-            cipher.decrypt,
-            token
-        )
-        decrypted_token = loads(decrypted_token)
-
-    except (JSONDecodeError, InvalidToken):
-        raise InvalidTokenError()
+    decrypted_token = await loop.run_in_executor(
+        _executor,
+        decrypt_token,
+        token
+    )
     
-    if decrypted_token.get("expires_at") <= int(datetime.now().timestamp()):
-        raise ExpiredTokenError()
-    
-    return decrypted_token.get("userid")
+    return decrypted_token.get("id")
 
 
 def generate_tokens(id, access_time: int = 900, refresh_time: int = 604800):
-    now_time = int(datetime.now().timestamp())
     
-    raw_access_token = {
-        "userid": id,
-        "expires_at": now_time + access_time
+    payload = {
+        "id": id,
+        "t": "a",
+        "exp": datetime.timedelta(seconds=access_time) + datetime.datetime.now(datetime.timezone.utc)
     }
-    access_token = cipher.encrypt(dumps(raw_access_token).encode())
+    access_token = jwt.encode(payload, secret, algorithm)
 
-    raw_refresh_token = {
-        "userid": id,
-        "expires_at": now_time + refresh_time
+    payload = {
+        "id": id,
+        "t": "r",
+        "exp": datetime.timedelta(seconds=refresh_time) + datetime.datetime.now(datetime.timezone.utc)
     }
-    refresh_token = cipher.encrypt(dumps(raw_refresh_token).encode())
+    refresh_token = jwt.encode(payload, secret, algorithm)
 
     return {
         "access_token": access_token,
         "refresh_token": refresh_token
     }
+
+def decrypt_token(token):
+    try:
+        data = jwt.decode(token, secret, algorithms=[algorithm])
+        return data
+    except jwt.ExpiredSignatureError:
+        raise ExpiredTokenError()
+    except jwt.InvalidTokenError:
+        raise InvalidTokenError()

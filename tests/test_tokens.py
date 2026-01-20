@@ -13,6 +13,7 @@ async def test_generate_token():
 async def test_validate_token():
     user_id = 52
     tokens = generate_tokens(user_id, 1, 1)         # access time & refresh time in seconds
+    print(tokens)
     assert await get_userid_by_token(tokens.get("access_token")) == user_id
     assert await get_userid_by_token(tokens.get("refresh_token")) == user_id
 
@@ -28,7 +29,6 @@ async def test_validate_token():
     
     with pytest.raises(InvalidTokenError) as err:
         await get_userid_by_token("Invalid token")
-
     assert err.type == InvalidTokenError
 
 @pytest.mark.asyncio
@@ -37,7 +37,6 @@ async def test_refresh_tokens():
     tokens = generate_tokens(user_id)
     with pytest.raises(InvalidTokenError) as err:
         await refresh_tokens("Invalid token")
-
     assert err.type == InvalidTokenError
 
     new_tokens = await refresh_tokens(tokens.get("refresh_token"))

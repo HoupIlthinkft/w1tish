@@ -84,7 +84,7 @@ async def register(register_request: RegisterRequest, response: Response, db = D
         
 
 @auth_router.post("/update_token")
-async def update_token(response: Response, refresh_token: Annotated[str | None, Cookie()]):
+async def update_token(response: Response, refresh_token: Annotated[None, Cookie()]):
     try:
         tokens = await refresh_tokens(refresh_token)
         response.set_cookie(
