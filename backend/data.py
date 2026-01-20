@@ -89,7 +89,7 @@ async def create_new_chat(
     session = Depends(get_async_db)
 ):
     try:
-        await add_chat(user_id, chat.chat_id, session)
+        return await add_chat(user_id, chat.members, session)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

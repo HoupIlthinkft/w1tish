@@ -1,7 +1,6 @@
-from backend.databases.data_base.models import usersDataBase
+from backend.databases.data_base.models import usersDataBase, chatsBase
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, update, cast
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import select, update
 from backend.errors import UserNotFoundError, UserExistError
 from sqlalchemy.exc import IntegrityError
 
@@ -34,12 +33,23 @@ async def get_user_chats(user_id: int, session: AsyncSession) -> dict:
     querty = select(usersDataBase.chats).where(usersDataBase.id == user_id)
     return await session.scalar(querty)
 
-async def add_chat(user_id: int, chat_id, session: AsyncSession) -> None:
-    stmt = (
-    update(usersDataBase)
-    .where(usersDataBase.id == user_id)
-    .values(chats=usersDataBase.chats.concat({str(chat_id): "admin"}))
-)
-    
-    await session.execute(stmt)
+async def add_chat(user_id: int, members_ids: int, session: AsyncSession) -> None:
+    permissions = {str(member): "user" for member in members_ids}
+    permissions[str(user_id)] = "admin"
+
+    new_chat = chatsBase(
+        members = permissions
+    )
+    session.add(new_chat)
     await session.commit()
+    await session.refresh(new_chat)
+
+    stmt = (
+        update(usersDataBase)
+        .where(usersDataBase.id == user_id)
+        .values(chats=usersDataBase.chats.concat({str(new_chat.id): "admin"}))
+    )
+    await session.execute(stmt) 
+    await session.commit()
+    
+    return new_chat.id

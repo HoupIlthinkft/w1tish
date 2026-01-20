@@ -10,4 +10,4 @@ class RegisterRequest(BaseModel):
     email: str
 
 class ChatCreateModel(BaseModel):
-    chat_id: str
+    members: list[int]
