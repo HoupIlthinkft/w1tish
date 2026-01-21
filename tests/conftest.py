@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from main import app
+import os
 
 @pytest.fixture
 async def async_client():
@@ -9,6 +10,5 @@ async def async_client():
 
 @pytest.fixture(scope="session", autouse=True)
 def set_env_vars_for_all_tests():
-    import os
     os.environ["JWT_SECRET"] = "iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA="
     yield
