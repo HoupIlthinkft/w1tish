@@ -26,14 +26,15 @@ function load_chat_container(oponent_id) {
     }
 }
 
-function load_contacts_and_profile() {
+function load_profile() {
     document.getElementById("logo_user").src = localStorage.getItem("avatar"); 
     document.getElementById("nickname").textContent = localStorage.getItem("nickname");
+    document.getElementById("user_id").textContent = localStorage.getItem("id");
+}
+function load_contacts() {
     contacts = document.getElementById("contacts");
     chats = localStorage.getItem("chats");
-    console.log(chats.length)
     for (chat in chats) {
-        console.log(chat)
         contact = document.createElement("div");
         contact.class = "contact";
         contact.id = chats.chat;
@@ -55,6 +56,36 @@ function load_contacts_and_profile() {
     }
     document.getElementById('chat_for_oponent').scrollIntoView(true);
 }
+
+function create_chat(oponents_id) {
+    const response = fetch(('http://127.0.0.1/data/chats/add'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: {
+            "members": oponents_id
+        }
+    });
+    load_contacts();
+}
+
+
+function send_message(chat_id) {
+    let input = document.getElementById("send_message");
+    let message = input.textContent;
+    input.textContent = "";
+    let user_id = localStorage.getItem("id");
+    const response = fetch(('http://127.0.0.1/data/messages/' + chat_id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: {
+            "chat_id": chat_id,
+            "content": message,
+            "sender": user_id
+        }
+    });
+}
+
+
 
 
 

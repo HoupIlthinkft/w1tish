@@ -9,12 +9,12 @@ async function register_user(username, email, password) {
 
         const data = await response.json();
         localStorage.setItem("accessToken", data.access_token);
-        localStorage.setItem("refreshToken", data.refresh_token);
-
         window.location.replace("app.html"); 
 
-    } else {                                            //TODO обработай ошибку 409 (пользователь уже существует)
-        console.log("Ошибка: ", response.status)
+    } else if (response.status === 409) {
+        document.getElementById("error").textContent == "Вы ввели занятый логин/почту";                            
+    } else { 
+        console.log("Ошибка: ", response.status);
     }
 }
 
@@ -40,14 +40,14 @@ async function login(username, password) {
         localStorage.setItem("accessToken", data.access_token);
         localStorage.setItem("refreshToken", data.refresh_token);
         window.location.replace("app.html");
-    } else { //TODO обработай 401 (неправильный логин или пароль)
+    } else { 
         console.log("Error", response.status)
     }
 }
 
 async function getProtectedData() {
     const accessToken = localStorage.getItem("accessToken");
-    if (refreshToken != null) {
+    if (accessToken != null) {
 
         const response = await fetch('http://localhost/data/', {
             method: "GET",
@@ -67,7 +67,8 @@ async function getProtectedData() {
             console.log(data)
             localStorage.setItem("nickname", data.nickname);
             localStorage.setItem("avatar", data.avatar_url);
-            localStorage.setItem("chats", data.chats);  
+            localStorage.setItem("chats", data.chats);
+            localStorage.setItem("id", data.id);  
             if (window.location.pathname == "/app.html") load_contacts_and_profile();
         }
     } else {
@@ -93,8 +94,11 @@ async function refreshToken() {
         } else if (response.status === 500) {
             console.log("Iternal server error");
             // TODO сделай функцию которая будет показывать ошибку на фронте
+        } else if (response.status === 422 || response.status === 401) {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            window.location.replace("index.html");
+            create_sign_in_container();
         }
     }
-    if (window.location.pathname != "/index.html") window.location.replace("index.html");
-    create_sign_in_container();
 }
