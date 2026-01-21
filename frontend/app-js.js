@@ -4,7 +4,7 @@ function load_chat_container(oponent_id) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({"users_ids":[oponent_id]})
     });
-    user_info = response_user_info.json();
+    const user_info = response_user_info.json();
     document.getElementById("logo_oponent").src = user_info.avatar_url;
     document.getElementById("oponent_name").textContent = user_info.nickname;
 
@@ -12,14 +12,14 @@ function load_chat_container(oponent_id) {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
-    data = response.json();
-    chat = document.getElementById("chat_for_oponent")
+    const data = response.json();
+    const chat = document.getElementById("chat_for_oponent")
     for (message in data) {
-        message_container = document.createElement("div") 
+        const message_container = document.createElement("div") 
         if (message.sender == oponent_id) {
-            message_container.class = "oponent message";
+            message_container.classList.add("oponent_message");
         } else {
-            message_container.class = "user message";
+            message_container.classList.add("user_message");
         }
         message_container.textContent = message.content;
         chat.append(message_container)
@@ -32,30 +32,31 @@ function load_profile() {
     document.getElementById("user_id").textContent = localStorage.getItem("id");
 }
 async function load_contacts() {
-    contacts = document.getElementById("contacts");
-    chats = JSON.parse(localStorage.getItem("chats"));
+    const contacts = document.getElementById("contacts");
+    const chats = JSON.parse(localStorage.getItem("chats"));
 
-    for (chat in chats) {
-        contact = document.createElement("div");
-        contact.class = "contact";
-        contact.id = chats[chat];
-        view_contact = document.createElement("div");
-        view_contact.class = "view_contact";
+    for (let chat in chats) {
+        const contact = document.createElement("div");
+        contact.classList.add("contact");
 
-        img = document.createElement("img");
+        const view_contact = document.createElement("div");
+        view_contact.classList.add("view_contact");
+
+        const img = document.createElement("img");
+        img.classList.add("logo");
         img.alt = "logo";
-        img.class = "logo";
-
         img.src = await get_avatar_url_by_id(chats[chat].ids[0]);
 
-        name_contact = document.createElement("p");
-        name_contact.class = "name_contact";
+        const name_contact = document.createElement("p");
+        name_contact.classList.add("name_contact");
         name_contact.textContent = chats[chat];
 
         view_contact.append(img, name_contact);
-        view_message = document.createElement("div");
-        view_message.class = "view_message";
+
+        const view_message = document.createElement("div");
+        view_message.classList.add("view_message");
         view_message.textContent = chats[chat][nickname]; // Добавить ссылку из бд
+
         contact.append(view_contact, view_message);
         contacts.append(contact);
     }
@@ -96,10 +97,11 @@ async function create_chat(oponents_id) {
 
 
 async function send_message(chat_id) {
-    let input = document.getElementById("send_message");
-    let message = input.textContent;
+    const input = document.getElementById("send_message");
+    const message = input.textContent;
+    const user_id = localStorage.getItem("id");
     input.textContent = "";
-    let user_id = localStorage.getItem("id");
+    
     await fetch(('http://127.0.0.1/data/messages/' + chat_id), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

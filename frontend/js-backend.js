@@ -29,7 +29,7 @@ async function login(username, password) {
         console.log("Виноват фронтендер");
 
     } else if (response.status === 404) { 
-        error_text.textContent = "Вы не зарегистрированы";
+        //error_text.textContent = "Вы не зарегистрированы"; //не успевает отображаться
         create_registration_container();
 
     } else if (response.status === 500) {
