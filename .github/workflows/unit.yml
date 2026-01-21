@@ -13,20 +13,8 @@ jobs:
         cat > .env << EOF
         JWT_SECRET=iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA=
         EOF
-    - name: Install Docker Compose
-      run: |
-        sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
-        docker-compose --version
-    - name: Start services with Docker Compose
-      run: |
-        docker-compose up -d --build
-        docker-compose ps
-        sleep 15
     - name: Unit tests
       run: |
         sudo chmod 666 /var/run/docker.sock
-        docker-compose exec app python -m pytest tests/
-    - name: Stop services
-      if: always()
-      run: docker-compose down -v
+        python3 -m pip install -r requirements.txt
+        python3 -m pytest tests/
