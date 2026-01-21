@@ -15,6 +15,11 @@ if docker_socket.exists():
     os.environ["DOCKER_HOST"] = f"unix://{docker_socket}"
     os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
     os.environ["TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"] = str(docker_socket)
+else:
+    docker_socket = Path("/var/run/docker.sock")
+    os.environ["DOCKER_HOST"] = f"unix://{docker_socket}"
+    os.environ["TESTCONTAINERS_RYUK_DISABLED"] = "true"
+    os.environ["TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE"] = str(docker_socket)
 
 @pytest.fixture(scope="session")
 async def async_client():
