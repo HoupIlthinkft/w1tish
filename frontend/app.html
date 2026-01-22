@@ -5,23 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="app.css">
-    <script src="js.js"></script>
-    <script src="start-js.js"></script>
+    <!-- <script src="js.js"></script>
+    <script src="start-js.js"></script> -->
     <script src="app-js.js"></script>
-    <script src="js-backend.js"></script>
-    <script>getProtectedData()</script>
+    <!-- <script src="js-backend.js"></script>
+    <script>getProtectedData()</script> -->
 </head>
 <body>
     <div id="main_container">
         <div id="view_container">
+            <div id="add_new_chat">
+                <img src="" alt="add" class="logo">
+                <p id="add_text">Add new chat</p>
+            </div>
             <div id="contacts">
-                <div class="contact">
-                    <div class="view_contact">
-                        <img src="" alt="logo" class="logo_contact">
-                        <p class="name_contact">tralalelo</p>
-                    </div>
-                    <div class="view_message">tralalelo tralala</div>
-                </div>
             </div>
             <div id="profile">
                 <div class="user_view">
@@ -31,26 +28,39 @@
                         <p id="user_id">1</p>
                     </div>
                 </div>
-                <img src="" alt="settings" class="logo settings">
+                <img src="" alt="settings" class="used_logo" id="settings">
             </div>
         </div>
-        <div id="chat_container">
-            <div class="oponent_header">
-                <img src="" alt="logo_oponent" class="logo logo_oponent" id="logo_oponent">
-                <div class="oponent_info">
-                    <p class="oponent_name" id="oponent_name">tralalelo</p>
-                    <p class="state_oponent">Был(а) недавно</p>
+        <div id="wait_event">
+            <img src="" alt="wait_logo" id="wait_logo">
+            <h1>Здесь пока что ничего нету</h1>
+            <h1 style="font-size: 60pt;">._.</h1>
+            <h4>Выберите контакт из левого столбца</h4>
+        </div>
+    </div>
+    <div id="overlay">
+        <div id="add_chat">
+            <img src="" alt="close" id="close_btn" class="used_logo">
+            <div id="contaiter_input_add_chat">
+                <p id="add_chat">Отправить приглашение</p>
+                <input type="text" placeholder="Введите id человека..." maxlength="10" id="input_id">
+                <div id="add_users">
                 </div>
             </div>
-            <div id="chat">
-                <div id="chat_for_oponent">
-                </div>
-            </div>
-            <div id="send">
-                <textarea name="" id="send_message" placeholder="Сообщение..." maxlength="1000" rows="1"></textarea>
-                <img src="" alt="send" class="logo" id="">
+            <div id="btn_add_chat">
+                <button id="add_btn">Добавить участника</button>
+                <button id="send_invitation">Отправить</button>
             </div>
         </div>
     </div>
+    <script src="https://unpkg.com/autosize@4.0.2/dist/autosize.min.js"></script>
+    <script>
+    autosize(document.getElementById("send_message"));
+    document.querySelectorAll(".contact").forEach(item => {item.addEventListener("click", load_chat_container(item.id))});
+    document.getElementById("add_new_chat").addEventListener("click", open_add_chat);
+    document.getElementById("close_btn").addEventListener("click", close_add_chat);
+    document.getElementById("add_btn").addEventListener("click", add_user_in_invitation);
+    document.getElementById("send_invitation").addEventListener("click", create_new_chat);
+    </script>
 </body>
 </html>
