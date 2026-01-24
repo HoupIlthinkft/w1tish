@@ -1,7 +1,6 @@
 from backend import models
 
 from backend.utils import token_generator
-from backend.dependencies.annotations import Database
 from backend import errors as err
 
 from backend.databases.data_base.data_methods import ChatRepository, DataRepository
@@ -18,7 +17,7 @@ class AuthService:
             request.username,
             request.password
         )
-        tokens = await token_generator.create_tokens(user_id)
+        tokens = token_generator.generate_tokens(user_id)
         return tokens
     
     async def register_user(self, request: models.RegisterRequestModel) -> models.TokensResponse:
@@ -27,11 +26,11 @@ class AuthService:
             request.email,
             request.password
         )
-        tokens = await token_generator.create_tokens(user_id)
+        tokens = token_generator.generate_tokens(user_id)
         return tokens
     
     async def update_auth_session(self, token: str) -> models.TokensResponse:
-        tokens = await token_generator.refresh_tokens(token)
+        tokens = token_generator.refresh_tokens(token)
         return tokens
 
 

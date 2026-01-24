@@ -1,53 +1,23 @@
-from asyncio import get_running_loop
 import jwt
-from os import getenv
 from backend.errors import InvalidTokenError, ExpiredTokenError
-from concurrent.futures import ProcessPoolExecutor
 from backend.models import TokensResponse
 import datetime
 from backend.config import settings
 
-
-
 secret = settings.JWT_SECRET
 algorithm = settings.JWT_ALGORITHM
-_executor = ProcessPoolExecutor()
 
 
-async def create_tokens(userid: int) -> TokensResponse: # TODO pool executor исбыточен
-    loop = get_running_loop()
-    tokens = await loop.run_in_executor(
-        _executor,
-        generate_tokens,
-        userid
-    )
-    return tokens
+def refresh_tokens(refresh_token: str) -> TokensResponse:
+    decrypted_token = decrypt_token(refresh_token)
+    if decrypted_token["t"] == "r":
+        tokens = generate_tokens(decrypted_token["id"])
+        return tokens
+    raise InvalidTokenError
 
 
-async def refresh_tokens(refresh_token: str) -> TokensResponse:
-    loop = get_running_loop()
-    decrypted_token = await loop.run_in_executor(
-        _executor,
-        decrypt_token,
-        refresh_token
-    )
-    
-    tokens = await loop.run_in_executor(
-        _executor,
-        generate_tokens,
-        decrypted_token["id"]
-    )
-    return tokens
-
-
-async def get_id_by_jwt(token: str) -> int:
-    loop = get_running_loop()
-    decrypted_token = await loop.run_in_executor(
-        _executor,
-        decrypt_token,
-        token
-    )
-    
+def get_id_by_jwt(token: str) -> int:
+    decrypted_token = decrypt_token(token)
     return decrypted_token["id"]
 
 
