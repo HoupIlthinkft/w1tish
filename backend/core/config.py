@@ -1,7 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from datetime import datetime
 
 class Settings(BaseSettings):
     REFRESH_TOKEN_MAX_AGE: int = 604800
+    ACCESS_TOKEN_MAX_AGE: int = 900
+
     COOKIE_SECURE: bool = False
     COOKIE_SAMESITE: str = "lax"
 
@@ -11,9 +14,12 @@ class Settings(BaseSettings):
     POSTGRES_BASE: str = "users_db"
 
     MONGO_USER: str = "admin"
-    MONGO_PASS: str = "password"
-    MONGO_HOST: str = "mongodb"
+    MONGO_PASS: str = "admin"
+    MONGO_HOST: str = "messagebase"
     MONGO_NAME: str = "messages_db"
+    MONGO_DISCONECT_TIMEOUT: int = 5
+
+    LOGS_FILE: str = f"{datetime.now().strftime("%d-%m-%Y_%H:%M")}.log"
 
     JWT_SECRET: str = "iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA="
     JWT_ALGORITHM: str = "HS256"

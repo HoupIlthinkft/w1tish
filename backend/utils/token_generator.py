@@ -6,12 +6,14 @@ from backend.core.config import settings
 
 secret = settings.JWT_SECRET
 algorithm = settings.JWT_ALGORITHM
+refresh_time = settings.REFRESH_TOKEN_MAX_AGE
+access_time = settings.ACCESS_TOKEN_MAX_AGE
 
 
 def refresh_tokens(refresh_token: str) -> TokensResponse:
     decrypted_token = decrypt_token(refresh_token)
     if decrypted_token["t"] == "r":
-        tokens = generate_tokens(decrypted_token["id"])
+        tokens = generate_tokens(decrypted_token["id"], access_time, refresh_time)
         return tokens
     raise InvalidTokenError
 
@@ -21,7 +23,7 @@ def get_id_by_jwt(token: str) -> int:
     return decrypted_token["id"]
 
 
-def generate_tokens(id: int, access_time: int = 900, refresh_time: int = 604800) -> TokensResponse:
+def generate_tokens(id: int, access_time: int, refresh_time: int) -> TokensResponse:
     access_payload = {
         "id": id,
         "t": "a",

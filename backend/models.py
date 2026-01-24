@@ -23,6 +23,7 @@ class MessageModel(BaseModel):
     chat_id: str
     content: str
     sender: str
+    created_at: str
 
 
 # модели запросов
