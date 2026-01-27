@@ -43,15 +43,15 @@ class DataService:
         self.user_chats = chats_repo
         self.user_messages = mess_repo
 
-    async def add_messages(self, user_id: int, request: models.SendMessagesRequestModel) -> None:
+    async def add_message(self, user_id: int, request: models.MessageModel) -> None:
         avarible_chats = await self.user_chats.get_user_chats(user_id)
         logger.info("Checking permissions...")
-        for message in request.messages:
-            if message.chat_id not in avarible_chats:
-                logger.warning("User have not permission to send messages")
-                raise err.NoWritePermissionError(message)
+        if int(request.chat_id) not in avarible_chats:
+            logger.warning("User have not permission to send message")
+            raise err.NoWritePermissionError(request)
             
-        await self.user_messages.add_messages(request)
+        await self.user_messages.add_message(request)
+        await self.user_chats.set_chat(request)
 
     async def add_chat(self, user_id: int, request: models.CreateChatRequestModel) -> str:
         permissions = {str(member): "user" for member in request.members_ids}
@@ -62,7 +62,7 @@ class DataService:
 
     async def get_messages(self, user_id: int, chat_id: str, offset: int, limit: int) -> models.MessagesResponse:
         avarible_chats = await self.user_chats.get_user_chats(user_id)
-        if chat_id in avarible_chats:
+        if int(chat_id) in avarible_chats:
             messages = await self.user_messages.get_messages_by_chat(
                 chat_id,
                 limit,

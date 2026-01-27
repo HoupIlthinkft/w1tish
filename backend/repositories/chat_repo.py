@@ -1,6 +1,5 @@
 from pymongo.collection import Collection
-from sqlalchemy.ext.asyncio import AsyncSession
-from backend.models import MessagesResponse, SendMessagesRequestModel
+from backend.models import MessagesResponse, MessageModel
 from backend.errors import InvalidMessagesError
 from pydantic import ValidationError
 
@@ -8,16 +7,15 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 class MessagesRepository:
-    def __init__(self, mb: Collection, db: AsyncSession):
+    def __init__(self, mb: Collection):
         self.mb = mb
-        self.db = db
 
-    async def add_messages(
+    async def add_message(
         self,
-        messages: SendMessagesRequestModel
+        message: MessageModel
     ) -> None:
         try:
-            await self.mb.insert_many(messages.model_dump()["messages"])
+            await self.mb.insert_one(message.model_dump())
 
         except TypeError as e:
             logger.error("Error occured: ", exc_info=e)

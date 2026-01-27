@@ -1,7 +1,8 @@
 from backend import models
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, cast, String, update
 from backend.errors import UserNotFoundError, ChatNotFoundError
+from datetime import datetime
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -9,12 +10,15 @@ logger = getLogger(__name__)
 class ChatRepository:
     def __init__(self, db: AsyncSession): self.db = db
     
-    async def get_user_chats(self, user_id: int) -> dict:
-        querty = select(
-            models.chatsBase
-        ).where(user_id in models.chatsBase.members)
-
-        chats = await self.db.scalar(querty)
+    async def get_user_chats(self, user_id: int) -> list[int]:
+        query = await self.db.execute(
+            select(
+                models.chatsBase.id
+            ).where(
+                models.chatsBase.permissions.has_key(cast(str(user_id), String))
+            )
+        )
+        chats = query.scalars().all()
         if not chats:
             raise ChatNotFoundError()
         return chats
@@ -28,6 +32,20 @@ class ChatRepository:
         await self.db.refresh(new_chat)
 
         return str(new_chat.id)
+    
+    async def set_chat(self, message: models.MessageModel) -> None:
+        await self.db.execute(
+            update(
+                models.chatsBase
+            ).where(
+                models.chatsBase.id == int(message.chat_id)
+            ).values(
+                last_message_author = int(message.sender),
+                last_message_text = message.content,
+                last_message_time = datetime.fromisoformat(message.created_at)
+            )
+        )
+        await self.db.commit()
     
 
 class DataRepository:
@@ -48,7 +66,7 @@ class DataRepository:
                 models.chatsBase.permissions
             ).outerjoin(
                 models.chatsBase,
-                models.chatsBase.permissions.has_key(str(user_id))
+                models.chatsBase.permissions.has_key(cast(str(user_id), String))
             ).where(
                 models.usersBase.id == user_id
             )
@@ -57,24 +75,24 @@ class DataRepository:
 
         if not user_data:
             raise UserNotFoundError()
-        
-        response = models.UserResponse(
-            id=user_data[0].user_id,
-            username=user_data[0].username,
-            nickname=user_data[0].nickname,
-            avatar_url=user_data[0].avatar_url,
-            chats={}
-        )
 
-        if user_data[0].chat_id is None: return response
-
-        for row in user_data:
-            response.chats[row.chat_id] = {
+        chats = {
+            row.chat_id: {
                 "last_message": row.last_message_text,
                 "last_message_time": row.last_message_time,
                 "last_message_author": row.last_message_author,
                 "permissions": row.permissions
             }
+            for row in user_data if row.chat_id is not None
+        }
+
+        response = models.UserResponse(
+            id=user_data[0].user_id,
+            username=user_data[0].username,
+            nickname=user_data[0].nickname,
+            avatar_url=user_data[0].avatar_url,
+            chats=chats
+        )
 
         return response
     
@@ -83,7 +101,8 @@ class DataRepository:
             select(
                 models.usersBase.nickname,
                 models.usersBase.avatar_url,
-                models.usersBase.id
+                models.usersBase.id,
+                models.usersBase.username
             ).where(
                 models.usersBase.id.in_(ids)
             )

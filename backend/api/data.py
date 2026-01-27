@@ -35,13 +35,13 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     "/messages",
     status_code=status.HTTP_201_CREATED
 )
-async def add_new_messages(
-    request: models.SendMessagesRequestModel,
+async def add_new_message(
+    request: models.MessageModel,
     service: DataServiceDep,
     user_id: CurrentUser
 ):
-    logger.info("[POST] Trying to add new messages...")
-    await service.add_messages(user_id, request)
+    logger.info("[POST] Trying to add new message...")
+    await service.add_message(user_id, request)
 
 @data_router.get("/messages", response_model=models.MessagesResponse)
 async def get_messages(

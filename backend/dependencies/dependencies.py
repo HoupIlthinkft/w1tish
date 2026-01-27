@@ -22,7 +22,7 @@ def get_data_service(
 ) -> services.DataService:
     data_repo = repo.DataRepository(session)
     chats_repo = repo.ChatRepository(session)
-    mess_repo = repo.MessagesRepository(collection, session)
+    mess_repo = repo.MessagesRepository(collection)
     return services.DataService(data_repo, chats_repo, mess_repo)
 
 AuthServiceDep = Annotated[services.AuthService, Depends(get_auth_service)]
