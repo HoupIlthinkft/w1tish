@@ -4,10 +4,25 @@ function starting_after() {
     document.getElementById("close_btn").addEventListener("click", close_add_chat);
     document.getElementById("add_btn").addEventListener("click", add_user_in_invitation);
     document.getElementById("send_invitation").addEventListener("click", create_new_chat);
+    document.getElementById("setting").addEventListener("click", open_settings);
+    document.getElementById("close_btn_settings").addEventListener("click", close_settings);
+    document.getElementById("btn_leave_account").addEventListener("click", exit_account);
 }
 
-async function get_data(user_id) {
-    const data = await fetch((`http://localhost/api/data/user?id=${user_id}`), {
+async function get_data_by_user_id(user_id) {
+    const data = await fetch((`http://localhost/api/data/user?user_id=${user_id}`), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (data.status === 200) {
+        return data.json();
+    } else if (data.status === 404) {
+    }
+}
+
+async function get_data_by_username(username) {
+    const data = await fetch((`http://localhost/api/data/user?username=${username}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -23,7 +38,7 @@ async function load_chat(user_id, chat_id) {
     var data = await fetch((`http://localhost/api/data/messages?chat_id=${Number(chat_id)}&offset=0&limit=50`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
-            'Access-Token': localStorage.getItem("accessToken")
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
          }
     });
     data = await data.json();
@@ -56,66 +71,63 @@ async function load_chat_container() {
     const oponent_header = document.createElement("div");
     oponent_header.classList.add("oponent_header");
 
-    const response_user_info = await get_data(this.id);
+    let response_user_info = await get_data_by_user_id(this.id);
+    response_user_info = response_user_info["users"][0];
+    
+    const logo_oponent = document.createElement("img");
+    logo_oponent.src = response_user_info.avatar_url;
+    logo_oponent.alt = "logo_oponent";
+    logo_oponent.className = "logo logo_oponent";
+    logo_oponent.id = "logo_oponent";
 
-    if (response_user_info.status === 200) {
-        let user_info = await response_user_info.json();
-        user_info = user_info.users[0];
-        const logo_oponent = document.createElement("img");
-        logo_oponent.src = user_info.avatar_url;
-        logo_oponent.alt = "logo_oponent";
-        logo_oponent.className = "logo logo_oponent";
-        logo_oponent.id = "logo_oponent";
+    const oponent_info = document.createElement("div");
+    oponent_info.classList.add("oponent_info")
+    
+    const oponent_name = document.createElement("p");
+    oponent_name.classList.add("oponent_name");
+    oponent_name.id = "oponent_name";
+    oponent_name.textContent = response_user_info.nickname;
 
-        const oponent_info = document.createElement("div");
-        oponent_info.classList.add("oponent_info")
-        
-        const oponent_name = document.createElement("p");
-        oponent_name.classList.add("oponent_name");
-        oponent_name.id = "oponent_name";
-        oponent_name.textContent = user_info.nickname;
+    const oponent_state = document.createElement("p");
+    oponent_state.classList.add("state_oponent");
+    oponent_state.textContent = ""; // TODO получать состояние опонента из запроса
 
-        const oponent_state = document.createElement("p");
-        oponent_state.classList.add("state_oponent");
-        oponent_state.textContent = ""; // TODO получать состояние опонента из запроса
-
-        oponent_info.append(oponent_name, oponent_state);
-        oponent_header.append(logo_oponent, oponent_info);
+    oponent_info.append(oponent_name, oponent_state);
+    oponent_header.append(logo_oponent, oponent_info);
 
 
-        const chat = document.createElement("div");
-        chat.id = "chat";
+    const chat = document.createElement("div");
+    chat.id = "chat";
 
-        load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id);
+    load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id);
 
-        const send = document.createElement("div");
-        send.id = "send";
+    const send = document.createElement("div");
+    send.id = "send";
 
-        const message_send = document.createElement("textarea");
-        message_send.id = "send_message";
-        message_send.placeholder = "Сообщение...";
-        message_send.maxlength = "1000";
-        message_send.rows = "1";
+    const message_send = document.createElement("textarea");
+    message_send.id = "send_message";
+    message_send.placeholder = "Сообщение...";
+    message_send.maxlength = "1000";
+    message_send.rows = "1";
 
-        const send_img = document.createElement("i");
-        send_img.alt = "send";
-        send_img.classList.add("fas", "fa-solid", "fa-paper-plane", "fa-2x", "used_logo");
-        send_img.id = "message_send";
+    const send_img = document.createElement("i");
+    send_img.alt = "send";
+    send_img.classList.add("fas", "fa-solid", "fa-paper-plane", "fa-2x", "used_logo");
+    send_img.id = "message_send";
 
-        send.append(message_send, send_img);
+    send.append(message_send, send_img);
 
 
-        chat_container.append(oponent_header, chat, send);
+    chat_container.append(oponent_header, chat, send);
 
-        const parent = document.getElementById("main_container");
-        parent.append(chat_container);
-        if (document.getElementById("wait_event")) {
-            parent.removeChild(document.getElementById("wait_event"));
-        } else {
-            parent.removeChild(document.getElementById("chat_container"));
-        }
-        document.getElementById("message_send").addEventListener("click", send_message);
+    const parent = document.getElementById("main_container");
+    parent.append(chat_container);
+    if (document.getElementById("wait_event")) {
+        parent.removeChild(document.getElementById("wait_event"));
+    } else {
+        parent.removeChild(document.getElementById("chat_container"));
     }
+    document.getElementById("message_send").addEventListener("click", send_message);
 }
 
 
@@ -123,6 +135,10 @@ function load_profile() {
     document.getElementById("logo_user").src = localStorage.getItem("avatar"); 
     document.getElementById("nickname").textContent = localStorage.getItem("nickname");
     document.getElementById("user_id").textContent = localStorage.getItem("id");
+    document.getElementById("setting_avatar_user").src =localStorage.getItem("avatar");
+    document.getElementById("nickname_user").textContent = localStorage.getItem("nickname")
+    document.getElementById("setting_user_username").textContent = localStorage.getItem("username");
+    document.getElementById("setting_user_id").textContent = localStorage.getItem("id"); 
 }
 
 
@@ -136,26 +152,32 @@ async function load_contacts() {
     for (let chat in chats) {
         const contact = document.createElement("div");
         contact.classList.add("contact");
-        contact.id = chats[chat].ids[0];
 
         const view_contact = document.createElement("div");
         view_contact.classList.add("view_contact");
         view_contact.id = chat;
 
-        const img = document.createElement("img");
-        img.classList.add("logo");
-        img.alt = "logo";
-        img.src = await get_avatar_url_by_id(chats[chat].ids[0]);
+        for (let members in chats[chat].permissions) {
+            if (members != localStorage.getItem("id")) {
+                let member_data = await get_data_by_user_id(members);
+                member_data = member_data["users"][0];
+                contact.id += `${members} `;
 
-        const name_contact = document.createElement("p");
-        name_contact.classList.add("name_contact");
-        name_contact.textContent = await get_nickname_by_id(chats[chat].ids[0]);
+                const img = document.createElement("img");
+                img.classList.add("logo");
+                img.alt = "logo";
+                img.src = member_data.avatar_url;
 
-        view_contact.append(img, name_contact);
+                const name_contact = document.createElement("p");
+                name_contact.classList.add("name_contact");
+                name_contact.textContent = member_data.nickname;
 
+                view_contact.append(img, name_contact);
+            }
+        }
         const view_message = document.createElement("div");
         view_message.classList.add("view_message");
-        view_message.textContent = chats[chat].last_message; // Добавить ссылку из бд
+        view_message.textContent = chats[chat].last_message; 
 
         contact.append(view_contact, view_message);
         contacts.append(contact);
@@ -171,20 +193,20 @@ async function load_contacts() {
 
 
 async function get_avatar_url_by_id(id) {
-    const response = await get_data(id);
+    const response = await get_data_by_user_id(id);
 
     if (response.status == 200) {
         const data = await response.json();
-        return data.users[0].avatar_url;
+        return data["users"][0].avatar_url;
     }
 }
 
 async function get_nickname_by_id(id) {
-    const response = await get_data(id);
+    const response = await get_data_by_user_id(id);
 
     if (response.status == 200) {
         const data = await response.json();
-        return data.users[0].nickname;
+        return data["users"][0].nickname;
     }
 }
 
@@ -193,7 +215,7 @@ async function create_chat(oponents_id) {
 
     await fetch(('http://localhost/api/data/chats'), {
         method: 'POST',
-        headers: {  'Access-Token': localStorage.getItem("accessToken"),
+        headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
         body: JSON.stringify({
             "members_ids": oponents_id
@@ -219,7 +241,7 @@ async function send_message() {
     
     await fetch(('http://localhost/api/data/messages'), {
         method: 'POST',
-        headers: {  'Access-Token': localStorage.getItem("accessToken"),
+        headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
         body: JSON.stringify({
                 "messages": [
@@ -238,6 +260,7 @@ async function send_message() {
 
 function open_add_chat() {
     document.getElementById("overlay").style.visibility = "visible";
+    document.getElementById("settings").style.visibility = "hidden";
 }
 
 function close_add_chat() {
@@ -247,23 +270,24 @@ function close_add_chat() {
     }
     document.getElementById("input_id").value = ""
     document.getElementById("overlay").style.visibility = "";
+    document.getElementById("settings").style.visibility = "";
 }
 
 async function add_user_in_invitation() {
     var input_value = document.getElementById("input_id").value;
-    if (input_value != "" && document.getElementById("add_users").childElementCount < 8 && input_value != document.getElementById("user_id").textContent) {
+    if (input_value != "" && document.getElementById("add_users").childElementCount < 8 && input_value != document.getElementById("nickname").textContent) {
         for (let i = 0; i < document.getElementsByClassName("added_user").length; i++) {
             if (input_value == document.getElementsByClassName("added_user").item(i).getElementsByClassName("nickname_added_user").item(0).textContent){
                 return
             }
         }
         for (let i = 0; i < document.getElementsByClassName("contact").length; i++){
-            if (input_value == document.getElementsByClassName("contact").item(i).id) {
+            if (input_value == document.getElementsByClassName("name_contact").item(i).textContent) {
                 return
             }
         }
 
-        var response_user_info = await get_data(Number(input_value));
+        var response_user_info = await get_data_by_username(input_value);
         response_user_info = response_user_info.users[0];
 
         const added_user = document.createElement("div");
@@ -276,7 +300,7 @@ async function add_user_in_invitation() {
         const nickname_added_user = document.createElement("p")
         nickname_added_user.classList.add("nickname_added_user");
         nickname_added_user.textContent = response_user_info.nickname;
-        nickname_added_user.value = input_value;
+        nickname_added_user.value = response_user_info.id;
 
         const delete_user = document.createElement("i");
         delete_user.classList.add("fas", "fa-solid", "fa-times", "used_logo", "fa-2x", "delete_user");
@@ -293,7 +317,7 @@ function create_new_chat() {
         let list = [];
         add_users = document.getElementById("add_users");
         for (let i = 0; i < add_users.childElementCount; i++) {
-                list.push(add_users.getElementsByClassName("nickname_added_user").item(i).textContent);
+                list.push(add_users.getElementsByClassName("nickname_added_user").item(i).value);
             }
         create_chat(list);
         close_add_chat();
@@ -302,4 +326,25 @@ function create_new_chat() {
 
 function delete_added_user() {
     document.getElementById("add_users").removeChild(this.parentNode);
+}
+
+function open_settings() {
+    document.getElementById("overlay").style.visibility = "visible";
+    document.getElementById("add_chat").style.visibility = "hidden";
+    if (document.getElementById("setting_avatar_user").src == "") document.getElementById("setting_avatar_user").src = localStorage.getItem("avatar_url");
+    if (document.getElementById("setting_nickname").childNodes.item(0).textContent == "") document.getElementById("setting_nickname").childNodes.item(0).textContent = localStorage.getItem("nickname");
+}
+
+function close_settings() {
+    document.getElementById("overlay").style.visibility = "";
+    document.getElementById("add_chat").style.visibility = "";
+}
+
+async function exit_account() {
+    await fetch((`http://localhost/auth/session/logout`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    localStorage.clear();
+    getProtectedData();
 }
