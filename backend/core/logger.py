@@ -7,8 +7,8 @@ logs_path = "backend/logs"
 
 def setup_logging():
     if not os.path.isdir(logs_path):
-        os.mkdir(logs_path, exist_ok=True)
-        
+        os.makedirs(logs_path, exist_ok=True)
+
     logging.basicConfig(
         level=logging.INFO,
         format=FORMAT,
