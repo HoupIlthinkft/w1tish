@@ -19,7 +19,7 @@ def _set_refresh_cookie(response: Response, refresh_token) -> None:
             httponly=True,
             secure=settings.COOKIE_SECURE,
             samesite=settings.COOKIE_SAMESITE,
-            path="/auth/refresh",
+            path="/auth/session",
             max_age=settings.REFRESH_TOKEN_MAX_AGE
         )
 
@@ -55,7 +55,7 @@ async def register(
     }
         
 
-@auth_router.post("/refresh", response_model=AccessTokenResponse)
+@auth_router.post("/session/refresh", response_model=AccessTokenResponse)
 async def update_token(
     auth_service: AuthServiceDep,
     response: Response,
@@ -69,7 +69,11 @@ async def update_token(
           "access_token": tokens.access_token
     }
 
-@auth_router.delete("/refresh", status_code=status.HTTP_205_RESET_CONTENT)
-async def reset_token(response: Response):
-     response.delete_cookie(key="refresh_token", path="/auth/refresh")
-     # TODO blacklist для отозванных токенов с ttl
+@auth_router.post("/session/logout", status_code=status.HTTP_200_OK)
+async def reset_token(
+    response: Response,
+    refresh_token: Annotated[str | None, Cookie()] = None
+):
+    logger.info("[POST] Trying delete token...")
+    response.delete_cookie(key="refresh_token", path="/auth/session")
+    # TODO blacklist для отозванных токенов с ttl
