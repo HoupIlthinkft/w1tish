@@ -71,9 +71,10 @@ async def update_token(
 
 @auth_router.post("/session/logout", status_code=status.HTTP_200_OK)
 async def reset_token(
+    auth_service: AuthServiceDep,
     response: Response,
     refresh_token: Annotated[str | None, Cookie()] = None
 ):
     logger.info("[POST] Trying delete token...")
     response.delete_cookie(key="refresh_token", path="/auth/session")
-    # TODO blacklist для отозванных токенов с ttl
+    await auth_service.blacklist.unvalidate_token(refresh_token)

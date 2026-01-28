@@ -7,8 +7,9 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 class AuthService:
-    def __init__(self, auth_repo: protocols.IAuthRepository):
+    def __init__(self, auth_repo: protocols.IAuthRepository, blacklist: protocols.IBlacklistRepository):
         self.auth_repo = auth_repo
+        self.blacklist = blacklist
     
     async def auth_user(self, request: models.AuthRequestModel) -> models.TokensResponse:
         user_id = await self.auth_repo.auth_user(
@@ -28,9 +29,11 @@ class AuthService:
         return tokens
     
     async def update_auth_session(self, token: str) -> models.TokensResponse:
+        if await self.blacklist.check_blacklist(token):
+            raise err.InvalidTokenError
+        await self.blacklist.unvalidate_token(token)
         tokens = token_generator.refresh_tokens(token)
         return tokens
-    # TODO добавить проверку logout токенов
 
 
 class DataService:

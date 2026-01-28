@@ -10,11 +10,13 @@ from backend.utils.security import password_encrypt
 # TODO добавить фабрики для репозиториев
 
 def get_auth_service(
-    session: annotations.Database
+    session: annotations.Database,
+    collection: annotations.MessageBase
 ) -> services.AuthService:
     pass_encrypter = password_encrypt.PasswordEncrypter()
+    blacklist_repo = repo.BlacklistRepository(collection)
     auth_repo = repo.AuthRepository(session, pass_encrypter)
-    return services.AuthService(auth_repo)
+    return services.AuthService(auth_repo, blacklist_repo)
 
 def get_data_service(
     session: annotations.Database,

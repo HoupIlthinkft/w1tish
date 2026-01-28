@@ -28,10 +28,11 @@ async def lifespan(app: FastAPI):
     mongo_session = AsyncMongoClient(M_URL)
 
     app.state.pg_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-    app.state.mg_collection = mongo_session[M_NAME]["messages"]
+    app.state.mg_session = mongo_session[M_NAME]
     
-    await app.state.mg_collection.create_index([("chat_id", 1)], name="idx_chat_id")
-    await app.state.mg_collection.create_index([("created_at", -1)], name="idx_created_at")
+    await app.state.mg_session["messages"].create_index([("chat_id", 1)], name="idx_chat_id")
+    await app.state.mg_session["messages"].create_index([("created_at", -1)], name="idx_created_at")
+    await app.state.mg_session["tokens"].create_index("expireAt", expireAfterSeconds=0)
 
     logger.info("Created index.")
 
