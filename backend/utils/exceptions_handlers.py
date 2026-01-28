@@ -5,6 +5,18 @@ import backend.errors as err
 import logging
 logger = logging.getLogger(__name__)
 
+async def invalid_argument_handler(
+        request: Request,
+        exc: err.InvalidArgumentsError
+):
+    logger.warning(exc.message)
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        content = {
+            "detail": exc.message
+        }
+    )
+
 async def user_exist_handler(
     request: Request,
     exc: err.UserExistError
@@ -122,6 +134,7 @@ async def no_read_permission_handlers(
 
 
 HANDLERS = {
+    err.InvalidArgumentsError:  invalid_argument_handler,
     err.UserExistError:         user_exist_handler,
     err.UserNotFoundError:      user_not_found_handler,
     err.ChatNotFoundError:      chat_not_found_handler,

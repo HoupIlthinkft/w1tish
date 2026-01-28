@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, Security, Query
 from fastapi.security import HTTPBearer
 
 from backend.dependencies.dependencies import DataServiceDep
-from typing import Annotated
+from typing import Annotated, Optional
 from backend.utils.security.token_generator import get_id_by_jwt
 from backend import models
 
@@ -19,10 +19,11 @@ data_router = APIRouter(prefix="/api/data", tags=["Data methods"])
 @data_router.get("/user", response_model=models.UsersResponse)
 async def get_user_data_by_id(
     service: DataServiceDep,
-    user_id: Annotated[list[int], Query(min_length=1)]
+    user_id: Annotated[list[int], Query()] = None,
+    username: Annotated[list[str], Query()] = None
 ):
     logger.info("[GET] Trying get some users data...")
-    return await service.get_users_data(user_id)
+    return await service.get_users_data(user_id, username)
 
 
 @data_router.get("/", response_model=models.UserResponse)
@@ -61,7 +62,7 @@ async def create_new_chat(
     service: DataServiceDep,
     user_id: CurrentUser
 ):  
-    logger.info("[GET] Trying get user chats...")
+    logger.info("[POST] Trying to create chat...")
     chat_id = await service.add_chat(user_id, request)
     return models.CreateChatResponse(chat_id=chat_id)
 

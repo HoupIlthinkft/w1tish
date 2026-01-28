@@ -105,7 +105,7 @@ class DataRepository:
 
         return response
     
-    async def get_users_by_ids(self, ids) -> models.UsersResponse:
+    async def get_users_by_ids(self, ids: list[int]) -> models.UsersResponse:
         query = await self.db.execute(
             select(
                 models.usersBase.nickname,
@@ -120,6 +120,25 @@ class DataRepository:
         users_data = query.mappings().all()
         if len(users_data) != len(set(ids)):
             logger.warning(f"Failed to get users data! Getted {len(users_data)}/{len(ids)}")
+            raise UserNotFoundError()
+        
+        return models.UsersResponse.model_validate({"users":users_data})
+    
+    async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse:
+        query = await self.db.execute(
+            select(
+                models.usersBase.nickname,
+                models.usersBase.avatar_url,
+                models.usersBase.id,
+                models.usersBase.username
+            ).where(
+                models.usersBase.username.in_(usernames)
+            )
+        )
+        
+        users_data = query.mappings().all()
+        if len(users_data) != len(set(usernames)):
+            logger.warning(f"Failed to get users data! Getted {len(users_data)}/{len(usernames)}")
             raise UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})

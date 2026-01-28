@@ -22,3 +22,8 @@ class NoWritePermissionError(NoPermissionError):
     def __init__(self, message: dict):
         super().__init__()
         self.error_message = message
+
+class InvalidArgumentsError(BaseAppException):
+    def __init__(self, message: str):
+        super().__init__()
+        self.message = message

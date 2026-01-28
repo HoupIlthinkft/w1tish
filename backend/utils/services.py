@@ -77,6 +77,20 @@ class DataService:
         data = await self.user_data.get_user_data(user_id)
         return data
     
-    async def get_users_data(self, users_ids: list[int]) -> models.UsersResponse:
-        data = await self.user_data.get_users_by_ids(users_ids)
-        return data
+    async def get_users_data(
+            self,
+            users_ids: list[int] = None,
+            users_usernames: list[str] = None
+    ) -> models.UsersResponse:
+        if users_ids and users_usernames: raise err.InvalidArgumentsError("Too many arguments. Select usernames or ids")
+
+        if users_ids:
+            data = await self.user_data.get_users_by_ids(users_ids)
+            return data
+        
+        elif users_usernames:
+            data = await self.user_data.get_users_by_usernames(users_usernames)
+            return data
+        
+        raise err.InvalidArgumentsError("Noone argument was getted")
+        
