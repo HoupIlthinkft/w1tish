@@ -10,6 +10,5 @@ COPY /backend ./backend
 COPY /tests ./tests
 COPY main.py .
 COPY pytest.ini .
-RUN mkdir logs
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

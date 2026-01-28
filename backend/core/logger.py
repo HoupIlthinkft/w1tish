@@ -1,9 +1,14 @@
 import logging
+import os
 from backend.core.config import settings
 
 FORMAT = "%(asctime)s: [%(levelname)s](%(name)s) --> %(message)s"
+logs_path = "backend/logs"
 
 def setup_logging():
+    if not os.path.isdir(logs_path):
+        os.mkdir(logs_path, exist_ok=True)
+        
     logging.basicConfig(
         level=logging.INFO,
         format=FORMAT,
