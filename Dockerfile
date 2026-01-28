@@ -10,5 +10,6 @@ COPY /backend ./backend
 COPY /tests ./tests
 COPY main.py .
 COPY pytest.ini .
+COPY .env .
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

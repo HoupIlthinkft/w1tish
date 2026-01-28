@@ -1,3 +1,2 @@
-from .auth_repo import AuthRepository
-from .chat_repo import MessagesRepository
-from .data_repo import ChatRepository, DataRepository
+from .postgress_methods import AuthRepository, ChatRepository, DataRepository
+from .mongo_methods import MessagesRepository
