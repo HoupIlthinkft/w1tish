@@ -8,14 +8,14 @@ class PasswordEncrypter:
         self._executor = ThreadPoolExecutor(max_workers=settings.WORKERS_COUNT)
 
     def _encrypt_password_sync(self, password: str) -> str:
-        password += settings.PASSWORD_PEPER
+        password += settings.PASSWORD_PEPPER
         return bcrypt.hashpw(
             password.encode('utf-8'),
-            bcrypt.gensalt(rounds=settings.PASSWORD_ROUNGS)
+            bcrypt.gensalt(rounds=settings.PASSWORD_ROUNDS)
         ).decode('utf-8')
 
     def _validate_password_sync(self, password: str, hashed: str) -> bool:
-        password += settings.PASSWORD_PEPER
+        password += settings.PASSWORD_PEPPER
         return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
     async def encrypt_password(self, password: str) -> str:

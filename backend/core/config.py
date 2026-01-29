@@ -4,8 +4,8 @@ from datetime import datetime
 class Settings(BaseSettings):
     REFRESH_TOKEN_MAX_AGE: int = 604800
     ACCESS_TOKEN_MAX_AGE: int = 900
-    PASSWORD_ROUNGS: int = 12
-    PASSWORD_PEPER: str = "spice_peper"
+    PASSWORD_ROUNDS: int = 12
+    PASSWORD_PEPPER: str = "spice_peper"
 
     COOKIE_SECURE: bool = False
     COOKIE_SAMESITE: str = "lax"

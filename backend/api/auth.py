@@ -23,6 +23,7 @@ def _set_refresh_cookie(response: Response, refresh_token) -> None:
             max_age=settings.REFRESH_TOKEN_MAX_AGE
         )
 
+
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @auth_router.post("/", response_model=AccessTokenResponse)
@@ -68,6 +69,7 @@ async def update_token(
     return {
           "access_token": tokens.access_token
     }
+
 
 @auth_router.post("/session/logout", status_code=status.HTTP_200_OK)
 async def reset_token(
