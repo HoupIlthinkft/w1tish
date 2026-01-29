@@ -30,7 +30,7 @@
                         <p id="user_id">0</p>
                     </div>
                 </div>
-                <i class="fas fa-solid fa-cog fa-2x used_logo" id="settings"></i>
+                <i class="fas fa-solid fa-cog fa-2x used_logo" id="setting"></i>
             </div>
         </div>
         <div id="wait_event">
@@ -45,13 +45,33 @@
             <i id="close_btn" class="fas fa-solid fa-times fa-2x used_logo"></i>
             <div id="contaiter_input_add_chat">
                 <p id="add_chat">Отправить приглашение</p>
-                <input type="text" placeholder="Введите id человека..." maxlength="10" id="input_id">
+                <input type="text" placeholder="Введите username человека..." maxlength="10" id="input_id">
                 <div id="add_users">
                 </div>
             </div>
             <div id="btn_add_chat">
                 <button id="add_btn">Добавить участника</button>
                 <button id="send_invitation">Отправить</button>
+            </div>
+        </div>
+        <div id="settings">
+            <i id="close_btn_settings" class="fas fa-solid fa-times fa-2x used_logo"></i>
+            <div id="setting_header">
+                <div id="setting_avatar">
+                    <img src="" alt="setting_avatar_user" id="setting_avatar_user">
+                    <input type="file" id="edit_avatar" accept=".png, .jpeg, .jpg, .webp">
+                </div>
+                <div id="setting_user_info">
+                    <div id="setting_nickname">
+                        <p id="nickname_user">НиХаоЗенберг</p>
+                        <i class="fas fa-pen fa-2x used_logo"></i>
+                    </div>
+                    <p id="setting_user_username">kirilosck</p>
+                    <p id="setting_user_id">0</p>
+                </div>
+            </div>
+            <div id="leave_account">
+                <button type="button" id="btn_leave_account">Выйти из аккаунта</button>
             </div>
         </div>
     </div>

@@ -4,7 +4,7 @@ async function register_user(username, email, password) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
     });
-    
+
     if (response.status === 201) {
 
         const data = await response.json();
@@ -12,7 +12,7 @@ async function register_user(username, email, password) {
         window.location.replace("app.html"); 
 
     } else if (response.status === 409) {
-        document.getElementById("error").textContent == "Вы ввели занятый логин/почту";                            
+        document.getElementById("error").textContent = "Вы ввели занятый логин/почту";                            
     } else { 
         console.log("Ошибка: ", response.status);
     }
@@ -54,7 +54,7 @@ async function getProtectedData() {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
-                'Access-Token': accessToken
+                'Authorization': `Bearer ${accessToken}`
             }
         });
 
@@ -72,6 +72,7 @@ async function getProtectedData() {
         } else {
             const data = await response.json();
             console.log(data)
+            localStorage.setItem("username", data.username);
             localStorage.setItem("nickname", data.nickname);
             localStorage.setItem("avatar", data.avatar_url);
             localStorage.setItem("chats", JSON.stringify(data.chats));
@@ -87,7 +88,7 @@ async function getProtectedData() {
 
 async function refreshToken() {
 
-    const response = await fetch('http://localhost/auth/refresh', {
+    const response = await fetch('http://localhost/auth/session/refresh', {
         method: "POST",
         headers: { 'Content-Type': 'application/json' }
     });
@@ -95,6 +96,7 @@ async function refreshToken() {
     if (response.status === 200) {
         const data = await response.json();
         localStorage.setItem("accessToken", data.access_token);
+        getProtectedData();
 
     } else if (response.status === 500) {
         console.log("Iternal server error");
