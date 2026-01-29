@@ -170,8 +170,3 @@ function activate_btn() {
     sign_in.addEventListener("click", sign_in_account);
     registration.addEventListener("click", registration_account);
 }
-
-function create_user_profile_container() {
-
-}
-

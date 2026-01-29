@@ -6,16 +6,11 @@ async function register_user(username, email, password) {
     });
 
     if (response.status === 201) {
-
         const data = await response.json();
         localStorage.setItem("accessToken", data.access_token);
         window.location.replace("app.html"); 
-
-    } else if (response.status === 409) {
-        document.getElementById("error").textContent = "Вы ввели занятый логин/почту";                            
-    } else { 
-        console.log("Ошибка: ", response.status);
-    }
+    } else if (response.status === 409) document.getElementById("error").textContent = "Вы ввели занятый логин/почту";                            
+        else console.log("Ошибка: ", response.status);
 }
 
 
@@ -26,23 +21,14 @@ async function login(username, password) {
         body: JSON.stringify({ username, password })
     });
 
-    if (response.status === 422) {
-        console.log("Виноват фронтендер");
-
-    } else if (response.status === 404) { 
-        //error_text.textContent = "Вы не зарегистрированы"; //не успевает отображаться
-        create_registration_container();
-
-    } else if (response.status === 500) {
-        console.log("Виноват бэкэндер");
-
-    } else if (response.status === 200) {                            
-        const data = await response.json();
-        localStorage.setItem("accessToken", data.access_token);
-        window.location.replace("app.html");
-    } else { 
-        console.log("Error", response.status)
-    }
+    if (response.status === 422) console.log("Виноват фронтендер");
+        else if (response.status === 404) create_registration_container();
+            else if (response.status === 500) console.log("Виноват бэкэндер");
+                else if (response.status === 200) {                            
+                    const data = await response.json();
+                    localStorage.setItem("accessToken", data.access_token);
+                    window.location.replace("app.html");
+                } else console.log("Error", response.status);
 }
 
 
@@ -80,9 +66,7 @@ async function getProtectedData() {
 
             if (window.location.pathname == "/app.html") load_contacts(); load_profile();
         }
-    } else {
-        await refreshToken();
-    }
+    } else await refreshToken();
 }
 
 

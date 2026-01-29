@@ -1,0 +1,142 @@
+/*----------------ЧАТ--------------*/
+
+
+#chat_container {
+    width: 80%;
+    
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    background-color: #666666;
+}
+
+.oponent_header {
+    width: max-content;
+    
+    padding: 15px 30px;
+    margin: 10px;
+    margin-right: 0px;
+    border-radius: 35px;
+    gap: 10px;
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    
+    background-color: #9D9D9D;
+}
+
+#chat {
+    height: 100%;
+    max-height: 100%;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-end;
+    
+    overflow: hidden;
+}
+
+#chat_for_oponent {
+    width: 100%;
+    max-height: 100%;
+    
+    gap: 10px;
+    
+    display: flex;
+    flex-flow: column nowrap;
+    
+    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    
+}
+
+.message {
+    width: max-content;
+    max-width: 50%;
+    
+    padding: 10px;
+    margin: 10px;
+    border-radius: 15px;
+    
+    align-self: flex-start;
+    
+    background-color: #9D9D9D;
+}
+
+.user {
+    border-bottom-right-radius: 0px;
+    
+    align-self: flex-end;
+}
+
+.oponent {
+    display: flex;
+    flex-flow: column nowrap;
+    border-bottom-left-radius: 0px;
+}
+
+#send {
+    width: auto;
+    height: auto;
+    min-height: 32px;
+    max-height: 250px;
+    
+    padding: 20px 15px;
+    margin: 10px;
+    border-radius: 30px;
+    
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    
+    background-color: #ffffff;
+    
+}
+
+#send_message {
+    width: 100%;
+    max-width: 100%;
+    max-height: 140px;
+
+    border-radius: 15px;
+    
+    font-size: 12pt;
+    word-break: normal;
+    resize: none;
+    box-sizing: border-box;
+    
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+#send_message, #send_message:focus {
+    border-width: 0px;
+    border-color: #FFFFFF;
+    
+    outline: #FFFFFF;
+    
+    overflow-y: auto;
+}
+
+#message_send {
+    margin-right: 10px;
+    margin-left: 5px;
+    
+    cursor: pointer;
+}
+
+.sender_header {
+    gap: 5px;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}

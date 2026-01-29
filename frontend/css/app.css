@@ -1,0 +1,191 @@
+@font-face {
+    font-family: 'Inter';
+    src: url(font/Inter-V.ttf);
+}
+
+
+body {
+    height: 100vh;
+
+    margin: 0px;
+
+    display: flex;
+    justify-content: center;
+}
+
+p {
+    margin: 0px;
+}
+
+
+/* -------Основной контейнер------- */
+
+
+#main_container {
+    width: 96vw;
+    height: 93vh;
+    
+    display: flex;
+    flex-direction: row;
+    justify-self: center;
+    align-self: center;
+
+    border-radius: 25px;
+    padding: 1%;
+    
+    background-color: #9D9D9D;
+    
+    font-family: Inter;
+}
+
+
+#view_container {
+    width: 20%;
+
+    margin-right: 15px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+}
+
+
+/*----------Чаты/Контакты---------- */
+
+
+#contacts {
+    height: 100%;
+    width: 100%;
+    max-height: 100%;
+
+    gap: 20px;
+    padding-right: 15px;
+
+    display: flex;
+    flex-flow: column nowrap;
+
+    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.contact {
+    width: 93%;
+    height: fit-content;
+    
+    min-height: 64px;
+
+    display: flex;
+    flex-flow: column nowrap;
+    
+    background-color: #d9d9d9;
+    
+    border-radius: 10px;
+    padding: 4%;
+    gap: 10px;
+    
+    cursor: pointer;
+}
+
+.view_contact {
+    height: fit-content;
+    min-height: 50%;
+    
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    
+    text-align: start;
+    gap: 10px;
+}
+
+.view_message {
+    height: fit-content;
+    
+    display: flex;
+    align-items: center;
+    
+    text-align: start;
+    
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/*---------Профиль--------- */
+
+
+#profile {
+    position: static;
+    
+    height: 48px;
+    width: 93%;
+    
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    gap: 5px;
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    
+    background-color: #d9d9d9;
+}
+
+.logo, .used_logo {
+    height: 32px;
+    width: 32px;
+    
+    border-radius: 100%;
+    
+    align-self: center;
+}
+
+.used_logo {
+    cursor: pointer;
+}
+
+.user_view {
+    display: flex;
+    flex-direction: row;
+}
+
+.user_info {
+    display: flex;
+    flex-direction: column;
+    
+    padding-left: 5px;
+}
+
+/* ----------Ожидание действий------------ */
+
+#wait_event {
+    width: 100%;
+    height: 100%;
+    
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* -------Оверлей-------- */
+
+
+#overlay {
+    position: absolute;
+    visibility: hidden;
+    
+    width: 100%;
+    height: 100%;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    background-color: rgba(0, 0, 0, 0.4);
+}
