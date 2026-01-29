@@ -21,6 +21,23 @@ async function get_data_by_user_id(user_id) {
     }
 }
 
+async function get_data_users_ids(users_ids) {
+    user_id = []
+    for (let i in users_ids) {
+        user_id.push(`user_id=${users_ids[i]}`)
+    }
+
+    const data = await fetch((`http://localhost/api/data/user?${user_id.join("&")}`), {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (data.status === 200) {
+        return data.json();
+    } else if (data.status === 404) {
+    }
+}
+
 async function get_data_by_username(username) {
     const data = await fetch((`http://localhost/api/data/user?username=${username}`), {
         method: 'GET',
@@ -34,7 +51,7 @@ async function get_data_by_username(username) {
 }
 
 
-async function load_chat(user_id, chat_id) {
+async function load_chat(user_id, chat_id, members_chat) {
     var data = await fetch((`http://localhost/api/data/messages?chat_id=${Number(chat_id)}&offset=0&limit=50`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
@@ -45,20 +62,70 @@ async function load_chat(user_id, chat_id) {
     const chat_for_oponent = document.createElement("div");
     chat_for_oponent.id = "chat_for_oponent";
 
-
-    for (message in data.messages) {
-        const message_container = document.createElement("div") 
-        if (data.messages[Number(message)].sender != user_id) {
-            message_container.className = "oponent message";
-        } else {
-            message_container.className = "user message";
+    if (members_chat.length == 1) {
+        for (message in data.messages) {
+            const message_container = document.createElement("div") 
+            if (data.messages[Number(message)].sender != user_id) {
+                message_container.className = "oponent message";
+            } else {
+                message_container.className = "user message";
+            }
+            message_container.textContent = data.messages[Number(message)].content;
+            chat_for_oponent.append(message_container);
         }
-        message_container.textContent = data.messages[Number(message)].content;
-        chat_for_oponent.append(message_container);
+    }
+    else {
+        var data_members = await get_data_users_ids(members_chat);
+        for (message in data.messages) {
+            const message_container = document.createElement("div") 
+            if (data.messages[Number(message)].sender == user_id) {
+                message_container.className = "user message";
+                message_container.textContent = data.messages[Number(message)].content;
+            } else {
+                message_container.className = "oponent message";
+             
+                var sender_data = {};
+
+                for (let i in data_members.users) {
+                    if (data_members.users[i].id == data.messages[Number(message)].sender) {
+                        sender_data = data_members.users[i];
+                    }
+                }
+
+                const message_content = document.createElement("p");
+                message_content.id = "message_content";
+                message_content.textContent = data.messages[Number(message)].content
+                
+                const sender_header = document.createElement("div");
+                sender_header.classList.add("sender_header")
+                
+                const sender_avatar = document.createElement("img");
+                sender_avatar.className = "logo logo_oponent";
+                sender_avatar.src = sender_data.avatar_url;
+
+                const sender_nickname = document.createElement("p")
+                sender_nickname.classList.add("sender_nickname");
+                sender_nickname.textContent = sender_data.nickname;
+
+                sender_header.append(sender_avatar, sender_nickname);
+
+                message_container.append(sender_header, message_content);
+            }
+            
+            chat_for_oponent.append(message_container);
+        }
     }
 
     chat.innerHTML = '';
     chat.append(chat_for_oponent);
+
+    setTimeout(() => {
+        const messages = chat.querySelectorAll('.message');
+        if (messages.length > 0) {
+            const lastMessage = messages[messages.length - 1];
+            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }, 50);
     
 }
 
@@ -70,36 +137,41 @@ async function load_chat_container() {
 
     const oponent_header = document.createElement("div");
     oponent_header.classList.add("oponent_header");
-
-    let response_user_info = await get_data_by_user_id(this.id);
-    response_user_info = response_user_info["users"][0];
     
-    const logo_oponent = document.createElement("img");
-    logo_oponent.src = response_user_info.avatar_url;
-    logo_oponent.alt = "logo_oponent";
-    logo_oponent.className = "logo logo_oponent";
-    logo_oponent.id = "logo_oponent";
+    const contact_id = this.id.split(" ").slice(0, -1);
 
-    const oponent_info = document.createElement("div");
-    oponent_info.classList.add("oponent_info")
-    
-    const oponent_name = document.createElement("p");
-    oponent_name.classList.add("oponent_name");
-    oponent_name.id = "oponent_name";
-    oponent_name.textContent = response_user_info.nickname;
+    localStorage.setItem("chat_members", contact_id);
 
-    const oponent_state = document.createElement("p");
-    oponent_state.classList.add("state_oponent");
-    oponent_state.textContent = ""; // TODO получать состояние опонента из запроса
+    for (let i in contact_id) {
+        let response_user_info = await get_data_by_user_id(contact_id[i]);
+        response_user_info = response_user_info["users"][0];
+        
+        const logo_oponent = document.createElement("img");
+        logo_oponent.src = response_user_info.avatar_url;
+        logo_oponent.alt = "logo_oponent";
+        logo_oponent.className = "logo logo_oponent";
+        logo_oponent.id = "logo_oponent";
 
-    oponent_info.append(oponent_name, oponent_state);
-    oponent_header.append(logo_oponent, oponent_info);
+        const oponent_info = document.createElement("div");
+        oponent_info.classList.add("oponent_info")
+        
+        const oponent_name = document.createElement("p");
+        oponent_name.classList.add("oponent_name");
+        oponent_name.id = "oponent_name";
+        oponent_name.textContent = response_user_info.nickname;
 
+        const oponent_state = document.createElement("p");
+        oponent_state.classList.add("state_oponent");
+        oponent_state.textContent = ""; // TODO получать состояние опонента из запроса
+
+        oponent_info.append(oponent_name, oponent_state);
+        oponent_header.append(logo_oponent, oponent_info);
+    }
 
     const chat = document.createElement("div");
     chat.id = "chat";
 
-    load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id);
+    load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id, contact_id);
 
     const send = document.createElement("div");
     send.id = "send";
@@ -127,6 +199,17 @@ async function load_chat_container() {
     } else {
         parent.removeChild(document.getElementById("chat_container"));
     }
+
+    document.getElementById("send_message").addEventListener('keyup', function onEvent(event) {
+        if (((event.key === "Enter") && event.ctrlKey) || ((event.key === "Enter") && !(event.shiftKey))) {
+            send_message()
+            this.style.height = "";
+        } else if ((event.key === "Enter") && (event.shiftKey)) {
+            this.style.height = "";
+            this.style.height = this.scrollHeight + "px"
+        }
+    });
+
     document.getElementById("message_send").addEventListener("click", send_message);
 }
 
@@ -188,7 +271,6 @@ async function load_contacts() {
     for (let element = 0; element < clicked_contacts.length; element++) {
         clicked_contacts.item(element).addEventListener("click", load_chat_container, true);
     }
-    // document.getElementById('chat_for_oponent').scrollIntoView;
 }
 
 
@@ -236,25 +318,29 @@ async function send_message() {
     }
 
     const input = document.getElementById("send_message");
+
+    if (input.value.trim().length === 0) {
+        input.value = ""
+        return
+    }
+
     const message = input.value;
     input.value = "";
-    
+
     await fetch(('http://localhost/api/data/messages'), {
         method: 'POST',
-        headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
+        headers: {  'accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
         body: JSON.stringify({
-                "messages": [
-                    {
                     "chat_id": chat_id,
                     "content": message,
-                    "sender": user_id
-                    }
-                        ]
+                    "sender": user_id,
+                    "created_at": `${new Date(Date.now()).toJSON().slice(0, -1)}`  
                 })
     });
 
-    await load_chat(user_id, chat_id);
+    await load_chat(user_id, chat_id, localStorage.getItem("chat_members").split(","));
 }
 
 

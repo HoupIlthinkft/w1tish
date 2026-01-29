@@ -20,7 +20,7 @@ async function register_user(username, email, password) {
 
 
 async function login(username, password) {
-    const response = await fetch('http://localhost/auth', {
+    const response = await fetch('http://localhost/auth/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
