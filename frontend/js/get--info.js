@@ -1,5 +1,5 @@
 async function get_data_by_user_id(user_id) {
-    const data = await fetch((`http://localhost/api/data/user?user_id=${user_id}`), {
+    const data = await fetch((`http://localhost/web/data/user?user_id=${user_id}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -16,7 +16,7 @@ async function get_data_users_ids(users_ids) {
         user_id.push(`user_id=${users_ids[i]}`)
     }
 
-    const data = await fetch((`http://localhost/api/data/user?${user_id.join("&")}`), {
+    const data = await fetch((`http://localhost/web/data/user?${user_id.join("&")}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -27,7 +27,7 @@ async function get_data_users_ids(users_ids) {
 
 
 async function get_data_by_username(username) {
-    const data = await fetch((`http://localhost/api/data/user?username=${username}`), {
+    const data = await fetch((`http://localhost/web/data/user?username=${username}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
