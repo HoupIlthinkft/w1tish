@@ -42,6 +42,9 @@ body {
 
 #error {
     text-align: center;
+    
+    font-size: 15pt;
+    font-weight: 200;
     font-family: Inter;
     color: red;
 }
