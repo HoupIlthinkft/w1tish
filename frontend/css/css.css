@@ -4,6 +4,7 @@
 }
 
 body {
+    position: relative;
     overflow: hidden;
     perspective: 1000px;
 
@@ -15,7 +16,7 @@ body {
 }
 
 #header_name {
-    font-size: 160pt;
+    font-size: 160px;
     font-family: Inter;
     
     color: #FFFFFF;
@@ -31,8 +32,8 @@ body {
 }
 
 #header {
-    margin-top: 41px;
-    margin-bottom: 11px;
+    margin-top: 4vh;
+    margin-bottom: 1vh;
     
     font-size: 48pt;
     font-family: Inter;
@@ -52,10 +53,10 @@ body {
 
 
 .entry {
-    height: 51px;   
+    height: 5vh;   
 
-    margin: 0px 20px;
-    padding: 0px 10px 0px 15px;
+    margin: 0px 1vw;
+    padding: 0px 0.5vw 0px 0.75vw;
     border-radius: 35px;
 
     align-items: center;
@@ -67,7 +68,7 @@ body {
 }
 
 .entry + .entry {
-    margin-top: 30px;
+    margin-top: 3vh;
 }
 
 .entry::placeholder {
@@ -80,15 +81,15 @@ body {
 }
 
 .entry:focus {
-    padding: 0px 10px 0px 15px;
+    padding: 0px 0.5vw 0px 0.75vw;
 
     outline: #FFFFFF;
     font-size: 16pt;
 }
 
 #reset_password {
-    margin-right: 20px;
-    padding-top: 10px;
+    margin-right: 1vw;
+    padding-top: 1vh;
     
     font-family: Inter;
     text-align: end;
@@ -97,7 +98,7 @@ body {
 }
 
 .btn {
-    padding: 10px 35px;
+    padding: 1vh 1.75vw;
     border-color: #FFFFFF;
 
     align-self: center;
@@ -113,7 +114,7 @@ body {
 }
 
 .active {
-    margin-top: 20px;
+    margin-top: 2vh;
     border-radius: 30px;
     
     font-size: 20pt;
@@ -126,7 +127,7 @@ body {
 }
 
 .active:hover {
-    padding: 10px 50px;
+    padding: 1vh 2.5vw;
     
     background-color: #c5c5c5;
 }
