@@ -1,5 +1,5 @@
 async function register_user(username, email, password) {
-    const response = await fetch('http://localhost/auth/register', {
+    const response = await fetch('http://localhost/web/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
@@ -15,7 +15,7 @@ async function register_user(username, email, password) {
 
 
 async function login(username, password) {
-    const response = await fetch('http://localhost/auth/', {
+    const response = await fetch('http://localhost/web/auth/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -36,7 +36,7 @@ async function getProtectedData() {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken != null) {
 
-        const response = await fetch('http://localhost/api/data/', {
+        const response = await fetch('http://localhost/web/data/', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
@@ -72,7 +72,7 @@ async function getProtectedData() {
 
 async function refreshToken() {
 
-    const response = await fetch('http://localhost/auth/session/refresh', {
+    const response = await fetch('http://localhost/web/auth/session/refresh', {
         method: "POST",
         headers: { 'Content-Type': 'application/json' }
     });
