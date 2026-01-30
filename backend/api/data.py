@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Security, Query
+from fastapi import APIRouter, Depends, status, Security, Query, UploadFile, File
 from fastapi.security import HTTPBearer
 
 from backend.dependencies.dependencies import DataServiceDep
@@ -14,7 +14,7 @@ def get_userid_from_bearer(token: str = Security(http_bearer)):
     return get_id_by_jwt(token.credentials)
 
 CurrentUser = Annotated[int, Depends(get_userid_from_bearer)]
-data_router = APIRouter(prefix="/api/data", tags=["Data methods"])
+data_router = APIRouter(prefix="/web/data", tags=["Data methods"])
 
 @data_router.get("/user", response_model=models.UsersResponse)
 async def get_user_data_by_id(
@@ -65,6 +65,16 @@ async def create_new_chat(
     logger.info("[POST] Trying to create chat...")
     chat_id = await service.add_chat(user_id, request)
     return models.CreateChatResponse(chat_id=chat_id)
+
+@data_router.put("avatar")
+async def set_avatar(
+    service: DataServiceDep,
+    user_id: CurrentUser,
+    file: UploadFile = File(...)
+):
+    logger.info("Trying to upload avatar...")
+    await service.set_avatar(file.file, user_id)
+    return {"succes": "ok"}
 
 
 # TODO добавить доставку сообщений в реальном времени через WebSocket

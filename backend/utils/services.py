@@ -2,6 +2,7 @@ from backend import models
 from backend import errors as err
 from backend.utils.security import token_generator
 from backend.interfaces import protocols
+from typing import BinaryIO
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -98,3 +99,9 @@ class DataService:
         
         raise err.InvalidArgumentsError("Noone argument was getted")
         
+    async def set_avatar(self, file: BinaryIO, user_id: int) -> None:
+        avatar_bytes = file.read(1024 * 1024 * 10 + 1)
+        if len(avatar_bytes) > 1024 * 1024 * 10:
+            raise TypeError()
+        
+        await self.user_data.set_user_avatar(avatar_bytes, user_id)

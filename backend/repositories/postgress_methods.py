@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncGenerator
 from random import choice as rand_choice
+from io import BytesIO
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -120,8 +121,9 @@ class ChatRepository:
     
 
 class DataRepository:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, avatar_loader: protocols.IAvatarLoader):
         self.db = session
+        self.avatar_loader = avatar_loader
     
     async def get_user_data(self, user_id: int) -> models.UserResponse:
         query = await self.db.execute(
@@ -204,3 +206,16 @@ class DataRepository:
             raise UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
+    
+    async def set_user_avatar(self, avatar: bytes, user_id: int) -> None:
+        avatar_link = await self.avatar_loader.load_avatar(avatar, user_id)
+        await self.db.execute(
+            update(
+                models.usersBase
+            ).where(
+                models.usersBase.id == user_id
+            ).values(
+                avatar_url=avatar_link
+            )
+        )
+        await self.db.commit()

@@ -1,5 +1,6 @@
 from typing import Protocol
 from backend import models
+from io import BytesIO
 
 class IDataRepository(Protocol):
 
@@ -8,6 +9,8 @@ class IDataRepository(Protocol):
     async def get_users_by_ids(self, ids: list[int]) -> models.UsersResponse: ...
 
     async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse: ...
+
+    async def set_user_avatar(self, avatar: BytesIO, user_id: int) -> None: ...
 
 
 class IChatRepository(Protocol):
@@ -45,3 +48,7 @@ class IBlacklistRepository(Protocol):
     async def unvalidate_token(self, token: str, live_time: int) -> None: ...
 
     async def check_blacklist(self, token: str) -> bool: ...
+
+class IAvatarLoader(Protocol):
+
+    async def load_avatar(self, avatar: bytes, user_id: int) -> str: ...

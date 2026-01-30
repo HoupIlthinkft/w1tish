@@ -3,9 +3,9 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from backend.core.config import settings
 
-class PasswordEncrypter:
-    def __init__(self):
-        self._executor = ThreadPoolExecutor(max_workers=settings.WORKERS_COUNT)
+class PasswordEncrypterRepository:
+    def __init__(self, thread_executor: ThreadPoolExecutor):
+        self._executor = thread_executor
 
     def _encrypt_password_sync(self, password: str) -> str:
         password += settings.PASSWORD_PEPPER

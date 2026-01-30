@@ -21,7 +21,7 @@ P_URL = f"postgresql+asyncpg://{P_USER}:{P_PASS}@{P_HOST}/{P_NAME}"
 M_URL = f"mongodb://{M_USER}:{M_PASS}@{M_HOST}"
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def bases_lifespan(app: FastAPI):
     logger.info("Creating db sessions & index...")
 
     engine = create_async_engine(P_URL, pool_size=20, max_overflow=10)

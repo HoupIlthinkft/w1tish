@@ -5,9 +5,9 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_MAX_AGE: int = 604800
     ACCESS_TOKEN_MAX_AGE: int = 900
     PASSWORD_ROUNDS: int = 12
-    PASSWORD_PEPPER: str = "spice_peper"
+    PASSWORD_PEPPER: str = "spicy_peper"
 
-    COOKIE_SECURE: bool = False
+    COOKIE_SECURE: bool = True
     COOKIE_SAMESITE: str = "lax"
 
     POSTGRES_USER: str = "admin"
@@ -23,13 +23,22 @@ class Settings(BaseSettings):
 
     LOGS_FILE: str = f"{datetime.now().strftime("%d-%m-%Y_%H:%M")}.log"
 
-    JWT_SECRET: str = "iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA="
+    JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
 
+    S3_ENDPOINT: str
+    S3_SECRET: str
+    S3_ACCESS: str
+    S3_BUKKET: str
+    S3_AVATARS: str
+
     BASE_AVATARS_URL: list[str] = [
+        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/pubertat_3.jpg",
+        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/pubertat_2.jpg",
+        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/pubertat_1.png",
         "https://cs15.pikabu.ru/post_img/2025/02/06/9/1738852265114233915.jpg",
-        "https://cojo.ru/wp-content/uploads/2022/12/avatarka-1-3.webp",
-        "https://img.freepik.com/free-photo/rendering-bee-anime-character_23-2150963632.jpg"
+        "https://img.freepik.com/free-photo/rendering-bee-anime-character_23-2150963632.jpg",
+        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/964470.jpg"
     ]
 
     WORKERS_COUNT: int = 8

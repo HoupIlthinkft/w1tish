@@ -8,7 +8,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 from backend.api import auth,data
-from backend.core.engine import lifespan
+from backend.dependencies.dependencies import lifespan
 from backend.utils.exceptions_handlers import setup_exception_handlers
 
 app = FastAPI(lifespan=lifespan)

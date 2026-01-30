@@ -19,12 +19,12 @@ def _set_refresh_cookie(response: Response, refresh_token) -> None:
             httponly=True,
             secure=settings.COOKIE_SECURE,
             samesite=settings.COOKIE_SAMESITE,
-            path="/auth/session",
+            path="/web/auth/session",
             max_age=settings.REFRESH_TOKEN_MAX_AGE
         )
 
 
-auth_router = APIRouter(prefix="/auth", tags=["Auth"])
+auth_router = APIRouter(prefix="/web/auth", tags=["Auth"])
 
 @auth_router.post("/", response_model=AccessTokenResponse)
 async def authenticate(
