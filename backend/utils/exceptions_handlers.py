@@ -132,6 +132,18 @@ async def no_read_permission_handlers(
         }
     )
 
+async def too_big_file_handlers(
+    request: Request,
+    exc: err.TooBigFileError
+):
+    logger.warning("Too big file")
+    return JSONResponse(
+        status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+        content = {
+            "detail": f"Max file size is {exc.max_size}"
+        }
+    )
+
 
 HANDLERS = {
     err.InvalidArgumentsError:  invalid_argument_handler,
@@ -143,7 +155,8 @@ HANDLERS = {
     err.InvalidMessagesError:   invalid_messages_handler,
     err.ExpiredTokenError:      expired_token_handlers,
     err.NoWritePermissionError: no_write_permission_handlers,
-    err.NoReadPermissionError:  no_read_permission_handlers
+    err.NoReadPermissionError:  no_read_permission_handlers,
+    err.TooBigFileError:        too_big_file_handlers
 }
 
 def setup_exception_handlers(app: FastAPI):

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from backend.core.config import settings
+from backend.core.config import settings, config
 
 import logging
 from backend.core.logger import setup_logging
@@ -26,14 +26,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/health")
+@app.get(
+    "/health",
+    summary=config.docs.health.summary
+)
 async def status():
     return {"status":"ok"}
 
 
-@app.get("/config.js")
+@app.get(
+    "/config.js",
+    summary=config.docs.config.summary
+)
 def get_config():
-    content = f"window.ENV = {{ API_URL: '{settings.API_URL}' }};"
+    env_variables = {
+        "API_URL": settings.API_URL,
+        "AVATARS_URL": settings.S3_AVATARS
+    }
+    content = ", ".join([f"{k}: '{v}'" for k, v in env_variables.items()])
+    content = f"window.ENV = {{{content}}};"
     
     return Response(
         content=content, 

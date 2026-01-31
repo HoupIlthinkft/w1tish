@@ -1,6 +1,7 @@
 import aioboto3
 from fastapi import FastAPI
-from backend.core.config import settings
+from backend.core.config import settings, config
+from random import randint
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
@@ -10,18 +11,12 @@ import asyncio
 from logging import getLogger
 logger = getLogger(__name__)
 
-ACCESS_KEY = settings.S3_ACCESS
-SECRET_KEY = settings.S3_SECRET
-ENDPOINT = settings.S3_ENDPOINT
-AVATARS_ENDPOINT = settings.S3_AVATARS
-BUCKET_NAME = settings.S3_BUKKET
-
 @asynccontextmanager
 async def s3_lifespan(app: FastAPI):
     logger.info("Creating s3 session...")
     _s3_session = aioboto3.Session(
-        aws_access_key_id=ACCESS_KEY,
-        aws_secret_access_key=SECRET_KEY
+        aws_access_key_id=settings.S3_ACCESS,
+        aws_secret_access_key=settings.S3_SECRET
     )
     async with _s3_session.client("s3", endpoint_url=settings.S3_ENDPOINT) as client:
         app.state.s3_client = client
@@ -63,9 +58,18 @@ class AvatarLoaderRepository:
             ContentType="image/jpeg"
         )
 
+    async def set_default_avatar(self, user_id: int) -> None:       
+        await self.s3_client.copy_object(
+            CopySource={
+                'Bucket': self.bukket,
+                'Key': f'default/{randint(1, config.avatars.default_count)}.jpg'
+            },
+            Bucket=self.bukket,
+            Key=f'avatars/{user_id}.jpeg'
+        )
+
     async def load_avatar(self, avatar: bytes, user_id: int) -> str:
         resized_bytes = await self._resize_avatar(avatar)
         await self._upload_avatar(resized_bytes, user_id)
-        url = AVATARS_ENDPOINT + f"/avatars/{user_id}.jpeg"
-        logger.info(url)
+        url = settings.S3_AVATARS + f"/avatars/{user_id}.jpeg"
         return url

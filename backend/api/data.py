@@ -5,6 +5,7 @@ from backend.dependencies.dependencies import DataServiceDep
 from typing import Annotated
 from backend.utils.security.token_generator import get_id_by_jwt
 from backend import models
+from backend.core.config import config
 
 import logging
 logger = logging.getLogger(__name__)
@@ -16,7 +17,11 @@ def get_userid_from_bearer(token: str = Security(http_bearer)):
 CurrentUser = Annotated[int, Depends(get_userid_from_bearer)]
 data_router = APIRouter(prefix="/web/data", tags=["Data methods"])
 
-@data_router.get("/user", response_model=models.UsersResponse)
+@data_router.get(
+    "/user",
+    response_model=models.UsersResponse,
+    summary=config.docs.user.summary
+)
 async def get_user_data_by_id(
     service: DataServiceDep,
     user_id: Annotated[list[int], Query()] = None,
@@ -26,7 +31,11 @@ async def get_user_data_by_id(
     return await service.get_users_data(user_id, username)
 
 
-@data_router.get("/", response_model=models.UserResponse)
+@data_router.get(
+    "",
+    response_model=models.UserResponse,
+    summary=config.docs.user.summary
+)
 async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     logger.info("[GET] Trying get user data...")
     return await service.get_user_data(user_id)
@@ -34,7 +43,8 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
 
 @data_router.post(
     "/messages",
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    summary=config.docs.add_messages.summary
 )
 async def add_new_message(
     request: models.MessageModel,
@@ -44,7 +54,11 @@ async def add_new_message(
     logger.info("[POST] Trying to add new message...")
     await service.add_message(user_id, request)
 
-@data_router.get("/messages", response_model=models.MessagesResponse)
+@data_router.get(
+    "/messages",
+    response_model=models.MessagesResponse,
+    summary=config.docs.get_messages.summary
+)
 async def get_messages(
     service: DataServiceDep,
     user_id: CurrentUser,
@@ -56,7 +70,12 @@ async def get_messages(
     messages = await service.get_messages(user_id, chat_id, offset, limit)
     return messages
 
-@data_router.post("/chats", status_code=status.HTTP_201_CREATED, response_model=models.CreateChatResponse)
+@data_router.post(
+    "/chats",
+    status_code=status.HTTP_201_CREATED,
+    response_model=models.CreateChatResponse,
+    summary=config.docs.chats.summary
+)
 async def create_new_chat(
     request: models.CreateChatRequestModel,
     service: DataServiceDep,
@@ -66,7 +85,10 @@ async def create_new_chat(
     chat_id = await service.add_chat(user_id, request)
     return models.CreateChatResponse(chat_id=chat_id)
 
-@data_router.put("avatar")
+@data_router.put(
+    "/avatar",
+    summary=config.docs.avatar.summary
+)
 async def set_avatar(
     service: DataServiceDep,
     user_id: CurrentUser,

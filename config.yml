@@ -1,0 +1,39 @@
+avatars:
+  default_count: 5
+
+docs:
+  auth:
+    summary: "Авторизировать пользователя"
+
+  register:
+    summary: "Зарегестрировать пользователя"
+
+  refresh:
+    summary: "Обновить access токен"
+
+  logout:
+    summary: "Удалить refresh токен"
+
+  user:
+    summary: "Получить данные пользователей по айди"
+
+  data:
+    summary: "Получить свои данные"
+
+  get_messages:
+    summary: "Получить историю сообщений в чате"
+
+  add_messages:
+    summary: "Добавить новое сообщение"
+
+  chats:
+    summary: "Создать новый чат или группу"
+
+  avatar:
+    summary: "Изменить аватар пользователя"
+
+  config:
+    summary: "Получить необходимые переменные"
+
+  health:
+    summary: "Проверить работоспособность бэкэнда"

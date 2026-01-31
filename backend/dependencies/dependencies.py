@@ -28,24 +28,26 @@ async def lifespan(app: FastAPI):
 def get_auth_service(
     session: annotations.Database,
     collection: annotations.MessageBase,
-    encrypter: annotations.PasswordEncrypter
+    encrypter: annotations.PasswordEncrypter,
+    avatars_repo: annotations.AvatarLoader
 ) -> services.AuthService:
     blacklist_repo = repo.BlacklistRepository(collection)
     auth_repo = repo.AuthRepository(session, encrypter)
-    return services.AuthService(auth_repo, blacklist_repo)
+    return services.AuthService(auth_repo, blacklist_repo, avatars_repo)
 
 def get_data_service(
     session: annotations.Database,
     collection: annotations.MessageBase,
     avatar_loader: annotations.AvatarLoader
 ) -> services.DataService:
-    data_repo = repo.DataRepository(session, avatar_loader)
+    data_repo = repo.DataRepository(session)
     chats_repo = repo.ChatRepository(session)
     mess_repo = repo.MessagesRepository(collection)
     return services.DataService(
         data_repo,
         chats_repo,
-        mess_repo
+        mess_repo,
+        avatar_loader
     )
 
 AuthServiceDep = Annotated[services.AuthService, Depends(get_auth_service)]

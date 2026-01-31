@@ -3,14 +3,21 @@ from backend import errors as err
 from backend.utils.security import token_generator
 from backend.interfaces import protocols
 from typing import BinaryIO
+from backend.core.config import settings
 
 from logging import getLogger
 logger = getLogger(__name__)
 
 class AuthService:
-    def __init__(self, auth_repo: protocols.IAuthRepository, blacklist: protocols.IBlacklistRepository):
+    def __init__(
+        self,
+        auth_repo: protocols.IAuthRepository,
+        blacklist: protocols.IBlacklistRepository,
+        avatars_repo: protocols.IAvatarLoader
+    ):
         self.auth_repo = auth_repo
         self.blacklist = blacklist
+        self.user_avatars = avatars_repo
     
     async def auth_user(self, request: models.AuthRequestModel) -> models.TokensResponse:
         user_id = await self.auth_repo.auth_user(
@@ -26,6 +33,7 @@ class AuthService:
             request.email,
             request.password
         )
+        await self.user_avatars.set_default_avatar(user_id)
         tokens = token_generator.generate_tokens(user_id)
         return tokens
     
@@ -42,11 +50,13 @@ class DataService:
         self,
         data_repo: protocols.IDataRepository,
         chats_repo: protocols.IChatRepository,
-        mess_repo: protocols.IMessagesRepository
+        mess_repo: protocols.IMessagesRepository,
+        avatars_repo: protocols.IAvatarLoader
     ):
         self.user_data = data_repo
         self.user_chats = chats_repo
         self.user_messages = mess_repo
+        self.user_avatars = avatars_repo
 
     async def add_message(self, user_id: int, request: models.MessageModel) -> None:
         avarible_chats = await self.user_chats.get_user_chats(user_id)
@@ -100,8 +110,8 @@ class DataService:
         raise err.InvalidArgumentsError("Noone argument was getted")
         
     async def set_avatar(self, file: BinaryIO, user_id: int) -> None:
-        avatar_bytes = file.read(1024 * 1024 * 10 + 1)
-        if len(avatar_bytes) > 1024 * 1024 * 10:
-            raise TypeError()
+        avatar_bytes = file.read(settings.MAX_AVATAR + 1)
+        if file.read(1):
+            raise err.TooBigFileError(max_size=settings.MAX_AVATAR)
         
-        await self.user_data.set_user_avatar(avatar_bytes, user_id)
+        await self.user_avatars.load_avatar(avatar_bytes, user_id)

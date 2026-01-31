@@ -4,14 +4,11 @@ from sqlalchemy import select, cast, String, update
 
 from backend.errors import UserExistError, UserNotFoundError, WrongPasswordError, ChatNotFoundError
 from backend import models
-from backend.core.config import settings
 from backend.interfaces import protocols
 
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncGenerator
-from random import choice as rand_choice
-from io import BytesIO
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -35,8 +32,7 @@ class AuthRepository:
                 username=username,
                 nickname=username,                                   # при регистрации ставим ник по умолчанию username
                 email=email,
-                password_hash=encrypted_password,
-                avatar_url=rand_choice(settings.BASE_AVATARS_URL)
+                password_hash=encrypted_password
             )
 
             self.db.add(new_user)
@@ -121,9 +117,8 @@ class ChatRepository:
     
 
 class DataRepository:
-    def __init__(self, session: AsyncSession, avatar_loader: protocols.IAvatarLoader):
+    def __init__(self, session: AsyncSession):
         self.db = session
-        self.avatar_loader = avatar_loader
     
     async def get_user_data(self, user_id: int) -> models.UserResponse:
         query = await self.db.execute(
@@ -131,7 +126,6 @@ class DataRepository:
                 models.usersBase.id.label("user_id"),
                 models.usersBase.username,
                 models.usersBase.nickname,
-                models.usersBase.avatar_url,
                 models.chatsBase.id.label("chat_id"),
                 models.chatsBase.last_message_author,
                 models.chatsBase.last_message_text,
@@ -163,7 +157,6 @@ class DataRepository:
             id=user_data[0].user_id,
             username=user_data[0].username,
             nickname=user_data[0].nickname,
-            avatar_url=user_data[0].avatar_url,
             chats=chats
         )
 
@@ -173,49 +166,35 @@ class DataRepository:
         query = await self.db.execute(
             select(
                 models.usersBase.nickname,
-                models.usersBase.avatar_url,
                 models.usersBase.id,
                 models.usersBase.username
             ).where(
                 models.usersBase.id.in_(ids)
             )
         )
-        
         users_data = query.mappings().all()
+
         if len(users_data) != len(set(ids)):
             logger.warning(f"Failed to get users data! Getted {len(users_data)}/{len(ids)}")
             raise UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
     
+
     async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse:
         query = await self.db.execute(
             select(
                 models.usersBase.nickname,
-                models.usersBase.avatar_url,
                 models.usersBase.id,
                 models.usersBase.username
             ).where(
                 models.usersBase.username.in_(usernames)
             )
         )
-        
         users_data = query.mappings().all()
+
         if len(users_data) != len(set(usernames)):
-            logger.warning(f"Failed to get users data! Getted {len(users_data)}/{len(usernames)}")
+            logger.warning(f"Failed to get users data! Getted %s/%s", len(users_data), len(usernames))
             raise UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
-    
-    async def set_user_avatar(self, avatar: bytes, user_id: int) -> None:
-        avatar_link = await self.avatar_loader.load_avatar(avatar, user_id)
-        await self.db.execute(
-            update(
-                models.usersBase
-            ).where(
-                models.usersBase.id == user_id
-            ).values(
-                avatar_url=avatar_link
-            )
-        )
-        await self.db.commit()

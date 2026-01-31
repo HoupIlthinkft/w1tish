@@ -3,8 +3,7 @@ CREATE TABLE users (
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    nickname TEXT NOT NULL,
-    avatar_url TEXT
+    nickname TEXT NOT NULL
 );
 
 CREATE TABLE chats (

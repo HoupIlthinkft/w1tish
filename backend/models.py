@@ -16,7 +16,6 @@ class UserModel(BaseModel):
     id: int
     username: str
     nickname: str
-    avatar_url: str
 
 class ChatModel(BaseModel):
     id: str
@@ -77,7 +76,6 @@ class usersBase(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     username: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
-    avatar_url: Mapped[str] = mapped_column(nullable=True)
     nickname: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False)

@@ -1,7 +1,19 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from box import Box
+import yaml
 from datetime import datetime
 
 class Settings(BaseSettings):
+
+    S3_ENDPOINT: str
+    S3_SECRET: str
+    S3_ACCESS: str
+    S3_BUKKET: str
+    S3_AVATARS: str
+
+    JWT_SECRET: str
+
+
     REFRESH_TOKEN_MAX_AGE: int = 604800
     ACCESS_TOKEN_MAX_AGE: int = 900
     PASSWORD_ROUNDS: int = 12
@@ -24,26 +36,15 @@ class Settings(BaseSettings):
     LOGS_FILE: str = f"{datetime.now().strftime("%d-%m-%Y_%H:%M")}.log"
     API_URL: str = "http://localhost"
 
-    JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
 
-    S3_ENDPOINT: str
-    S3_SECRET: str
-    S3_ACCESS: str
-    S3_BUKKET: str
-    S3_AVATARS: str
-
-    BASE_AVATARS_URL: list[str] = [
-        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/pubertat_3.jpg",
-        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/pubertat_2.jpg",
-        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/pubertat_1.png",
-        "https://cs15.pikabu.ru/post_img/2025/02/06/9/1738852265114233915.jpg",
-        "https://img.freepik.com/free-photo/rendering-bee-anime-character_23-2150963632.jpg",
-        "https://9b410e25-b424-42f9-8c98-0f003b6b0bd3.selstorage.ru/964470.jpg"
-    ]
+    MAX_AVATAR: int = 1024 * 1024 * 5
 
     WORKERS_COUNT: int = 8
 
     model_config = SettingsConfigDict(env_file=".env")
+
+with open('config.yml') as f:
+    config = Box(yaml.safe_load(f))
 
 settings = Settings()

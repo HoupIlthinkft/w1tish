@@ -27,3 +27,15 @@ class InvalidArgumentsError(BaseAppException):
     def __init__(self, message: str):
         super().__init__()
         self.message = message
+
+class TooBigFileError(BaseAppException):
+    def __init__(self, max_size: int):
+        super().__init__()
+        if max_size < 1024:
+            self.max_size = str(max_size) + "b"
+        elif max_size < 1024**2:
+            self.max_size = str(max_size / 1024) + "Kb"
+        elif max_size < 1024**3:
+            self.max_size = str(max_size / 1024**2) + "Mb"
+        else:
+            self.max_size = str(max_size / 1024**3) + "Gb"

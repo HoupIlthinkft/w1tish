@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, Cookie, Response
 from typing import Annotated
 
-from backend.core.config import settings
+from backend.core.config import settings, config
 from backend.dependencies.dependencies import AuthServiceDep
 from backend.models import (
     AuthRequestModel,
@@ -26,7 +26,11 @@ def _set_refresh_cookie(response: Response, refresh_token) -> None:
 
 auth_router = APIRouter(prefix="/web/auth", tags=["Auth"])
 
-@auth_router.post("/", response_model=AccessTokenResponse)
+@auth_router.post(
+    "",
+    response_model=AccessTokenResponse,
+    summary=config.docs.auth.summary
+)
 async def authenticate(
     auth_request: AuthRequestModel,
     auth_service: AuthServiceDep,
@@ -41,7 +45,12 @@ async def authenticate(
     }
     
 
-@auth_router.post("/register", status_code=status.HTTP_201_CREATED, response_model=AccessTokenResponse)
+@auth_router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    response_model=AccessTokenResponse,
+    summary=config.docs.register.summary
+)
 async def register(
     register_request: RegisterRequestModel,
     auth_service: AuthServiceDep,
@@ -56,7 +65,11 @@ async def register(
     }
         
 
-@auth_router.post("/session/refresh", response_model=AccessTokenResponse)
+@auth_router.post(
+    "/session/refresh",
+    response_model=AccessTokenResponse,
+    summary=config.docs.refresh.summary
+)
 async def update_token(
     auth_service: AuthServiceDep,
     response: Response,
@@ -71,7 +84,11 @@ async def update_token(
     }
 
 
-@auth_router.post("/session/logout", status_code=status.HTTP_200_OK)
+@auth_router.post(
+    "/session/logout",
+    status_code=status.HTTP_200_OK,
+    summary=config.docs.logout.summary
+)
 async def reset_token(
     auth_service: AuthServiceDep,
     response: Response,
