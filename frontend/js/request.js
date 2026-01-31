@@ -1,5 +1,5 @@
 async function request_add_new_message(chat_id, message, user_id) {
-    await fetch(('http://localhost/web/data/messages'), {
+    await fetch((window.ENV.API_URL + '/web/data/messages'), {
         method: 'POST',
         headers: {  'accept': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
@@ -16,7 +16,7 @@ async function request_add_new_message(chat_id, message, user_id) {
 
 
 async function request_get_messages(chat_id) {
-    var data = await fetch((`http://localhost/web/data/messages?chat_id=${Number(chat_id)}&offset=0&limit=50`), {
+    var data = await fetch((window.ENV.API_URL + `/web/data/messages?chat_id=${Number(chat_id)}&offset=0&limit=50`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
@@ -30,7 +30,7 @@ async function request_get_messages(chat_id) {
 
 
 async function request_create_new_chat(oponents_id) {
-    await fetch(('http://localhost/web/data/chats'), {
+    await fetch((window.ENV.API_URL + '/web/data/chats'), {
         method: 'POST',
         headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
@@ -42,7 +42,7 @@ async function request_create_new_chat(oponents_id) {
 
 
 async function request_reset_token() {
-    await fetch((`http://localhost/web/auth/session/logout`), {
+    await fetch((window.ENV.API_URL + '/web/auth/session/logout'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -50,7 +50,7 @@ async function request_reset_token() {
 
 async function requset_editing_nickname(new_nickname) {
     if (new_nickname != localStorage.getItem("nickname")) {
-        await fetch(('http://localhost/web/data/edit/nickname'), {
+        await fetch((window.ENV.API_URL + '/web/data/edit/nickname'), {
             method: 'PATCH',
             headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                         'Content-Type': 'application/json' },

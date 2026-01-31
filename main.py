@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from backend.core.config import settings
 
 import logging
 from backend.core.logger import setup_logging
@@ -28,5 +29,15 @@ app.add_middleware(
 @app.get("/health")
 async def status():
     return {"status":"ok"}
+
+
+@app.get("/config.js")
+def get_config():
+    content = f"window.ENV = {{ API_URL: '{settings.API_URL}' }};"
+    
+    return Response(
+        content=content, 
+        media_type="application/javascript"
+    )
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")

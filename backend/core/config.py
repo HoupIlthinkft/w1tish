@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     MONGO_DISCONECT_TIMEOUT: int = 5
 
     LOGS_FILE: str = f"{datetime.now().strftime("%d-%m-%Y_%H:%M")}.log"
+    API_URL: str = "http://localhost"
 
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
