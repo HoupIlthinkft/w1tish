@@ -2,6 +2,7 @@ from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import settings, config
+from fastapi.openapi.docs import get_swagger_ui_html
 
 import logging
 from backend.core.logger import setup_logging
@@ -12,7 +13,13 @@ from backend.api import auth,data
 from backend.dependencies.dependencies import lifespan
 from backend.utils.exceptions_handlers import setup_exception_handlers
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title="W1tish API",
+    version="0.0.1",
+    description=config.docs.api.description,
+    docs_url=None,
+    lifespan=lifespan
+)
 setup_exception_handlers(app)
 
 app.include_router(auth.auth_router)
@@ -36,7 +43,8 @@ async def status():
 
 @app.get(
     "/config.js",
-    summary=config.docs.config.summary
+    summary=config.docs.config.summary,
+    description=config.docs.config.description
 )
 def get_config():
     env_variables = {
@@ -49,6 +57,15 @@ def get_config():
     return Response(
         content=content, 
         media_type="application/javascript"
+    )
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title="W1tish Docs",
+        swagger_css_url="swagger.css",
+        swagger_ui_parameters=config.swagger
     )
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")

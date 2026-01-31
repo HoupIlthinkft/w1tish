@@ -15,12 +15,14 @@ def get_userid_from_bearer(token: str = Security(http_bearer)):
     return get_id_by_jwt(token.credentials)
 
 CurrentUser = Annotated[int, Depends(get_userid_from_bearer)]
-data_router = APIRouter(prefix="/web/data", tags=["Data methods"])
+data_router = APIRouter(prefix="/web/data", tags=["Data методы"])
 
 @data_router.get(
     "/user",
     response_model=models.UsersResponse,
-    summary=config.docs.user.summary
+    summary=config.docs.user.summary,
+    description=config.docs.user.description,
+    responses=config.docs.user.responses
 )
 async def get_user_data_by_id(
     service: DataServiceDep,
@@ -34,7 +36,9 @@ async def get_user_data_by_id(
 @data_router.get(
     "",
     response_model=models.UserResponse,
-    summary=config.docs.user.summary
+    summary=config.docs.data.summary,
+    description=config.docs.data.description,
+    responses=config.docs.data.responses
 )
 async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     logger.info("[GET] Trying get user data...")
@@ -44,7 +48,10 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
 @data_router.post(
     "/messages",
     status_code=status.HTTP_201_CREATED,
-    summary=config.docs.add_messages.summary
+    response_model=models.OKResponse,
+    summary=config.docs.add_messages.summary,
+    description=config.docs.add_messages.description,
+    responses=config.docs.add_messages.responses
 )
 async def add_new_message(
     request: models.MessageModel,
@@ -57,7 +64,9 @@ async def add_new_message(
 @data_router.get(
     "/messages",
     response_model=models.MessagesResponse,
-    summary=config.docs.get_messages.summary
+    summary=config.docs.get_messages.summary,
+    description=config.docs.get_messages.description,
+    responses=config.docs.get_messages.responses
 )
 async def get_messages(
     service: DataServiceDep,
@@ -74,7 +83,9 @@ async def get_messages(
     "/chats",
     status_code=status.HTTP_201_CREATED,
     response_model=models.CreateChatResponse,
-    summary=config.docs.chats.summary
+    summary=config.docs.chats.summary,
+    description=config.docs.chats.description,
+    responses=config.docs.chats.responses
 )
 async def create_new_chat(
     request: models.CreateChatRequestModel,
@@ -87,7 +98,10 @@ async def create_new_chat(
 
 @data_router.put(
     "/avatar",
-    summary=config.docs.avatar.summary
+    response_model=models.OKResponse,
+    summary=config.docs.avatar.summary,
+    description=config.docs.avatar.description,
+    responses=config.docs.avatar.responses
 )
 async def set_avatar(
     service: DataServiceDep,
@@ -96,7 +110,6 @@ async def set_avatar(
 ):
     logger.info("Trying to upload avatar...")
     await service.set_avatar(file.file, user_id)
-    return {"succes": "ok"}
 
 
 # TODO добавить доставку сообщений в реальном времени через WebSocket

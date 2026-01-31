@@ -6,7 +6,8 @@ from backend.dependencies.dependencies import AuthServiceDep
 from backend.models import (
     AuthRequestModel,
     RegisterRequestModel,
-    AccessTokenResponse
+    AccessTokenResponse,
+    OKResponse
 )
 
 import logging
@@ -24,12 +25,14 @@ def _set_refresh_cookie(response: Response, refresh_token) -> None:
         )
 
 
-auth_router = APIRouter(prefix="/web/auth", tags=["Auth"])
+auth_router = APIRouter(prefix="/web/auth", tags=["Методы авторизации"])
 
 @auth_router.post(
     "",
     response_model=AccessTokenResponse,
-    summary=config.docs.auth.summary
+    summary=config.docs.auth.summary,
+    description=config.docs.auth.description,
+    responses=config.docs.auth.responses
 )
 async def authenticate(
     auth_request: AuthRequestModel,
@@ -49,7 +52,9 @@ async def authenticate(
     "/register",
     status_code=status.HTTP_201_CREATED,
     response_model=AccessTokenResponse,
-    summary=config.docs.register.summary
+    summary=config.docs.register.summary,
+    description=config.docs.register.description,
+    responses=config.docs.register.responses
 )
 async def register(
     register_request: RegisterRequestModel,
@@ -68,7 +73,9 @@ async def register(
 @auth_router.post(
     "/session/refresh",
     response_model=AccessTokenResponse,
-    summary=config.docs.refresh.summary
+    summary=config.docs.refresh.summary,
+    description=config.docs.refresh.description,
+    responses=config.docs.refresh.responses
 )
 async def update_token(
     auth_service: AuthServiceDep,
@@ -86,8 +93,10 @@ async def update_token(
 
 @auth_router.post(
     "/session/logout",
-    status_code=status.HTTP_200_OK,
-    summary=config.docs.logout.summary
+    response_model=OKResponse,
+    summary=config.docs.logout.summary,
+    description=config.docs.logout.description,
+    responses=config.docs.logout.responses
 )
 async def reset_token(
     auth_service: AuthServiceDep,

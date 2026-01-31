@@ -1,0 +1,324 @@
+@import url("https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css");
+
+/* Основные цвета и темы */
+:root {
+  --primary-color: #4a6fa5;
+  --secondary-color: #166088;
+  --accent-color: #17a2b8;
+  --light-bg: #f8f9fa;
+  --dark-bg: #2d3748;
+  --text-dark: #2d3748;
+  --text-light: #f8f9fa;
+  --border-color: #e2e8f0;
+  --success-color: #38a169;
+  --warning-color: #d69e2e;
+  --error-color: #e53e3e;
+}
+
+/* Темная тема */
+.swagger-ui .topbar {
+  background: linear-gradient(135deg, var(--dark-bg) 0%, #1a202c 100%) !important;
+  padding: 20px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.swagger-ui .topbar .topbar-wrapper {
+  align-items: center;
+}
+
+.swagger-ui .topbar .topbar-wrapper img {
+  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30"><text x="0" y="20" font-family="Arial" font-size="20" fill="%2317a2b8">API Docs</text></svg>') !important;
+  height: 40px !important;
+}
+
+/* Основной контейнер */
+.swagger-ui .information-container {
+  background: var(--light-bg) !important;
+  padding: 30px !important;
+  border-radius: 8px !important;
+  margin: 20px 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Заголовки */
+.swagger-ui .info .title {
+  color: var(--primary-color) !important;
+  font-size: 2.2rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.swagger-ui .info .description {
+  color: var(--text-dark) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  margin-bottom: 20px !important;
+}
+
+/* Методы API */
+.swagger-ui .opblock {
+  border-radius: 8px !important;
+  margin: 15px 0 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color) !important;
+}
+
+.swagger-ui .opblock:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.swagger-ui .opblock.opblock-get {
+  border-color: var(--primary-color) !important;
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+  background: var(--primary-color) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border-color: var(--success-color) !important;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method {
+  background: var(--success-color) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+}
+
+.swagger-ui .opblock.opblock-put {
+  border-color: var(--warning-color) !important;
+}
+
+.swagger-ui .opblock.opblock-put .opblock-summary-method {
+  background: var(--warning-color) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+}
+
+.swagger-ui .opblock.opblock-delete {
+  border-color: var(--error-color) !important;
+}
+
+.swagger-ui .opblock.opblock-delete .opblock-summary-method {
+  background: var(--error-color) !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+}
+
+/* Панели параметров */
+.swagger-ui .opblock-body {
+  background: white !important;
+  border-radius: 0 0 8px 8px !important;
+}
+
+.swagger-ui .opblock-section {
+  background: white !important;
+}
+
+.swagger-ui .parameters-container {
+  background: white !important;
+}
+
+.swagger-ui .parameter__name {
+  color: var(--text-dark) !important;
+  font-weight: 600 !important;
+}
+
+.swagger-ui .parameter__type {
+  color: var(--accent-color) !important;
+  font-weight: 500 !important;
+}
+
+/* Кнопки */
+.swagger-ui .btn {
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  padding: 8px 16px !important;
+}
+
+.swagger-ui .btn.execute {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.swagger-ui .btn.execute:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(26, 96, 136, 0.3);
+}
+
+.swagger-ui .btn.try-out__btn {
+  background: transparent !important;
+  border: 2px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.swagger-ui .btn.try-out__btn:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Вкладки */
+.swagger-ui .tab {
+  border-radius: 6px 6px 0 0 !important;
+  background: #f1f5f9 !important;
+  margin-right: 5px !important;
+}
+
+.swagger-ui .tab.active {
+  background: white !important;
+  border-bottom: 3px solid var(--primary-color) !important;
+  font-weight: 600 !important;
+}
+
+/* Схемы и модели */
+.swagger-ui .model {
+  background: var(--light-bg) !important;
+  border-radius: 6px !important;
+  padding: 15px !important;
+  margin: 10px 0 !important;
+}
+
+.swagger-ui .model-title {
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+}
+
+/* Редактор */
+.swagger-ui .microlight {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-radius: 6px !important;
+  padding: 15px !important;
+  font-family: 'Fira Code', 'Consolas', monospace !important;
+}
+
+/* Ответы сервера */
+.swagger-ui .response-control-media-type__accept-message {
+  color: var(--accent-color) !important;
+}
+
+.swagger-ui .responses-inner {
+  padding: 20px !important;
+  border-radius: 6px !important;
+  background: white !important;
+}
+
+/* Таблицы */
+.swagger-ui table thead tr {
+  background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%) !important;
+}
+
+.swagger-ui table thead tr th {
+  color: var(--text-dark) !important;
+  font-weight: 600 !important;
+  border: none !important;
+}
+
+.swagger-ui table tbody tr td {
+  border-color: var(--border-color) !important;
+}
+
+/* Авторизация */
+.swagger-ui .auth-wrapper {
+  margin: 20px 0 !important;
+}
+
+.swagger-ui .auth-btn-wrapper {
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.swagger-ui .authorization__btn {
+  color: white !important;
+  border: none !important;
+}
+
+/* Состояния */
+.swagger-ui .loading-container .loading:after {
+  color: var(--primary-color) !important;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .swagger-ui .information-container {
+    padding: 20px !important;
+    margin: 10px !important;
+  }
+  
+  .swagger-ui .info .title {
+    font-size: 1.8rem !important;
+  }
+  
+  .swagger-ui .opblock {
+    margin: 10px 0 !important;
+  }
+}
+
+/* Кастомные скроллбары */
+.swagger-ui ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.swagger-ui ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.swagger-ui ::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
+}
+
+/* Дополнительные улучшения */
+.swagger-ui .scheme-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 20px 0 !important;
+}
+
+.swagger-ui .scheme-container .schemes {
+  background: white !important;
+  padding: 15px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Бейджи и лейблы */
+.swagger-ui .opblock-summary-path {
+  font-family: 'Fira Code', 'Consolas', monospace !important;
+  font-weight: 500 !important;
+}
+
+.swagger-ui .opblock-summary-description {
+  color: var(--text-dark) !important;
+  font-style: italic !important;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.swagger-ui .opblock {
+  animation: fadeIn 0.3s ease-out;
+}
