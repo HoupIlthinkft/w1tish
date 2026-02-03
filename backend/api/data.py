@@ -26,8 +26,8 @@ data_router = APIRouter(prefix="/web/data", tags=["Data методы"])
 )
 async def get_user_data_by_id(
     service: DataServiceDep,
-    user_id: Annotated[list[int], Query()] = None,
-    username: Annotated[list[str], Query()] = None
+    user_id: Annotated[list[int], Query(description="Айди пользователя")] = None,
+    username: Annotated[list[str], Query(description="Логин пользователя")] = None
 ):
     logger.info("[GET] Trying get some users data...")
     return await service.get_users_data(user_id, username)
@@ -60,6 +60,7 @@ async def add_new_message(
 ):
     logger.info("[POST] Trying to add new message...")
     await service.add_message(user_id, request)
+    return models.OKResponse()
 
 @data_router.get(
     "/messages",
@@ -72,8 +73,8 @@ async def get_messages(
     service: DataServiceDep,
     user_id: CurrentUser,
     chat_id: str,
-    offset: Annotated[int, Query(ge=0)] = 0,
-    limit: Annotated[int, Query(le=100)] = 50
+    offset: Annotated[int, Query(ge=0, description="Смещение относительно последнего сообщения")] = 0,
+    limit: Annotated[int, Query(le=100, description="Колличество сообщений")] = 50
 ):
     logger.info("[GET] Trying get messages...")
     messages = await service.get_messages(user_id, chat_id, offset, limit)
@@ -96,7 +97,7 @@ async def create_new_chat(
     chat_id = await service.add_chat(user_id, request)
     return models.CreateChatResponse(chat_id=chat_id)
 
-@data_router.put(
+@data_router.patch(
     "/avatar",
     response_model=models.OKResponse,
     summary=config.docs.avatar.summary,
@@ -106,10 +107,27 @@ async def create_new_chat(
 async def set_avatar(
     service: DataServiceDep,
     user_id: CurrentUser,
-    file: UploadFile = File(...)
+    file: UploadFile = File(..., description="Новый аватар пользователя")
 ):
-    logger.info("Trying to upload avatar...")
+    # TODO сделать проверку типа поступаемого изображения
+    logger.info("[PATCH] Trying to upload avatar...")
     await service.set_avatar(file.file, user_id)
+    return models.OKResponse()
 
+@data_router.patch(
+    "/nickname",
+    response_model=models.OKResponse,
+    summary=config.docs.nickname.summary,
+    description=config.docs.nickname.description,
+    responses=config.docs.nickname.responses
+)
+async def set_user_nickname(
+    service: DataServiceDep,
+    user_id: CurrentUser,
+    nickname: models.SetNicknameModel
+):
+    logger.info(f"[PATCH] Trying to update nickname... '{nickname.nickname}'")
+    await service.set_nickname(nickname.nickname, user_id)
+    return models.OKResponse()
 
 # TODO добавить доставку сообщений в реальном времени через WebSocket

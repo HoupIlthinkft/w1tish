@@ -1,6 +1,5 @@
 from typing import Protocol
 from backend import models
-from io import BytesIO
 
 class IDataRepository(Protocol):
 
@@ -10,7 +9,7 @@ class IDataRepository(Protocol):
 
     async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse: ...
 
-    async def set_user_avatar(self, avatar: BytesIO, user_id: int) -> None: ...
+    async def set_user_nickname(self, nickname: str, user_id: int) -> None: ...
 
 
 class IChatRepository(Protocol):

@@ -2,6 +2,9 @@
 avatars:
   default_count: 5
 
+limits:
+  nickname_len: 42
+
 # документация
 docs:
   api:
@@ -127,6 +130,17 @@ docs:
       422:
         description: "Неверный формат тела / токена"
 
+  nickname:
+    summary: "Изменить ник пользователя"
+    description: "Изменить отображаемое имя пользователя"
+    responses:
+      200:
+        description: "Никнейм успешно иземенён"
+      401:
+        description: "Токен просрочен / Нет токена"
+      422:
+        description: "Неверный формат тела / токена"
+
   config:
     summary: "Получить необходимые переменные"
     description: "Получить адресс бэкэнда и адресс s3 хранилища"
@@ -137,5 +151,5 @@ docs:
 # настройки UI swagger
 swagger:
   defaultModelsExpandDepth: -1
-  filter: true
+  filter: false
   

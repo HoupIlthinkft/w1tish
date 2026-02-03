@@ -322,3 +322,12 @@
 .swagger-ui .opblock {
   animation: fadeIn 0.3s ease-out;
 }
+
+.response .response-col_status {
+  color: red !important;
+  font-size: 1.05em;;
+}
+
+tbody .response:nth-child(1 of .response) .response-col_status {
+  color: rgb(138, 217, 19) !important;
+}

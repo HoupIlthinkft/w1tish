@@ -48,11 +48,14 @@ class GetMessagesRequestModel(BaseModel):
 class SendMessagesRequestModel(BaseModel):
     messages: list[MessageModel] = Field(..., description="Сообщения")
 
+class SetNicknameModel(BaseModel):
+    nickname: str = Field(..., description="Новый никнейм пользователя", examples=["Пельмень 228 котлета 336"])
+
 
 # модели ответов
 
 class OKResponse(BaseModel):
-    status: str = Field('OK')
+    status: str = "OK"
 
 class AccessTokenResponse(BaseModel):
     access_token: str = Field(..., description="Access токен", examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"])

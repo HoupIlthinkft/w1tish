@@ -198,3 +198,18 @@ class DataRepository:
             raise UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
+    
+    async def set_user_nickname(self, nickname: str, user_id: int) -> None:
+        query = await self.db.execute(
+            update(
+                models.usersBase
+            ).where(
+                models.usersBase.id == user_id
+            ).values(
+                nickname=nickname
+            )
+        )
+        if query.rowcount:
+            await self.db.commit()
+        else:
+            raise UserNotFoundError()

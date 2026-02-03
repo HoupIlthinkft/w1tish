@@ -3,7 +3,7 @@ from backend import errors as err
 from backend.utils.security import token_generator
 from backend.interfaces import protocols
 from typing import BinaryIO
-from backend.core.config import settings
+from backend.core.config import settings, config
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -115,3 +115,9 @@ class DataService:
             raise err.TooBigFileError(max_size=settings.MAX_AVATAR)
         
         await self.user_avatars.load_avatar(avatar_bytes, user_id)
+
+    async def set_nickname(self, nickname: str, user_id: int) -> None:
+        if len(nickname) > config.limits.nickname_len:
+            raise err.TooLongError(f"Max nickname len is {config.limits.nickname_len}")
+        
+        await self.user_data.set_user_nickname(nickname, user_id)

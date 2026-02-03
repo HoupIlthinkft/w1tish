@@ -28,6 +28,11 @@ class InvalidArgumentsError(BaseAppException):
         super().__init__()
         self.message = message
 
+class TooLongError(BaseAppException):
+    def __init__(self, message):
+        super().__init__()
+        self.message = message
+
 class TooBigFileError(BaseAppException):
     def __init__(self, max_size: int):
         super().__init__()
