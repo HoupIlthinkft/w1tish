@@ -40,7 +40,7 @@ async function load_chat(user_id, chat_id, members_chat) {
                 
                 const sender_avatar = document.createElement("img");
                 sender_avatar.className = "logo logo_oponent";
-                sender_avatar.src = sender_data.avatar_url;
+                sender_avatar.src = await get_avatar_url_by_id(sender_data.id);
 
                 const sender_nickname = document.createElement("p")
                 sender_nickname.classList.add("sender_nickname");
@@ -75,15 +75,14 @@ async function load_chat_container() {
     oponent_header.classList.add("oponent_header");
     
     const contact_id = this.id.split(" ").slice(0, -1);
-
     localStorage.setItem("chat_members", contact_id);
 
     for (let i in contact_id) {
-        let response_user_info = await get_data_by_user_id(contact_id[i]);
-        response_user_info = response_user_info["users"][0];
+        let response_user_avatar = await get_avatar_url_by_id(contact_id[i]);
+        let response_user_nickname = await get_nickname_by_id(contact_id[i]);
         
         const logo_oponent = document.createElement("img");
-        logo_oponent.src = response_user_info.avatar_url;
+        logo_oponent.src = response_user_avatar;
         logo_oponent.alt = "logo_oponent";
         logo_oponent.className = "logo logo_oponent";
         logo_oponent.id = "logo_oponent";
@@ -94,7 +93,7 @@ async function load_chat_container() {
         const oponent_name = document.createElement("p");
         oponent_name.classList.add("oponent_name");
         oponent_name.id = "oponent_name";
-        oponent_name.textContent = response_user_info.nickname;
+        oponent_name.textContent = response_user_nickname;
 
         const oponent_state = document.createElement("p");
         oponent_state.classList.add("state_oponent");
@@ -109,7 +108,6 @@ async function load_chat_container() {
 
     chat.append(load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id, contact_id));
 
-    
 
     const send = document.createElement("div");
     send.id = "send";
@@ -151,11 +149,12 @@ async function load_chat_container() {
 
 
 function scrollBottom() {
-    setTimeout(() => {
-        const messages = chat.querySelectorAll('.message');
-        if (messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-    }, 50);
+    const chat = document.getElementById("chat");
+
+    const messages = chat.querySelectorAll('.message');
+    
+    if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        lastMessage.scrollIntoView({ behavior: 'instant', block: 'end' });
+    }
 }

@@ -38,8 +38,7 @@ async function get_data_by_username(username) {
 
 
 async function get_avatar_url_by_id(id) {
-    const data = await get_data_by_user_id(id);
-    return data["users"][0].avatar_url;
+    return window.ENV.AVATARS_URL + `/avatars/${id}.jpeg`
 }
 
 

@@ -7,6 +7,8 @@ function open_settings() {
 }
 
 function close_settings() {
+    recovery_editing();
+
     document.getElementById("overlay").style.visibility = "";
     document.getElementById("add_chat").style.visibility = "";
 }
@@ -25,34 +27,53 @@ function edit_nickname() {
     edit_nickname_input.id = "edit_nickname_input";
     edit_nickname_input.type = "text";
     edit_nickname_input.value = localStorage.getItem("nickname");
+    edit_nickname_input.maxLength = 42;
+    edit_nickname_input.placeholder = "Введите nickname";
 
     let approve_nickname = document.createElement("button");
     approve_nickname.id = "approve_nickname";
     approve_nickname.textContent = "Утвердить";
 
+    let cancellation = document.createElement("button");
+    cancellation.id = "cancellation";
+    cancellation.textContent = "Отмена";
+
     header.innerHTML = '';
-    header.append(edit_nickname_input, approve_nickname);
+    header.append(edit_nickname_input, approve_nickname, cancellation);
 
     approve_nickname.addEventListener("click", editing_nickname);
+    cancellation.addEventListener("click", recovery_editing);
 }
 
 function editing_nickname() {
     let new_nickname = document.getElementById("edit_nickname_input").value;
+
+    if (new_nickname == localStorage.getItem("nickname")) {
+        return
+    }
 
     requset_editing_nickname(new_nickname);
 
     localStorage.setItem("nickname", new_nickname);
     document.getElementById("nickname").textContent = new_nickname;
 
+    recovery_editing();
+}
+
+function recovery_editing() {
     const header = document.getElementById("setting_nickname");
-
-    let nickname_user = document.createElement("p");
+    
+    const nickname_user = document.createElement("p");
     nickname_user.id = "nickname_user";
-    nickname_user.textContent = new_nickname;
+    nickname_user.textContent = localStorage.getItem("nickname");
 
-    let icon_edit_nickname = document.createElement("i");
-    icon_edit_nickname.className = "fas fa-pen fa-2x used_logo";
+    const edit_nickname_logo = document.createElement("i");
+    edit_nickname_logo.className = "fas fa-pen fa-2x used_logo";
+    edit_nickname_logo.id = "edit_nickname";
+    
 
     header.innerHTML = '';
-    header.append(nickname_user, icon_edit_nickname);
+    header.append(nickname_user, edit_nickname_logo);
+
+    edit_nickname_logo.addEventListener("click", edit_nickname);
 }

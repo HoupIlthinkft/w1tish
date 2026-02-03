@@ -16,13 +16,15 @@ async function load_contacts() {
         for (let members in chats[chat].permissions) {
             if (members != localStorage.getItem("id")) {
                 let member_data = await get_data_by_user_id(members);
+                let member_data_avatar = await get_avatar_url_by_id(members);
+
                 member_data = member_data["users"][0];
                 contact.id += `${members} `;
 
                 const img = document.createElement("img");
                 img.classList.add("logo");
                 img.alt = "logo";
-                img.src = member_data.avatar_url;
+                img.src = member_data_avatar;
 
                 const name_contact = document.createElement("p");
                 name_contact.classList.add("name_contact");

@@ -50,12 +50,12 @@ async function request_reset_token() {
 
 async function requset_editing_nickname(new_nickname) {
     if (new_nickname != localStorage.getItem("nickname")) {
-        await fetch((window.ENV.API_URL + '/web/data/edit/nickname'), {
+        await fetch((window.ENV.API_URL + '/web/data/nickname'), {
             method: 'PATCH',
             headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                         'Content-Type': 'application/json' },
             body: JSON.stringify({
-                "new_nickname": new_nickname
+                "nickname": new_nickname
             })
         });
     }

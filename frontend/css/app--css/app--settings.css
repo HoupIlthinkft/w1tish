@@ -57,6 +57,7 @@
 }
 
 #setting_nickname {
+    padding-right: 2vw;
     gap: 2%;
     
     display: flex;

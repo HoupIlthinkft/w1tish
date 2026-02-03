@@ -15,12 +15,12 @@ async function register_user(username, email, password) {
 
 
 async function login(username, password) {
-    const response = await fetch(window.ENV.API_URL + '/web/auth/', {
+    const response = await fetch(window.ENV.API_URL + '/web/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     });
-
+    
     if (response.status === 422) console.log("Виноват фронтендер");
         else if (response.status === 404) create_registration_container();
             else if (response.status === 500) console.log("Виноват бэкэндер");
@@ -28,7 +28,10 @@ async function login(username, password) {
                     const data = await response.json();
                     localStorage.setItem("accessToken", data.access_token);
                     window.location.replace("app.html");
-                } else console.log("Error", response.status);
+                } else if (response.status === 401) {
+                    document.getElementById("error").textContent = "Неверный логин или пароль";
+                } 
+                else console.log("Error", response.status);
 }
 
 
@@ -36,7 +39,7 @@ async function getProtectedData() {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken != null) {
 
-        const response = await fetch(window.ENV.API_URL + '/web/data/', {
+        const response = await fetch(window.ENV.API_URL + '/web/data', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
@@ -60,7 +63,7 @@ async function getProtectedData() {
             console.log(data)
             localStorage.setItem("username", data.username);
             localStorage.setItem("nickname", data.nickname);
-            localStorage.setItem("avatar", data.avatar_url);
+            localStorage.setItem("avatar", await get_avatar_url_by_id(data.id));
             localStorage.setItem("chats", JSON.stringify(data.chats));
             localStorage.setItem("id", data.id);
 
