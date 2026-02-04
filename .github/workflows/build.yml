@@ -12,6 +12,11 @@ jobs:
       run: |
         cat > .env << EOF
         JWT_SECRET=iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA=
+        S3_ENDPOINT=https://s3.w1tish.ru
+        S3_AVATARS=https://avatars.w1tish
+        S3_ACCESS=fake_access_key
+        S3_SECRET=fake_secret_key
+        S3_BUKKET=w1tish
         EOF
     - name: Install Docker Compose
       run: |

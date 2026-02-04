@@ -144,6 +144,17 @@ async def too_big_file_handlers(
         }
     )
 
+async def too_long_nickname_handlers(
+    request: Request,
+    exc: err.TooLongError
+):
+    logger.info("Too long nickname")
+    return JSONResponse(
+        status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+        content = {
+            "detail": exc.message
+        }
+    )
 
 HANDLERS = {
     err.InvalidArgumentsError:  invalid_argument_handler,
@@ -156,7 +167,8 @@ HANDLERS = {
     err.ExpiredTokenError:      expired_token_handlers,
     err.NoWritePermissionError: no_write_permission_handlers,
     err.NoReadPermissionError:  no_read_permission_handlers,
-    err.TooBigFileError:        too_big_file_handlers
+    err.TooBigFileError:        too_big_file_handlers,
+    err.TooLongError:           too_long_nickname_handlers
 }
 
 def setup_exception_handlers(app: FastAPI):
