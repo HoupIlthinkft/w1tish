@@ -38,6 +38,8 @@ async function login(username, password) {
 async function getProtectedData() {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken != null) {
+        localStorage.clear();
+        localStorage.setItem("accessToken", accessToken);
 
         const response = await fetch(window.ENV.API_URL + '/web/data', {
             method: "GET",

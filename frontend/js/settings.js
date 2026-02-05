@@ -30,13 +30,13 @@ function edit_nickname() {
     edit_nickname_input.maxLength = 42;
     edit_nickname_input.placeholder = "Введите nickname";
 
-    let approve_nickname = document.createElement("button");
+    let approve_nickname = document.createElement("i");
     approve_nickname.id = "approve_nickname";
-    approve_nickname.textContent = "Утвердить";
+    approve_nickname.className = "fas fa-check used_logo";
 
-    let cancellation = document.createElement("button");
+    let cancellation = document.createElement("i");
     cancellation.id = "cancellation";
-    cancellation.textContent = "Отмена";
+    cancellation.className = "fas fa-times used_logo";
 
     header.innerHTML = '';
     header.append(edit_nickname_input, approve_nickname, cancellation);

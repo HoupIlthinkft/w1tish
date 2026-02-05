@@ -28,6 +28,8 @@ async function add_user_in_invitation() {
 
 
         var response_user_info = await get_data_by_username(input_value);
+        if (response_user_info == null) return
+
         response_user_info = response_user_info.users[0];
 
         var user_avatar = await get_avatar_url_by_id(response_user_info.id);

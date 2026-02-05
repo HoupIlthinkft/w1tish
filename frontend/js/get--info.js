@@ -5,7 +5,8 @@ async function get_data_by_user_id(user_id) {
     });
 
     if (data.status === 200) return data.json();
-        else if (data.status === 404 || data.status === 422) console.log(data.status, data.statusText);
+        else if (data.status === 404) return null;
+            else console.log(data.status + data.statusText);
 }
 
 
@@ -22,7 +23,8 @@ async function get_data_users_ids(users_ids) {
     });
 
     if (data.status === 200) return data.json();
-        else if (data.status === 404 || data.status === 422) console.log(data.status, data.statusText);
+        else if (data.status === 404) return null;
+            else console.log(data.status + data.statusText);
 }
 
 
@@ -33,7 +35,8 @@ async function get_data_by_username(username) {
     });
 
     if (data.status === 200) return data.json();
-        else if (data.status === 404 || data.status === 422) console.log(data.status, data.statusText);
+        else if (data.status === 404) return null;
+            else console.log(data.status + data.statusText);
 }
 
 

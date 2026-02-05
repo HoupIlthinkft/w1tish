@@ -24,12 +24,18 @@ function load_profile() {
 async function send_message() {
     var user_id = document.getElementById("user_id").textContent; 
     var chat_id = "";
-    for (let i = 0; i < document.getElementsByClassName("name_contact").length; i++) {
-        if (document.getElementsByClassName("name_contact").item(i).textContent == document.getElementById("oponent_name").textContent){
-            chat_id = document.getElementsByClassName("name_contact").item(i).parentNode.id;
+
+    let contact_names = [] 
+
+    for (let i = 0; i < document.getElementsByClassName("contact").length; i++) {
+        for (let j = 0; j < document.getElementsByClassName("contact").item(i).getElementsByClassName("name_contact").length; j++) contact_names.push(document.getElementsByClassName("contact").item(i).getElementsByClassName("name_contact").item(j).textContent);
+        if (JSON.stringify(contact_names) == JSON.stringify([document.getElementById("oponent_name").textContent])){
+            chat_id = document.getElementsByClassName("contact").item(i).firstElementChild.id;
             break;
         }
-    }
+        
+        contact_names = []
+    }   
 
     const input = document.getElementById("send_message");
 

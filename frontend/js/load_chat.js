@@ -57,12 +57,12 @@ async function load_chat(user_id, chat_id, members_chat) {
     
     const chat = document.getElementById("chat");
 
-    if (chat) {
+    setTimeout(() => {
         chat.innerHTML = '';
         chat.append(chat_for_oponent);
+        
         scrollBottom();
-    } else return chat_for_oponent;
-    
+    }, 100);
 }
 
 async function load_chat_container() {
@@ -106,8 +106,7 @@ async function load_chat_container() {
     const chat = document.createElement("div");
     chat.id = "chat";
 
-    chat.append(load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id, contact_id));
-
+    load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id, contact_id);
 
     const send = document.createElement("div");
     send.id = "send";
@@ -129,7 +128,8 @@ async function load_chat_container() {
     chat_container.append(oponent_header, chat, send);
 
     const parent = document.getElementById("main_container");
-    parent.append(chat_container);
+    
+    setTimeout(parent.append(chat_container), 1000);
     
     scrollBottom();
 
