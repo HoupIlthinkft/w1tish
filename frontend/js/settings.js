@@ -81,16 +81,12 @@ function recovery_editing() {
 async function edit_avatar() {
     const formdata = new FormData();
     
-    const input =  document.getElementById("edit_avatar");
+    const input = document.getElementById("edit_avatar");
     formdata.append('file', input.files[0], input.files[0].name);
 
     const response = await requset_editing_avatar(formdata);
     
-    if (!response) {
-        console.log("size very big");
-        const new_avatar = await get_avatar_url_by_id(localStorage.getItem('id'));
-
-        document.getElementById("logo_user").src = new_avatar;
-        document.getElementById('setting_avatar_user').src = new_avatar;
-    }
+    if (!response) console.log("size very big");
+        else if (response) console.log("edit entry");
+            else console.log("error");
 }

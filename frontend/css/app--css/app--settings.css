@@ -52,9 +52,15 @@
 
 #nickname_user {
     font-size: 2vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #setting_nickname {
+    max-width: 41vw;
+    width: fit-content;
+
+    padding: 1vh 0.5vw;
     margin-right: 2vw;
     gap: 0.5vw;
     
@@ -120,7 +126,7 @@ input[type="file"], input[type=file]::file-selector-button {
     align-self: center;
     z-index: -1;
     background-color: transparent;
-    transition: background-color 0.3s ease-in, z-index 0.3s ease-in;
+    transition: background-color 0.15s ease-in, z-index 0.15s ease-in;
 }
 
 #setting_avatar:hover #edit_avatar, #setting_avatar:hover #logo_edit_avatar {
@@ -134,11 +140,11 @@ input[type="file"], input[type=file]::file-selector-button {
     border-radius: 30px;
     border-width: 0px;
     outline: 0px;
-    padding: 1vh 1vw;
 }
 
 #edit_nickname_input {
-    padding: 2vh 1vw;
+    width: 36vw;
+
     font-size: 2vw;
 }
 

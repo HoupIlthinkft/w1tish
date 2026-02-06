@@ -156,7 +156,7 @@ p {
 }
 
 #nickname {
-    max-width: 18vw;
+    max-width: 16vw;
     font-size: max(1vw, 10pt);
 
     overflow: hidden;
