@@ -8,13 +8,15 @@ function starting_after() {
     document.getElementById("close_btn_settings").addEventListener("click", close_settings);
     document.getElementById("btn_leave_account").addEventListener("click", exit_account);
     document.getElementById("edit_nickname").addEventListener("click", edit_nickname);
+    document.getElementById("edit_avatar").addEventListener("change", edit_avatar);
 }
 
 
 function load_profile() {
     document.getElementById("logo_user").src = localStorage.getItem("avatar"); 
     document.getElementById("nickname").textContent = localStorage.getItem("nickname");
-    document.getElementById("user_id").textContent = localStorage.getItem("id");
+    document.getElementById("user_id").textContent = "  " + localStorage.getItem("id");
+    document.getElementById("user_username").textContent = "  " + localStorage.getItem("username");
     document.getElementById("setting_avatar_user").src = localStorage.getItem("avatar");
     document.getElementById("nickname_user").textContent = localStorage.getItem("nickname")
     document.getElementById("setting_user_username").textContent = localStorage.getItem("username");

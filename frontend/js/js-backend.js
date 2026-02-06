@@ -15,7 +15,7 @@ async function register_user(username, email, password) {
 
 
 async function login(username, password) {
-    const response = await fetch(window.ENV.API_URL + '/web/auth', {
+    const response = await fetch(window.ENV.API_URL + '/w1eb/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -54,12 +54,13 @@ async function getProtectedData() {
             await refreshToken();
 
         } else if (response.status === 500) {
-            console.log("Виноват бэкэндер")
+            console.log("Виноват бэкэндер");
 
         } else if (response.status === 404) {
             localStorage.removeItem("accessToken");
             window.location.replace("index.html");
             create_sign_in_container();
+
         } else {
             const data = await response.json();
             console.log(data)

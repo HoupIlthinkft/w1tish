@@ -60,3 +60,19 @@ async function requset_editing_nickname(new_nickname) {
         });
     }
 }
+
+async function requset_editing_avatar(new_avatar) {
+    const response = await fetch("http://localhost/web/data/avatar", {
+        method: 'PATCH',
+        headers: {
+            'accept': 'application/json', 
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        },
+        body: new_avatar
+    });
+
+    if (response.status === 200) return true;
+        else if (response.status === 413) return false;
+            else if ((response.status === 422) || (response.status === 401)) getProtectedData();
+                else console.log(response.status, response.statusText); 
+}

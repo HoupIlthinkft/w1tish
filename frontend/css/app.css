@@ -150,6 +150,11 @@ p {
     background-color: #d9d9d9;
 }
 
+#detailed_info_id, #detailed_info_username {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
 #nickname {
     max-width: 18vw;
     font-size: max(1vw, 10pt);
@@ -181,6 +186,7 @@ p {
 .user_info {
     display: flex;
     flex-direction: column;
+    align-self: center;
     
     padding-left: 5px;
 }
