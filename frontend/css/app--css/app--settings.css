@@ -130,9 +130,16 @@ input[type="file"], input[type=file]::file-selector-button {
 }
 
 #setting_avatar:hover #edit_avatar, #setting_avatar:hover #logo_edit_avatar {
-    z-index: 100;
     cursor: pointer;
     background-color: rgba(213, 213, 213, 0.5);
+}
+
+#setting_avatar:hover #edit_avatar {
+    z-index: 100;
+}
+
+#setting_avatar:hover #logo_edit_avatar {
+    z-index: 10;
 }
 
 #setting_nickname, #edit_nickname_input {
