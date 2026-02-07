@@ -36,7 +36,7 @@ async function load_contacts() {
         
         const view_message = document.createElement("div");
         view_message.classList.add("view_message");
-        view_message.textContent = chats[chat].last_message; 
+        view_message.textContent = DOMPurify.sanitize(marked.parse(chats[chat].last_message.replaceAll("<br>", " ")), { ALLOWED_TAGS: [] });; 
 
         contact.append(view_contact, view_message);
         contacts.append(contact);

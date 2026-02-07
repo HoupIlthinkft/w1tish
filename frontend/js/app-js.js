@@ -46,7 +46,9 @@ async function send_message() {
         return
     }
 
-    const message = input.value;
+    var message = input.value;
+    message = DOMPurify.sanitize(message, { ALLOWED_TAGS: [] });
+    message = message.replaceAll("\n", "<br>")
     input.value = "";
 
     request_add_new_message(chat_id, message, user_id);
@@ -55,3 +57,5 @@ async function send_message() {
         load_chat(user_id, chat_id, localStorage.getItem("chat_members").split(","))
     }, 50);
 }
+
+

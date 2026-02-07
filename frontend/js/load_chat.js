@@ -11,7 +11,7 @@ async function load_chat(user_id, chat_id, members_chat) {
             if (data.messages[Number(message)].sender != user_id) message_container.className = "oponent message";
                 else message_container.className = "user message";
 
-            message_container.textContent = data.messages[Number(message)].content;
+            message_container.innerHTML = marked.parse(data.messages[Number(message)].content);
             chat_for_oponent.append(message_container);
         }
     }
@@ -21,7 +21,7 @@ async function load_chat(user_id, chat_id, members_chat) {
             const message_container = document.createElement("div") 
             if (data.messages[Number(message)].sender == user_id) {
                 message_container.className = "user message";
-                message_container.textContent = data.messages[Number(message)].content;
+                message_container.append(marked.parse(data.messages[Number(message)].content));
             } else {
                 message_container.className = "oponent message";
              
@@ -31,9 +31,13 @@ async function load_chat(user_id, chat_id, members_chat) {
                     if (data_members.users[i].id == data.messages[Number(message)].sender) sender_data = data_members.users[i];
                 }
 
-                const message_content = document.createElement("p");
+
+                console.log(marked.parse(data.messages[Number(message)].content));
+                console.log(data.messages[Number(message)].content);
+
+
+                const message_content = marked.parse(data.messages[Number(message)].content);
                 message_content.id = "message_content";
-                message_content.textContent = data.messages[Number(message)].content
                 
                 const sender_header = document.createElement("div");
                 sender_header.classList.add("sender_header")
@@ -137,9 +141,7 @@ async function load_chat_container() {
         else parent.removeChild(document.getElementById("chat_container"));
 
     document.getElementById("send_message").addEventListener('keyup', function onEvent(event) {
-        this.style.height = "";
-
-        if (((event.key === "Enter") && event.ctrlKey) || ((event.key === "Enter") && !(event.shiftKey))) send_message();
+        if (((event.key === "Enter") && event.ctrlKey) || ((event.key === "Enter") && !(event.shiftKey))) this.style.height = "", send_message();
             else if ((event.key === "Enter") && (event.shiftKey)) this.style.height = this.scrollHeight + "px";
 
     });
