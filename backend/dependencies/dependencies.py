@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, WebSocket
 from typing import Annotated
 
 from backend.utils import services
@@ -9,11 +9,23 @@ from backend.core.engine import bases_lifespan
 from backend.core.config import settings
 
 from concurrent.futures import ThreadPoolExecutor
+from backend.utils.websocket import WebSocketManager
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import AsyncGenerator
 
 from contextlib import asynccontextmanager, AsyncExitStack
+from logging import getLogger
+logger = getLogger(__name__)
 
 
 # TODO добавить фабрики для репозиториев
+
+@asynccontextmanager
+async def get_pg_session(app: FastAPI) -> AsyncGenerator[AsyncSession, None]:
+    async with app.state.pg_session_maker() as session:
+        logger.info("Creating pg session...")
+        yield session
+        logger.info("Teardown pg session...")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,7 +35,13 @@ async def lifespan(app: FastAPI):
     async with AsyncExitStack() as stack:
         await stack.enter_async_context(bases_lifespan(app))
         await stack.enter_async_context(s3_lifespan(app))
+        app.state.pg_session = await stack.enter_async_context(get_pg_session(app))
+        app.state.manager = WebSocketManager(app, repo.ChatRepository, repo.MessagesRepository)
+        await stack.enter_async_context(app.state.manager.lifespan())
         yield
+
+def get_websocket_manager(websocket: WebSocket) -> WebSocketManager:
+    return websocket.app.state.manager
 
 def get_auth_service(
     session: annotations.Database,
@@ -52,3 +70,4 @@ def get_data_service(
 
 AuthServiceDep = Annotated[services.AuthService, Depends(get_auth_service)]
 DataServiceDep = Annotated[services.DataService, Depends(get_data_service)]
+WebSocketDep = Annotated[WebSocketManager, Depends(get_websocket_manager)]

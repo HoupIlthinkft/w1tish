@@ -19,7 +19,14 @@ class UserModel(BaseModel):
 
 class ChatModel(BaseModel):
     id: str = Field(..., examples=["42"], description="Айди чата")
-    members: list[UserModel] = Field(..., description="Список участников")
+    permissions: dict = Field(
+        ...,
+        description="Список участников",
+        examples=[{
+            42: "owner",
+            52: "user"
+        }]
+    )
 
 class MessageModel(BaseModel):
     chat_id: str = Field(..., examples=["42"], description="Айди чата")

@@ -114,6 +114,22 @@ class ChatRepository:
         except:
             await self.db.rollback()
             raise
+
+    async def get_chat_by_id(self, chat_id: int) -> models.ChatModel:
+        query = await self.db.execute(
+            select(
+                models.chatsBase.id,
+                models.chatsBase.permissions
+            ).where(
+                models.chatsBase.id == int(chat_id)
+            )
+        )
+        chats_data = query.one()
+        logger.info(chats_data)
+        if not chats_data:
+            raise ChatNotFoundError()
+        
+        return models.ChatModel(id=str(chats_data[0]), permissions=chats_data[1])
     
 
 class DataRepository:

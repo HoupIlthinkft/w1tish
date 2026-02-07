@@ -5,6 +5,9 @@ avatars:
 limits:
   nickname_len: 42
 
+logger: # debug / info / warn / error
+  level: "info"
+
 # документация
 docs:
   api:

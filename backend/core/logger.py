@@ -1,8 +1,14 @@
 import logging
 import os
-from backend.core.config import settings
+from backend.core.config import settings, config
 
 FORMAT = "%(asctime)s: [%(levelname)s](%(name)s) --> %(message)s"
+logger_levels = {
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warn": logging.WARN,
+    "error": logging.ERROR
+}
 logs_path = "backend/logs"
 
 def setup_logging():
@@ -10,7 +16,7 @@ def setup_logging():
         os.makedirs(logs_path, exist_ok=True)
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logger_levels.get(config.logger.level, logging.INFO),
         format=FORMAT,
         handlers=[logging.FileHandler(f"backend/logs/{settings.LOGS_FILE}")]
     )

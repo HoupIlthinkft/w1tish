@@ -126,7 +126,7 @@ async def set_user_nickname(
     user_id: CurrentUser,
     nickname: models.SetNicknameModel
 ):
-    logger.info(f"[PATCH] Trying to update nickname... '{nickname.nickname}'")
+    logger.info(f"[PATCH] Trying to update nickname...")
     await service.set_nickname(nickname.nickname, user_id)
     return models.OKResponse()
 

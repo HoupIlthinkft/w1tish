@@ -106,3 +106,4 @@ async def reset_token(
     logger.info("[POST] Trying delete token...")
     response.delete_cookie(key="refresh_token", path="/auth/session")
     await auth_service.blacklist.unvalidate_token(refresh_token)
+    return OKResponse()

@@ -20,6 +20,8 @@ class IChatRepository(Protocol):
 
     async def set_chat(self, message: models.MessageModel) -> None: ...
 
+    async def get_chat_by_id(self, chat_id: int) -> models.ChatModel: ...
+
 
 class IAuthRepository(Protocol):
 
