@@ -36,19 +36,25 @@ async function send_message() {
             break;
         }
         
-        contact_names = []
+        contact_names = [];
     }   
 
     const input = document.getElementById("send_message");
 
     if (input.value.trim().length === 0) {
-        input.value = ""
+        input.value = "";
         return
     }
 
     var message = input.value;
     message = DOMPurify.sanitize(message, { ALLOWED_TAGS: [] });
-    message = message.replaceAll("\n", "<br>")
+    message = message.replaceAll("\n", "<br>");
+
+    for (let i = 0; i < message.length / 4; i++) {
+        if (message.slice(0, 4) == "<br>") message = message.slice(4, );  
+            else break;
+    }
+
     input.value = "";
 
     request_add_new_message(chat_id, message, user_id);

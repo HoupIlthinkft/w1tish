@@ -6,12 +6,12 @@ async function load_chat(user_id, chat_id, members_chat) {
 
     if (members_chat.length == 1) {
         for (let message in data.messages) {
-            const message_container = document.createElement("div") 
+            const message_container = document.createElement("div"); 
 
             if (data.messages[Number(message)].sender != user_id) message_container.className = "oponent message";
                 else message_container.className = "user message";
-
-            message_container.innerHTML = marked.parse(data.messages[Number(message)].content);
+            
+            message_container.innerHTML = markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content).replaceAll("&lt;br&gt;", "<br>");
             chat_for_oponent.append(message_container);
         }
     }
@@ -21,7 +21,7 @@ async function load_chat(user_id, chat_id, members_chat) {
             const message_container = document.createElement("div") 
             if (data.messages[Number(message)].sender == user_id) {
                 message_container.className = "user message";
-                message_container.append(marked.parse(data.messages[Number(message)].content));
+                message_container.innerHTML = markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content).replaceAll("&lt;br&gt;", "<br>");
             } else {
                 message_container.className = "oponent message";
              
@@ -32,11 +32,8 @@ async function load_chat(user_id, chat_id, members_chat) {
                 }
 
 
-                console.log(marked.parse(data.messages[Number(message)].content));
-                console.log(data.messages[Number(message)].content);
-
-
-                const message_content = marked.parse(data.messages[Number(message)].content);
+                const message_content = document.createElement("div");
+                message_content.innerHTML = markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content).replaceAll("&lt;br&gt;", "<br>");
                 message_content.id = "message_content";
                 
                 const sender_header = document.createElement("div");
@@ -141,7 +138,7 @@ async function load_chat_container() {
         else parent.removeChild(document.getElementById("chat_container"));
 
     document.getElementById("send_message").addEventListener('keyup', function onEvent(event) {
-        if (((event.key === "Enter") && event.ctrlKey) || ((event.key === "Enter") && !(event.shiftKey))) this.style.height = "", send_message();
+        if ((event.key === "Enter") && !(event.shiftKey)) this.style.height = "", send_message();
             else if ((event.key === "Enter") && (event.shiftKey)) this.style.height = this.scrollHeight + "px";
 
     });

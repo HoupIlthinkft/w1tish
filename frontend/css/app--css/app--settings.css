@@ -38,9 +38,13 @@
     justify-content: center;
 }
 
+#setting_avatar, #edit_avatar {
+    width: min(256px, 25vw);
+    height: min(256px, 25vw);
+}
+
 #setting_avatar_user {
-    width: 256px;
-    height: 256px;
+    width: 100%;
     
     border-radius: 10px;
 }
@@ -57,16 +61,16 @@
 }
 
 #setting_nickname {
-    max-width: 41vw;
+    max-width: calc(60vw - 3vw - 1.2vw - min(256px, 25vw) - 20px);
     width: fit-content;
 
     padding: 1vh 0.5vw;
-    margin-right: 2vw;
     gap: 0.5vw;
     
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
+    justify-content: space-between;
 }
 
 #btn_leave_account{
@@ -101,9 +105,6 @@
     position: absolute;
     z-index: -1;
 
-    width: 256px;
-    height: 256px;
-
     display: block;
 
     color: transparent;
@@ -125,21 +126,21 @@ input[type="file"], input[type=file]::file-selector-button {
     
     align-self: center;
     z-index: -1;
-    background-color: transparent;
+    color: transparent;
     transition: background-color 0.15s ease-in, z-index 0.15s ease-in;
 }
 
 #setting_avatar:hover #edit_avatar, #setting_avatar:hover #logo_edit_avatar {
     cursor: pointer;
-    background-color: rgba(213, 213, 213, 0.5);
 }
-
 #setting_avatar:hover #edit_avatar {
     z-index: 100;
+    background-color: rgba(213, 213, 213, 0.5);
 }
 
 #setting_avatar:hover #logo_edit_avatar {
     z-index: 10;
+    color: rgb(213, 213, 213);
 }
 
 #setting_nickname, #edit_nickname_input {
@@ -150,7 +151,7 @@ input[type="file"], input[type=file]::file-selector-button {
 }
 
 #edit_nickname_input {
-    width: 36vw;
+    max-width: calc(60vw - 3vw - 1.2vw - min(256px, 25vw) - 20px - 32px - 32px);
 
     font-size: 2vw;
 }
