@@ -62,7 +62,7 @@ async function requset_editing_nickname(new_nickname) {
 }
 
 async function requset_editing_avatar(new_avatar) {
-    const response = await fetch("http://localhost/web/data/avatar", {
+    const response = await fetch((window.ENV.API_URL  + "/web/data/avatar"), {
         method: 'PATCH',
         headers: {
             'accept': 'application/json', 
