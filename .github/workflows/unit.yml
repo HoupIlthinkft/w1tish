@@ -26,7 +26,7 @@ jobs:
         python3 -m pytest tests/ --cov=./ --cov-report=xml
 
     - name: SonarCloud Scan
-      uses: SonarSource/sonarqube-scan-action@v5
+      uses: sonarsource/sonarcloud-github-action@ba3875ecf642b2129de2b589510c81a8b53dbf4e
       with:
         args: >
           -Dsonar.projectKey=KIriLOsck_w1tish
