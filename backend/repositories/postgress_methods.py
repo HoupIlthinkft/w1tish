@@ -28,7 +28,7 @@ class AuthRepository:
     ) -> int:
         encrypted_password = await self.encrypter.encrypt_password(password)
         try:
-            new_user = models.usersBase(
+            new_user = models.UsersBase(
                 username=username,
                 nickname=username,                                   # при регистрации ставим ник по умолчанию username
                 email=email,
@@ -46,10 +46,10 @@ class AuthRepository:
             raise UserExistError()
 
 
-    async def check_user(self, username: str) -> models.usersBase:
+    async def check_user(self, username: str) -> models.UsersBase:
         query = await self.db.execute(
-            select(models.usersBase).where(
-                models.usersBase.username == username
+            select(models.UsersBase).where(
+                models.UsersBase.username == username
             )
         )
         user = query.scalar_one_or_none()
@@ -74,9 +74,9 @@ class ChatRepository:
     async def get_user_chats(self, user_id: int) -> list[int]:
         query = await self.db.execute(
             select(
-                models.chatsBase.id
+                models.ChatsBase.id
             ).where(
-                models.chatsBase.permissions.has_key(cast(str(user_id), String))
+                models.ChatsBase.permissions.has_key(cast(str(user_id), String))
             )
         )
         chats = query.scalars().all()
@@ -85,7 +85,7 @@ class ChatRepository:
         return chats
 
     async def add_chat(self, permissions: dict) -> str:
-        new_chat = models.chatsBase(
+        new_chat = models.ChatsBase(
             permissions = permissions
         )
         self.db.add(new_chat)
@@ -99,9 +99,9 @@ class ChatRepository:
         try:
             await self.db.execute(
                 update(
-                    models.chatsBase
+                    models.ChatsBase
                 ).where(
-                    models.chatsBase.id == int(message.chat_id)
+                    models.ChatsBase.id == int(message.chat_id)
                 ).values(
                     last_message_author = int(message.sender),
                     last_message_text = message.content,
@@ -118,10 +118,10 @@ class ChatRepository:
     async def get_chat_by_id(self, chat_id: int) -> models.ChatModel:
         query = await self.db.execute(
             select(
-                models.chatsBase.id,
-                models.chatsBase.permissions
+                models.ChatsBase.id,
+                models.ChatsBase.permissions
             ).where(
-                models.chatsBase.id == int(chat_id)
+                models.ChatsBase.id == int(chat_id)
             )
         )
         chats_data = query.one()
@@ -139,19 +139,19 @@ class DataRepository:
     async def get_user_data(self, user_id: int) -> models.UserResponse:
         query = await self.db.execute(
             select(
-                models.usersBase.id.label("user_id"),
-                models.usersBase.username,
-                models.usersBase.nickname,
-                models.chatsBase.id.label("chat_id"),
-                models.chatsBase.last_message_author,
-                models.chatsBase.last_message_text,
-                models.chatsBase.last_message_time,
-                models.chatsBase.permissions
+                models.UsersBase.id.label("user_id"),
+                models.UsersBase.username,
+                models.UsersBase.nickname,
+                models.ChatsBase.id.label("chat_id"),
+                models.ChatsBase.last_message_author,
+                models.ChatsBase.last_message_text,
+                models.ChatsBase.last_message_time,
+                models.ChatsBase.permissions
             ).outerjoin(
-                models.chatsBase,
-                models.chatsBase.permissions.has_key(cast(str(user_id), String))
+                models.ChatsBase,
+                models.ChatsBase.permissions.has_key(cast(str(user_id), String))
             ).where(
-                models.usersBase.id == user_id
+                models.UsersBase.id == user_id
             )
         )
         user_data = query.all()
@@ -181,11 +181,11 @@ class DataRepository:
     async def get_users_by_ids(self, ids: list[int]) -> models.UsersResponse:
         query = await self.db.execute(
             select(
-                models.usersBase.nickname,
-                models.usersBase.id,
-                models.usersBase.username
+                models.UsersBase.nickname,
+                models.UsersBase.id,
+                models.UsersBase.username
             ).where(
-                models.usersBase.id.in_(ids)
+                models.UsersBase.id.in_(ids)
             )
         )
         users_data = query.mappings().all()
@@ -200,17 +200,17 @@ class DataRepository:
     async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse:
         query = await self.db.execute(
             select(
-                models.usersBase.nickname,
-                models.usersBase.id,
-                models.usersBase.username
+                models.UsersBase.nickname,
+                models.UsersBase.id,
+                models.UsersBase.username
             ).where(
-                models.usersBase.username.in_(usernames)
+                models.UsersBase.username.in_(usernames)
             )
         )
         users_data = query.mappings().all()
 
         if len(users_data) != len(set(usernames)):
-            logger.warning(f"Failed to get users data! Getted %s/%s", len(users_data), len(usernames))
+            logger.warning("Failed to get users data! Getted %s/%s", len(users_data), len(usernames))
             raise UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
@@ -218,9 +218,9 @@ class DataRepository:
     async def set_user_nickname(self, nickname: str, user_id: int) -> None:
         query = await self.db.execute(
             update(
-                models.usersBase
+                models.UsersBase
             ).where(
-                models.usersBase.id == user_id
+                models.UsersBase.id == user_id
             ).values(
                 nickname=nickname
             )

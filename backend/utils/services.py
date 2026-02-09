@@ -59,17 +59,22 @@ class DataService:
         self.user_avatars = avatars_repo
 
     async def add_message(self, user_id: int, request: models.MessageModel) -> None:
-        avarible_chats = await self.user_chats.get_user_chats(user_id)
-        logger.info("Checking permissions...")
-        if int(request.chat_id) not in avarible_chats:
-            logger.warning("User have not permission to send message")
-            raise err.NoWritePermissionError(request)
-            
-        async with self.user_chats.set_chat(request):
-            await self.user_messages.add_message(request)
+        if request.chat_id:
+            avarible_chats = await self.user_chats.get_user_chats(user_id)
+            logger.info("Checking permissions...")
+            if int(request.chat_id) not in avarible_chats:
+                logger.warning("User have not permission to send message")
+                raise err.NoWritePermissionError(request)
+                
+            async with self.user_chats.set_chat(request):
+                await self.user_messages.add_message(request)
+        raise err.InvalidArgumentsError("Chat id cant be emply")
 
     async def add_chat(self, user_id: int, request: models.CreateChatRequestModel) -> str:
-        await self.user_data.get_users_by_ids([user_id for user_id in request.members_ids])
+        chat_members = []
+        for chat_user_id in request.members_ids:
+            chat_members.append(chat_user_id)
+        await self.user_data.get_users_by_ids(chat_members)
         
         permissions = {str(member): "user" for member in request.members_ids}
         permissions[str(user_id)] = "owner"

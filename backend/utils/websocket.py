@@ -42,7 +42,7 @@ class WebSocketManager:
 
                     await self.broadcast(message)
 
-                except JSONDecodeError as e:
+                except JSONDecodeError:
                      await socket.send_json({"type":"error", "detail": "Invalid JSON format!"})
 
             await socket.close(status.WS_1012_SERVICE_RESTART)

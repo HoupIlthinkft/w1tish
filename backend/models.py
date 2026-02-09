@@ -94,7 +94,7 @@ class UsersResponse(BaseModel):
 
 # базы данных
 
-class usersBase(Base):
+class UsersBase(Base):
     __tablename__ = "users"
     
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
@@ -103,7 +103,7 @@ class usersBase(Base):
     password_hash: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False)
 
-class chatsBase(Base):
+class ChatsBase(Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)

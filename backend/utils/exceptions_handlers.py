@@ -5,7 +5,7 @@ import backend.errors as err
 import logging
 logger = logging.getLogger(__name__)
 
-async def invalid_argument_handler(
+def invalid_argument_handler(
         request: Request,
         exc: err.InvalidArgumentsError
 ):
@@ -17,7 +17,7 @@ async def invalid_argument_handler(
         }
     )
 
-async def user_exist_handler(
+def user_exist_handler(
     request: Request,
     exc: err.UserExistError
 ):
@@ -30,7 +30,7 @@ async def user_exist_handler(
     )
 
 
-async def user_not_found_handler(
+def user_not_found_handler(
     request: Request,
     exc: err.UserNotFoundError
 ):
@@ -42,7 +42,7 @@ async def user_not_found_handler(
         }
     )
 
-async def chat_not_found_handler(
+def chat_not_found_handler(
     request: Request,
     exc: err.NoWritePermissionError
 ):
@@ -55,7 +55,7 @@ async def chat_not_found_handler(
     )
 
 
-async def wrong_password_handler(
+def wrong_password_handler(
     request: Request,
     exc: err.WrongPasswordError
 ):
@@ -68,7 +68,7 @@ async def wrong_password_handler(
     )
 
 
-async def invalid_token_handler(
+def invalid_token_handler(
     request: Request,
     exc: err.InvalidTokenError
 ):
@@ -81,7 +81,7 @@ async def invalid_token_handler(
     )
 
 
-async def invalid_messages_handler(
+def invalid_messages_handler(
     request: Request, 
     exc: err.InvalidMessagesError
 ):
@@ -94,7 +94,7 @@ async def invalid_messages_handler(
     )
 
 
-async def expired_token_handlers(
+def expired_token_handlers(
     request: Request,
     exc: err.ExpiredTokenError
 ):
@@ -107,7 +107,7 @@ async def expired_token_handlers(
     )
 
 
-async def no_write_permission_handlers(
+def no_write_permission_handlers(
     request: Request,
     exc: err.NoWritePermissionError
 ):
@@ -120,7 +120,7 @@ async def no_write_permission_handlers(
     )
 
 
-async def no_read_permission_handlers(
+def no_read_permission_handlers(
     request: Request,
     exc: err.NoReadPermissionError
 ):
@@ -132,7 +132,7 @@ async def no_read_permission_handlers(
         }
     )
 
-async def too_big_file_handlers(
+def too_big_file_handlers(
     request: Request,
     exc: err.TooBigFileError
 ):
@@ -145,7 +145,7 @@ async def too_big_file_handlers(
         }
     )
 
-async def too_long_nickname_handlers(
+def too_long_nickname_handlers(
     request: Request,
     exc: err.TooLongError
 ):
