@@ -24,3 +24,9 @@ jobs:
         python3 -m pip install --no-cache-dir -r requirements.txt
         python3 -m pip install --no-chahe-dir pytest-cov
         python3 -m pytest tests/ --cov=./ --cov-report=xml
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
