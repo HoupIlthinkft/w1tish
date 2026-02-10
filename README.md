@@ -5,9 +5,9 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
 
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=bugs)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=coverage)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=bugs)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
 
 # w1tish - Легковесный, высоконагружаемый мессенджер
 
