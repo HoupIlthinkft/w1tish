@@ -33,13 +33,12 @@ class WebSocketManager:
             while self.background_check:
                 try:
                     message = await socket.receive_json()
-                    logger.info(message)
 
                     try:
                         message = models.MessageModel.model_validate(message)
                     except ValidationError:
                         await socket.send_json({"type":"error", "detail": "Invalid message format!"})
-
+                    # тут контекстный менеджер обноления метаданных + сохранение в mongo
                     await self.broadcast(message)
 
                 except JSONDecodeError:
@@ -59,11 +58,11 @@ class WebSocketManager:
         self.background_check = False
 
 
-    async def connect(self, socket: WebSocket, id: int) -> None:
+    async def connect(self, socket: WebSocket, user_id: int) -> None:
         await socket.accept()
-        logger.info("[WS] Client connected. ID: " + str(id))
-        await socket.send_text("You id is " + str(id))
-        await self._background_check(socket, id)
+        logger.info("[WS] Client connected. ID: " + str(user_id))
+        await socket.send_json({"type":"info", "id": user_id})
+        await self._background_check(socket, user_id)
 
 
     async def broadcast(self, message: models.MessageModel):

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text
+from sqlalchemy import text, BigInteger
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
@@ -97,7 +97,7 @@ class UsersResponse(BaseModel):
 class UsersBase(Base):
     __tablename__ = "users"
     
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
     username: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     nickname: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
@@ -106,7 +106,7 @@ class UsersBase(Base):
 class ChatsBase(Base):
     __tablename__ = "chats"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
     last_message_text: Mapped[str] = mapped_column(server_default=text("'_Чат создан_'"))
     last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
     last_message_author: Mapped[int] = mapped_column(server_default=text("0"))

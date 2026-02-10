@@ -1,11 +1,11 @@
 import aioboto3
 from fastapi import FastAPI
 from backend.core.config import settings, config
-from random import randint
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
 from PIL import Image, ImageOps
+import random
 import asyncio
 
 from logging import getLogger
@@ -58,11 +58,12 @@ class AvatarLoaderRepository:
             ContentType="image/jpeg"
         )
 
-    async def set_default_avatar(self, user_id: int) -> None:       
+    async def set_default_avatar(self, user_id: int) -> None:
+        random_avatar_id = random.randint(1, config.avatars.default_count)
         await self.s3_client.copy_object(
             CopySource={
                 'Bucket': self.bukket,
-                'Key': f'default/{randint(1, config.avatars.default_count)}.jpg'
+                'Key': f'default/{random_avatar_id}.jpg'
             },
             Bucket=self.bukket,
             Key=f'avatars/{user_id}.jpeg'
