@@ -1,6 +1,8 @@
 from httpx import AsyncClient, ASGITransport
 from concurrent.futures import ThreadPoolExecutor
 from backend.utils.security import password_encrypt
+from tests import mocks
+from backend.utils import services
 from main import app
 import pytest
 
@@ -13,6 +15,15 @@ async def async_client():
 def theard_pool():
     executor = ThreadPoolExecutor(1)
     return executor
+
+@pytest.fixture(scope="function")
+def auth_mock():
+    mocked_service = services.AuthService(
+        mocks.AuthMock(),
+        mocks.BlackListMock(),
+        mocks.AvatarMock()
+    )
+    return mocked_service
 
 @pytest.fixture(scope="function")
 def pass_encrypter(theard_pool):

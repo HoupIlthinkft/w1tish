@@ -68,8 +68,6 @@ class AvatarLoaderRepository:
             Key=f'avatars/{user_id}.jpeg'
         )
 
-    async def load_avatar(self, avatar: bytes, user_id: int) -> str:
+    async def load_avatar(self, avatar: bytes, user_id: int) -> None:
         resized_bytes = await self._resize_avatar(avatar)
         await self._upload_avatar(resized_bytes, user_id)
-        url = settings.S3_AVATARS + f"/avatars/{user_id}.jpeg"
-        return url

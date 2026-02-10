@@ -1,0 +1,1 @@
+from tests.mocks.repo_mocks import AuthMock, AvatarMock, BlackListMock
