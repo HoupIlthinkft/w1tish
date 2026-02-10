@@ -30,8 +30,14 @@ async def test_auth_service(auth_mock: services.AuthService):
         await auth_mock.auth_user(wrong_auth_model)
     assert exc.type == err.UserNotFoundError
 
-    await auth_mock.register_user(true_register_model)
+    tokens = await auth_mock.register_user(true_register_model)
     with pytest.raises(err.UserExistError) as exc:
         await auth_mock.register_user(wrong_register_model)
     assert exc.type == err.UserExistError
-    
+
+    await auth_mock.update_auth_session(tokens.refresh_token)
+    await auth_mock.blacklist.unvalidate_token(tokens.refresh_token)
+
+    with pytest.raises(err.InvalidTokenError) as exc:
+        await auth_mock.update_auth_session(tokens.refresh_token)
+    assert exc.type == err.InvalidTokenError

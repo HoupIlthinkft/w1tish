@@ -20,7 +20,7 @@ class BlackListMock(protocols.IBlacklistRepository):
     async def check_blacklist(self, token):
         return token in self.blacklist
     
-    async def unvalidate_token(self, token, live_time):
+    async def unvalidate_token(self, token, live_time = 1):
         self.blacklist.add(token)
 
 
