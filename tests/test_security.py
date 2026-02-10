@@ -18,6 +18,15 @@ def test_token_generation():
         token_generator.get_id_by_jwt(tokens.access_token)
     assert exc.type == err.ExpiredTokenError
 
+    token_generator.refresh_tokens(tokens.refresh_token)
+
     with pytest.raises(err.InvalidTokenError) as exc:
         token_generator.get_id_by_jwt("INVALID TOKEN")
     assert exc.type == err.InvalidTokenError
+
+
+@pytest.mark.asyncio
+async def test_pass_encoder(pass_encrypter: password_encrypt.PasswordEncrypterRepository):
+    password = "fake_password"
+    hash_pass = await pass_encrypter.encrypt_password(password)
+    assert await pass_encrypter.validate_password(password, hash_pass)
