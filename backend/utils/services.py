@@ -68,7 +68,7 @@ class DataService:
                 
             async with self.user_chats.set_chat(request):
                 await self.user_messages.add_message(request)
-        raise err.InvalidArgumentsError("Chat id cant be emply")
+        else: raise err.InvalidArgumentsError("Chat id cant be emply")
 
     async def add_chat(self, user_id: int, request: models.CreateChatRequestModel) -> str:
         chat_members = []

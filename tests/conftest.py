@@ -26,6 +26,16 @@ def auth_mock():
     return mocked_service
 
 @pytest.fixture(scope="function")
+def data_mock():
+    mocked_service = services.DataService(
+        mocks.DataMock(),
+        mocks.ChatMock(),
+        mocks.MessMock(),
+        mocks.AvatarMock()
+    )
+    return mocked_service
+
+@pytest.fixture(scope="function")
 def pass_encrypter(theard_pool):
     pass_repo = password_encrypt.PasswordEncrypterRepository(theard_pool)
     return pass_repo
