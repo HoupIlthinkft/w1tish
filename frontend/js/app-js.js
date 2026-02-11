@@ -27,16 +27,20 @@ async function send_message() {
     var user_id = document.getElementById("user_id").textContent; 
     var chat_id = "";
 
-    let contact_names = [] 
+    let contact_names = []; 
+    let chat_names = [];
 
     for (let i = 0; i < document.getElementsByClassName("contact").length; i++) {
         for (let j = 0; j < document.getElementsByClassName("contact").item(i).getElementsByClassName("name_contact").length; j++) contact_names.push(document.getElementsByClassName("contact").item(i).getElementsByClassName("name_contact").item(j).textContent);
-        if (JSON.stringify(contact_names) == JSON.stringify([document.getElementById("oponent_name").textContent])){
+        for (let c = 0; c < document.getElementsByClassName("oponent_name").length; c++) chat_names.push(document.getElementsByClassName("oponent_name").item(c).textContent);
+        console.log(contact_names, chat_names);
+        if (JSON.stringify(contact_names) == JSON.stringify(chat_names)) {
             chat_id = document.getElementsByClassName("contact").item(i).firstElementChild.id;
             break;
         }
         
         contact_names = [];
+        chat_names = [];
     }   
 
     const input = document.getElementById("send_message");
