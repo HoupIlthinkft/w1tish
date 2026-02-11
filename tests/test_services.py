@@ -3,6 +3,7 @@ from backend.utils import services
 from backend import models
 from io import BytesIO
 import pytest
+import datetime
 
 @pytest.mark.asyncio
 async def test_auth_service(auth_mock: services.AuthService):
@@ -49,13 +50,13 @@ async def test_add_message(data_mock: services.DataService):
         chat_id="52",
         sender=42,
         content="message",
-        created_at="time"
+        created_at=datetime.datetime.isoformat(datetime.datetime.now())
     )
     wrong_addmessage_request = models.MessageModel(
         chat_id="",
         sender=42,
         content="message",
-        created_at="time"
+        created_at=datetime.datetime.isoformat(datetime.datetime.now())
     )
     await data_mock.add_message(42, true_addmessage_request)
     with pytest.raises(err.InvalidArgumentsError) as exc:
