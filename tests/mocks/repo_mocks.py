@@ -11,11 +11,12 @@ class DataMock(protocols.IDataRepository):
             username="test_user",
             nickname="Test User",
             chats={
-                "id": "42",
-                "last_message_text": "лох",
-                "last_message_time": "2026-01-31T21:35:10.161344",
-                "last_message_author": "52",
-                "permissions": {"52": "owner", "42": "user"}
+                "42": {
+                    "last_message_text": "лох",
+                    "last_message_time": "2026-01-31T21:35:10.161344",
+                    "last_message_author": "52",
+                    "permissions": {"52": "owner", "42": "user"}
+                }
             }
         )
 

@@ -78,6 +78,7 @@ class DataService:
         
         permissions = {str(member): "user" for member in request.members_ids}
         permissions[str(user_id)] = "owner"
+        if len(permissions) < 2 or len(permissions) > 7: raise err.InvalidArgumentsError("You should create chat with 2 - 7 users")
 
         chat_id = await self.user_chats.add_chat(permissions)
         return chat_id

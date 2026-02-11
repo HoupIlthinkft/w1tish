@@ -7,7 +7,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE chats (
-    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 10000000000),
+    id BIGINT PRIMARY KEY,
     last_message_text TEXT DEFAULT '_Чат создан_',
     last_message_time TIMESTAMP DEFAULT now(),
     last_message_author BIGINT DEFAULT 0,

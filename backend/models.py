@@ -76,7 +76,7 @@ class CreateChatResponse(BaseModel):
     chat_id: str = Field(..., description="Айди чата", examples=["123456789012345678"])
 
 class UserResponse(UserModel):
-    chats: dict = Field(
+    chats: dict[str, dict] = Field(
         ...,
         description="Чаты пользователя",
         examples=[{
@@ -110,5 +110,5 @@ class ChatsBase(Base):
     last_message_text: Mapped[str] = mapped_column(server_default=text("'_Чат создан_'"))
     last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
     last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
-    permissions: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
+    permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
 

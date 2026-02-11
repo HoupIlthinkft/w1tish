@@ -2,14 +2,16 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, cast, String, update
 
-from backend.errors import UserExistError, UserNotFoundError, WrongPasswordError, ChatNotFoundError
+from backend import errors as err
 from backend import models
+from backend.core.config import settings
 from backend.interfaces import protocols
 
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncGenerator
-import os, asyncio, time
+import os, asyncio, time, hashlib
+import struct
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -43,13 +45,18 @@ class IdGenerator:
             
             return self._seq
 
-    async def generate_id(self, worker: int):
+    async def generate_userid(self, worker: int):
         time_mark = round(datetime.now().timestamp() * 1000) - 1577836800000
         counter = await self._get_increment()
         user_id = (
             (time_mark << 22) | (self.server << 17) | (worker << 12) | counter
         )
         return user_id
+    
+    def generate_chatid(self, users: list[int]):
+        users.sort()    # не критично если изменим оригинал
+        hash_64 = int(hashlib.blake2b(struct.pack(f">{len(users)}Q", *users), digest_size=8).hexdigest(), base=16)
+        return 0xFFFFFFFFFFFFFFF & hash_64
 
 generator = IdGenerator(SERVER)
 
@@ -66,7 +73,7 @@ class AuthRepository:
         password: str
     ) -> str:
         encrypted_password = await self.encrypter.encrypt_password(password)
-        user_id = await generator.generate_id(WORKER_ID)
+        user_id = await generator.generate_userid(WORKER_ID)
         try:
             new_user = models.UsersBase(
                 id=user_id,
@@ -82,7 +89,7 @@ class AuthRepository:
             return str(user_id)
         
         except IntegrityError:
-            raise UserExistError()
+            raise err.UserExistError()
 
 
     async def check_user(self, username: str) -> models.UsersBase:
@@ -94,7 +101,7 @@ class AuthRepository:
         user = query.scalar_one_or_none()
         if user:
             return user
-        raise UserNotFoundError()
+        raise err.UserNotFoundError()
 
 
     async def auth_user(self, username: str, password: str) -> str:
@@ -103,7 +110,7 @@ class AuthRepository:
         if await self.encrypter.validate_password(password, user.password_hash):
             return str(user.id)
         
-        raise WrongPasswordError()
+        raise err.WrongPasswordError()
     
 
 class ChatRepository:
@@ -119,17 +126,23 @@ class ChatRepository:
         )
         chats = query.scalars().all()
         if not chats:
-            raise ChatNotFoundError()
+            raise err.ChatNotFoundError()
         return chats
 
     async def add_chat(self, permissions: dict) -> str:
-        new_chat = models.ChatsBase(
-            permissions = permissions
-        )
-        self.db.add(new_chat)
-        await self.db.flush()
+        chat_id = generator.generate_chatid([int(k) for k in permissions])
+        try:
+            new_chat = models.ChatsBase(
+                id=chat_id,
+                permissions = permissions
+            )
+            self.db.add(new_chat)
+            await self.db.flush()
 
-        return str(new_chat.id)
+            return str(chat_id)
+    
+        except IntegrityError:
+                raise err.ChatExistError()
     
     @asynccontextmanager
     async def set_chat(self, message: models.MessageModel) -> AsyncGenerator[None, None]:
@@ -158,7 +171,7 @@ class ChatRepository:
         chats_data = query.one_or_none()
         logger.info(chats_data)
         if not chats_data:
-            raise ChatNotFoundError()
+            raise err.ChatNotFoundError()
         
         return models.ChatModel(id=str(chats_data[0]), permissions=chats_data[1])
     
@@ -188,7 +201,7 @@ class DataRepository:
         user_data = query.all()
 
         if not user_data:
-            raise UserNotFoundError()
+            raise err.UserNotFoundError()
 
         chats = {
             row.chat_id: {
@@ -223,7 +236,7 @@ class DataRepository:
 
         if len(users_data) != len(set(ids)):
             logger.warning(f"Failed to get users data! Getted {len(users_data)}/{len(ids)}")
-            raise UserNotFoundError()
+            raise err.UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
     
@@ -242,7 +255,7 @@ class DataRepository:
 
         if len(users_data) != len(set(usernames)):
             logger.warning("Failed to get users data! Getted %s/%s", len(users_data), len(usernames))
-            raise UserNotFoundError()
+            raise err.UserNotFoundError()
         
         return models.UsersResponse.model_validate({"users":users_data})
     
@@ -257,4 +270,4 @@ class DataRepository:
             )
         )
         if not query.rowcount:
-            raise UserNotFoundError()
+            raise err.UserNotFoundError()

@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
 
     MAX_AVATAR: int = 1024 * 1024 * 5
+    MAX_ROOM_SIZE: int = 7
 
     WORKERS_COUNT: int = 8
 
