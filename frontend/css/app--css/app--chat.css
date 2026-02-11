@@ -67,6 +67,7 @@
     
     align-self: flex-start;
     
+    word-break: break-all;
     background-color: #9D9D9D;
 }
 

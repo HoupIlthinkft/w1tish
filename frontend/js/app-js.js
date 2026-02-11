@@ -33,7 +33,7 @@ async function send_message() {
     for (let i = 0; i < document.getElementsByClassName("contact").length; i++) {
         for (let j = 0; j < document.getElementsByClassName("contact").item(i).getElementsByClassName("name_contact").length; j++) contact_names.push(document.getElementsByClassName("contact").item(i).getElementsByClassName("name_contact").item(j).textContent);
         for (let c = 0; c < document.getElementsByClassName("oponent_name").length; c++) chat_names.push(document.getElementsByClassName("oponent_name").item(c).textContent);
-        console.log(contact_names, chat_names);
+         
         if (JSON.stringify(contact_names) == JSON.stringify(chat_names)) {
             chat_id = document.getElementsByClassName("contact").item(i).firstElementChild.id;
             break;
@@ -56,7 +56,8 @@ async function send_message() {
 
     for (let i = 0; i < message.length / 4; i++) {
         if (message.slice(0, 4) == "<br>") message = message.slice(4, );  
-            else break;
+            else if (message.slice(-4) == "<br>") message = message.slice(0, -4);
+                else break;
     }
 
     input.value = "";

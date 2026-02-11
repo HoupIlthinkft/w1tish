@@ -11,17 +11,29 @@ async function load_chat(user_id, chat_id, members_chat) {
             if (data.messages[Number(message)].sender != user_id) message_container.className = "oponent message";
                 else message_container.className = "user message";
             
-            message_container.innerHTML = markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content).replaceAll("&lt;br&gt;", "<br>");
+            let row_format = [];
+            console.log(data.messages[Number(message)].content);
+            for (let row in data.messages[Number(message)].content.split("<br>")) row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+            
+            
+            message_container.innerHTML = row_format.join("<br>");
             chat_for_oponent.append(message_container);
         }
     }
     else {
         var data_members = await get_data_users_ids(members_chat);
         for (let message in data.messages) {
-            const message_container = document.createElement("div") 
+            const message_container = document.createElement("div");
+
+            let row_format = [];
+            console.log(data.messages[Number(message)].content);
+            for (let row in data.messages[Number(message)].content.split("<br>")) row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+
             if (data.messages[Number(message)].sender == user_id) {
+
                 message_container.className = "user message";
-                message_container.innerHTML = markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content).replaceAll("&lt;br&gt;", "<br>");
+                message_container.innerHTML = row_format.join("<br>");
+            
             } else {
                 message_container.className = "oponent message";
              
@@ -33,7 +45,8 @@ async function load_chat(user_id, chat_id, members_chat) {
 
 
                 const message_content = document.createElement("div");
-                message_content.innerHTML = markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content).replaceAll("&lt;br&gt;", "<br>");
+                
+                message_content.innerHTML = row_format.join("<br>");
                 message_content.id = "message_content";
                 
                 const sender_header = document.createElement("div");

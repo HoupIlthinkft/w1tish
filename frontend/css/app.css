@@ -105,7 +105,9 @@ p {
     align-items: center;
     
     text-align: start;
-    
+}
+
+.view_message p { 
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
