@@ -21,13 +21,6 @@ logger = getLogger(__name__)
 # TODO добавить фабрики для репозиториев
 
 @asynccontextmanager
-async def get_pg_session(app: FastAPI) -> AsyncGenerator[AsyncSession, None]:
-    async with app.state.pg_session_maker() as session:
-        logger.info("Creating pg session...")
-        yield session
-        logger.info("Teardown pg session...")
-
-@asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.executor = ThreadPoolExecutor(
         max_workers=settings.WORKERS_COUNT
@@ -35,7 +28,6 @@ async def lifespan(app: FastAPI):
     async with AsyncExitStack() as stack:
         await stack.enter_async_context(bases_lifespan(app))
         await stack.enter_async_context(s3_lifespan(app))
-        app.state.pg_session = await stack.enter_async_context(get_pg_session(app))
         app.state.manager = WebSocketManager(app, repo.ChatRepository, repo.MessagesRepository)
         await stack.enter_async_context(app.state.manager.lifespan())
         yield

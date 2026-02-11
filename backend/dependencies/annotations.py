@@ -4,17 +4,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from pymongo.asynchronous.database import AsyncDatabase
 from backend.utils.security.password_encrypt import PasswordEncrypterRepository
 from backend.utils.cloud import AvatarLoaderRepository
+from backend import errors as err
 from typing import AsyncGenerator
-from contextlib import asynccontextmanager
 from logging import getLogger
 logger = getLogger(__name__)
 
 async def get_async_db(request: Request) -> AsyncGenerator[AsyncSession, None]:
-    logger.info("Trying to create pg session for dep...")
     async with request.app.state.pg_session_maker() as session:
-        logger.info("created pg session for dep")
-        yield session
-        logger.info("teardown pg session for dep...")
+        session: AsyncSession
+        try:
+            yield session
+            await session.commit()
+        except err.NoCommitException:
+            await session.rollback()
+            raise
+            
 
 def get_messages_session(request: Request) -> AsyncDatabase:
     return request.app.state.mg_session

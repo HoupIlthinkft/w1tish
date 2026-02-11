@@ -32,7 +32,7 @@ class MessageModel(BaseModel):
     chat_id: str = Field(..., examples=["42"], description="Айди чата")
     content: str = Field(..., examples=["Васап бро"], description="Сообщение")
     sender: int = Field(..., examples=[52], description="Айди отправителя")
-    created_at: str = Field(..., examples=["2026-01-31T21:35:10.161344"], description="Дата отправки")
+    created_at: datetime = Field(..., examples=["2026-01-31T21:35:10.161344"], description="Дата отправки")
 
 
 # модели запросов
@@ -109,6 +109,6 @@ class ChatsBase(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
     last_message_text: Mapped[str] = mapped_column(server_default=text("'_Чат создан_'"))
     last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
-    last_message_author: Mapped[int] = mapped_column(server_default=text("0"))
+    last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
 

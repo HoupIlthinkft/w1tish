@@ -36,13 +36,11 @@ class AuthRepository:
             )
 
             self.db.add(new_user)
-            await self.db.commit()
-            await self.db.refresh(new_user)
+            await self.db.flush()
 
             return new_user.id
         
         except IntegrityError:
-            await self.db.rollback()
             raise UserExistError()
 
 
@@ -53,10 +51,9 @@ class AuthRepository:
             )
         )
         user = query.scalar_one_or_none()
-        if user is None:
-            raise UserNotFoundError()
-        
-        return user
+        if user:
+            return user
+        raise UserNotFoundError()
 
 
     async def auth_user(self, username: str, password: str) -> int:
@@ -89,31 +86,24 @@ class ChatRepository:
             permissions = permissions
         )
         self.db.add(new_chat)
-        await self.db.commit()
-        await self.db.refresh(new_chat)
+        await self.db.flush()
 
         return str(new_chat.id)
     
     @asynccontextmanager
     async def set_chat(self, message: models.MessageModel) -> AsyncGenerator[None, None]:
-        try:
-            await self.db.execute(
-                update(
-                    models.ChatsBase
-                ).where(
-                    models.ChatsBase.id == int(message.chat_id)
-                ).values(
-                    last_message_author = int(message.sender),
-                    last_message_text = message.content,
-                    last_message_time = datetime.fromisoformat(message.created_at)
-                )
+        await self.db.execute(
+            update(
+                models.ChatsBase
+            ).where(
+                models.ChatsBase.id == int(message.chat_id)
+            ).values(
+                last_message_author = int(message.sender),
+                last_message_text = message.content,
+                last_message_time = message.created_at
             )
-            yield
-            await self.db.commit()
-        
-        except:
-            await self.db.rollback()
-            raise
+        )
+        yield
 
     async def get_chat_by_id(self, chat_id: int) -> models.ChatModel:
         query = await self.db.execute(
@@ -124,7 +114,7 @@ class ChatRepository:
                 models.ChatsBase.id == int(chat_id)
             )
         )
-        chats_data = query.one()
+        chats_data = query.one_or_none()
         logger.info(chats_data)
         if not chats_data:
             raise ChatNotFoundError()
@@ -162,7 +152,7 @@ class DataRepository:
         chats = {
             row.chat_id: {
                 "last_message": row.last_message_text,
-                "last_message_time": row.last_message_time,
+                "last_message_time": datetime.isoformat(row.last_message_time),
                 "last_message_author": row.last_message_author,
                 "permissions": row.permissions
             }
@@ -225,7 +215,5 @@ class DataRepository:
                 nickname=nickname
             )
         )
-        if query.rowcount:
-            await self.db.commit()
-        else:
+        if not query.rowcount:
             raise UserNotFoundError()

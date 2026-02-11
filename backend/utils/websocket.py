@@ -1,6 +1,7 @@
 from fastapi import WebSocket, WebSocketDisconnect, status, FastAPI
 from backend.interfaces.protocols import IChatRepository, IMessagesRepository
 from backend import models
+from backend import errors as err
 from contextlib import asynccontextmanager
 from logging import getLogger
 from pydantic import ValidationError
@@ -10,25 +11,49 @@ import asyncio
 logger = getLogger(__name__)
 
 class WebSocketManager:
+    pool: dict[int, list[WebSocket]] = {}
+    background_check = False
 
     def __init__(self, app: FastAPI, chat_rep_class: IChatRepository, mess_rep_class: IMessagesRepository):
-        self.pool = {}
-        self.background_check = False
-        self.chat_repo = chat_rep_class(app.state.pg_session)
+        self.app = app
+        self.chat_repo_temlate = chat_rep_class
         self.mess_repo = mess_rep_class(app.state.mg_session)
+
+    async def _clear_dead_sockets(self, user_id: int) -> None:
+        if user_sockets := self.pool.get(user_id):
+            pings = [sock.send_json({"type":"ping"}) for sock in user_sockets]
+            results = await asyncio.gather(*pings, return_exceptions=True)
+            alive_sockets = []
+            for socket, result in zip(user_sockets, results):
+                if not isinstance(result, Exception):
+                    alive_sockets.append(socket)
+            if alive_sockets:
+                self.pool[int(user_id)] = alive_sockets
+            else: del self.pool[int(user_id)]
 
 
     async def _send_message(self, message: models.MessageModel, user_id: int) -> None:
         logger.debug("Checking connection to " + str(user_id))
-        if int(user_id) in self.pool:
+        if user_id in self.pool:
             logger.debug("Connected to user")
-            await self.pool[int(user_id)].send_json(message.model_dump_json())
-            logger.debug("Message sent!")
+            tasks = [
+                sock.send_json(message.model_dump()) for sock in self.pool[user_id]
+            ]
+            results = await asyncio.gather(
+                *tasks,
+                return_exceptions=True
+            )
+            for result in results:
+                if isinstance(result, Exception): 
+                    raise result
+            
     
-
     async def _background_check(self, socket: WebSocket, user_id: int):
-        self.pool[user_id] = socket
-        logger.info(self.pool)
+        if user_socks := self.pool.get(user_id):
+            user_socks.append(socket)
+        else:
+            self.pool[user_id] = [socket]
+
         try:
             while self.background_check:
                 try:
@@ -38,8 +63,15 @@ class WebSocketManager:
                         message = models.MessageModel.model_validate(message)
                     except ValidationError:
                         await socket.send_json({"type":"error", "detail": "Invalid message format!"})
-                    # тут контекстный менеджер обноления метаданных + сохранение в mongo
-                    await self.broadcast(message)
+
+                    # тут контекстный менеджер обновления метаданных + сохранение в mongo
+
+                    else:
+                        task = asyncio.create_task(self.broadcast(message))
+                        try:
+                            await task
+                        except err.BaseAppException:
+                            await socket.send_json({"type":"error", "detail": "Invalid message format!"})
 
                 except JSONDecodeError:
                      await socket.send_json({"type":"error", "detail": "Invalid JSON format!"})
@@ -48,7 +80,8 @@ class WebSocketManager:
 
         except WebSocketDisconnect:
             logger.info("[WS] Client disconected")
-            del self.pool[user_id]
+            await self._clear_dead_sockets(user_id)
+
 
 
     @asynccontextmanager
@@ -66,7 +99,9 @@ class WebSocketManager:
 
 
     async def broadcast(self, message: models.MessageModel):
-        chat = await self.chat_repo.get_chat_by_id(message.chat_id)
+        async with self.app.state.pg_session_maker() as session:
+            chat_repo = self.chat_repo_temlate(session)
+            chat = await chat_repo.get_chat_by_id(message.chat_id)
         for user_id in chat.permissions:
             logger.debug("Trying send message to " + user_id)
             await self._send_message(message, user_id)
