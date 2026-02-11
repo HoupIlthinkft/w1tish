@@ -26,7 +26,7 @@ data_router = APIRouter(prefix="/web/data", tags=["Data методы"])
 )
 async def get_user_data_by_id(
     service: DataServiceDep,
-    user_id: Annotated[list[int], Query(description="Айди пользователя")] = None,
+    user_id: Annotated[list[str], Query(description="Айди пользователя")] = None,
     username: Annotated[list[str], Query(description="Логин пользователя")] = None
 ):
     logger.info("[GET] Trying get some users data...")

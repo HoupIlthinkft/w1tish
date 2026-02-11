@@ -13,18 +13,18 @@ from sqlalchemy.orm import Mapped, mapped_column
 class Base(AsyncAttrs, DeclarativeBase): ...
 
 class UserModel(BaseModel):
-    id: int = Field(..., examples=[52], description="Айди пользователя")
+    id: str = Field(..., examples=["123456789012345678"], description="Айди пользователя")
     username: str = Field(..., examples=["Tralalelo_tralala"], description="Логин пользователя")
     nickname: str = Field(..., examples=["Гигачат 228 котлета 336"], description="Ник пользователя")
 
 class ChatModel(BaseModel):
-    id: str = Field(..., examples=["42"], description="Айди чата")
+    id: str = Field(..., examples=["123456789012345678"], description="Айди чата")
     permissions: dict = Field(
         ...,
         description="Список участников",
         examples=[{
-            42: "owner",
-            52: "user"
+            "123456789012345678": "owner",
+            "123456789012345677": "user"
         }]
     )
 
@@ -45,10 +45,10 @@ class RegisterRequestModel(AuthRequestModel):
     email: str = Field(..., examples=["polzovatel@w1tish.com"], description="Почта пользователя")
 
 class CreateChatRequestModel(BaseModel):
-    members_ids: list[int] = Field(..., examples=[[1, 2]], description="Список айди участников")
+    members_ids: list[str] = Field(..., examples=[["123456789012345678", "123456789012345677"]], description="Список айди участников")
 
 class GetMessagesRequestModel(BaseModel):
-    chat_id: int = Field(..., examples=["42"], description="Айди чата")
+    chat_id: str = Field(..., examples=["123456789012345678"], description="Айди чата")
     limit: int = Field(50, description="Колличество сообщений для получения")
     offset: int = Field(0, description="Смещение в сообщениях")
 
@@ -73,18 +73,18 @@ class TokensResponse(AccessTokenResponse):
 class MessagesResponse(SendMessagesRequestModel): ...
 
 class CreateChatResponse(BaseModel):
-    chat_id: str = Field(..., description="Айди чата", examples=["52"])
+    chat_id: str = Field(..., description="Айди чата", examples=["123456789012345678"])
 
 class UserResponse(UserModel):
     chats: dict = Field(
         ...,
         description="Чаты пользователя",
         examples=[{
-            "id": "42",
+            "id": "123456789012345678",
             "last_message_text": "лох",
             "last_message_time": "2026-01-31T21:35:10.161344",
-            "last_message_author": 52,
-            "permissions": {52: "owner", 42: "user"}
+            "last_message_author": "123456789012345678",
+            "permissions": {"123456789012345678": "owner", '123456789012345677': "user"}
         }]
     )
 

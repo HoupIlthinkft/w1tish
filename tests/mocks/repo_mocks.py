@@ -5,25 +5,25 @@ from backend import models
 
 class DataMock(protocols.IDataRepository):
 
-    async def get_user_data(self, user_id: int) -> models.UserResponse:
+    async def get_user_data(self, user_id: str) -> models.UserResponse:
         return models.UserResponse(
-            id=52,
+            id="52",
             username="test_user",
             nickname="Test User",
             chats={
                 "id": "42",
                 "last_message_text": "лох",
                 "last_message_time": "2026-01-31T21:35:10.161344",
-                "last_message_author": 52,
-                "permissions": {52: "owner", 42: "user"}
+                "last_message_author": "52",
+                "permissions": {"52": "owner", "42": "user"}
             }
         )
 
-    async def get_users_by_ids(self, ids: list[int]) -> models.UsersResponse:
+    async def get_users_by_ids(self, ids: list[str]) -> models.UsersResponse:
         return models.UsersResponse(
             users=[
                 models.UserModel(
-                    id=52,
+                    id="52",
                     username="test_user",
                     nickname="Test User"
                 )
@@ -31,20 +31,20 @@ class DataMock(protocols.IDataRepository):
         )
 
     async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse:
-        return await self.get_users_by_ids([1])
+        return await self.get_users_by_ids(["1"])
 
-    async def set_user_nickname(self, nickname: str, user_id: int) -> None: ...
+    async def set_user_nickname(self, nickname: str, user_id: str) -> None: ...
 
 
 class AuthMock(protocols.IAuthRepository):
 
-    async def auth_user(self, username, password) -> int:
+    async def auth_user(self, username, password) -> str:
         if username == password: raise err.UserNotFoundError()
-        return 52
+        return "52"
     
-    async def register_new(self, username, email, password) -> int:
+    async def register_new(self, username, email, password) -> str:
         if username == email: raise err.UserExistError()
-        return 52
+        return "52"
 
 
 class BlackListMock(protocols.IBlacklistRepository):
@@ -68,7 +68,7 @@ class AvatarMock(protocols.IAvatarLoader):
 
 class ChatMock(protocols.IChatRepository):
 
-    async def get_user_chats(self, user_id: int) -> list[int]: return [52, 42, 67]
+    async def get_user_chats(self, user_id: str) -> list[str]: return ["52", "42", "67"]
 
     async def add_chat(self, permissions: dict) -> str: return "52"
 
@@ -79,8 +79,8 @@ class ChatMock(protocols.IChatRepository):
         return models.ChatModel(
             id="52",
             permissions={
-                42: "owner",
-                52: "user"
+                "42": "owner",
+                "52": "user"
             }
         )
     
@@ -94,7 +94,7 @@ class MessMock(protocols.IMessagesRepository):
                 models.MessageModel(
                     chat_id="52",
                     content="лох",
-                    sender=52,
+                    sender="52",
                     created_at="2026-01-31T21:35:10.161344"
                 )
             ]

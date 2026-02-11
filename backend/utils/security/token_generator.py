@@ -19,13 +19,13 @@ def refresh_tokens(refresh_token: str) -> TokensResponse:
     raise InvalidTokenError
 
 
-def get_id_by_jwt(token: str) -> int:
+def get_id_by_jwt(token: str) -> str:
     decrypted_token = decrypt_token(token)
     return decrypted_token["user_id"]
 
 
 def generate_tokens(
-    id: int,
+    id: str,
     access_time: int = settings.ACCESS_TOKEN_MAX_AGE,
     refresh_time: int = settings.REFRESH_TOKEN_MAX_AGE
 ) -> TokensResponse:

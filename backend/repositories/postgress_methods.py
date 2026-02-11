@@ -9,10 +9,49 @@ from backend.interfaces import protocols
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncGenerator
+import os, asyncio, time
 
 from logging import getLogger
 logger = getLogger(__name__)
 
+SERVER = 5
+WORKER_ID = os.getpid() % 32
+
+class IdGenerator:
+    def __init__(self, server: int):
+        self.server = server
+        self._seq = 0
+        self._last_time = time.perf_counter_ns() // 1_000_000
+        self._lock = asyncio.Lock()
+
+    async def _get_increment(self):
+        async with self._lock:
+            now = time.perf_counter_ns() // 1_000_000
+            if self._seq >= 4095:
+                while now <= self._last_time:
+                    await asyncio.sleep(0) # отдаем управление
+                    now = time.perf_counter_ns() // 1_000_000
+
+                self._seq = 0
+                self._last_time = time.perf_counter_ns() // 1_000_000
+            else:
+                if now > self._last_time:
+                    self._seq = 0
+                    self._last_time = now
+                else:
+                    self._seq += 1
+            
+            return self._seq
+
+    async def generate_id(self, worker: int):
+        time_mark = round(datetime.now().timestamp() * 1000) - 1577836800000
+        counter = await self._get_increment()
+        user_id = (
+            (time_mark << 22) | (self.server << 17) | (worker << 12) | counter
+        )
+        return user_id
+
+generator = IdGenerator(SERVER)
 
 class AuthRepository:
 
@@ -25,10 +64,12 @@ class AuthRepository:
         username: str,
         email: str,
         password: str
-    ) -> int:
+    ) -> str:
         encrypted_password = await self.encrypter.encrypt_password(password)
+        user_id = await generator.generate_id(WORKER_ID)
         try:
             new_user = models.UsersBase(
+                id=user_id,
                 username=username,
                 nickname=username,                                   # при регистрации ставим ник по умолчанию username
                 email=email,
@@ -38,7 +79,7 @@ class AuthRepository:
             self.db.add(new_user)
             await self.db.flush()
 
-            return new_user.id
+            return str(user_id)
         
         except IntegrityError:
             raise UserExistError()
@@ -56,11 +97,11 @@ class AuthRepository:
         raise UserNotFoundError()
 
 
-    async def auth_user(self, username: str, password: str) -> int:
+    async def auth_user(self, username: str, password: str) -> str:
         user = await self.check_user(username)
 
         if await self.encrypter.validate_password(password, user.password_hash):
-            return user.id
+            return str(user.id)
         
         raise WrongPasswordError()
     
@@ -68,12 +109,12 @@ class AuthRepository:
 class ChatRepository:
     def __init__(self, db: AsyncSession): self.db = db
     
-    async def get_user_chats(self, user_id: int) -> list[int]:
+    async def get_user_chats(self, user_id: str) -> list[str]:
         query = await self.db.execute(
             select(
-                models.ChatsBase.id
+                cast(models.ChatsBase.id, String)
             ).where(
-                models.ChatsBase.permissions.has_key(cast(str(user_id), String))
+                models.ChatsBase.permissions.has_key(user_id)
             )
         )
         chats = query.scalars().all()
@@ -105,10 +146,10 @@ class ChatRepository:
         )
         yield
 
-    async def get_chat_by_id(self, chat_id: int) -> models.ChatModel:
+    async def get_chat_by_id(self, chat_id: str) -> models.ChatModel:
         query = await self.db.execute(
             select(
-                models.ChatsBase.id,
+                cast(models.ChatsBase.id, String),
                 models.ChatsBase.permissions
             ).where(
                 models.ChatsBase.id == int(chat_id)
@@ -126,22 +167,22 @@ class DataRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
     
-    async def get_user_data(self, user_id: int) -> models.UserResponse:
+    async def get_user_data(self, user_id: str) -> models.UserResponse:
         query = await self.db.execute(
             select(
-                models.UsersBase.id.label("user_id"),
+                cast(models.UsersBase.id, String).label("user_id"),
                 models.UsersBase.username,
                 models.UsersBase.nickname,
-                models.ChatsBase.id.label("chat_id"),
-                models.ChatsBase.last_message_author,
+                cast(models.ChatsBase.id, String).label("chat_id"),
+                cast(models.ChatsBase.last_message_author, String),
                 models.ChatsBase.last_message_text,
                 models.ChatsBase.last_message_time,
                 models.ChatsBase.permissions
             ).outerjoin(
                 models.ChatsBase,
-                models.ChatsBase.permissions.has_key(cast(str(user_id), String))
+                models.ChatsBase.permissions.has_key(user_id)
             ).where(
-                models.UsersBase.id == user_id
+                models.UsersBase.id == int(user_id)
             )
         )
         user_data = query.all()
@@ -168,14 +209,14 @@ class DataRepository:
 
         return response
     
-    async def get_users_by_ids(self, ids: list[int]) -> models.UsersResponse:
+    async def get_users_by_ids(self, ids: list[str]) -> models.UsersResponse:
         query = await self.db.execute(
             select(
                 models.UsersBase.nickname,
-                models.UsersBase.id,
+                cast(models.UsersBase.id, String),
                 models.UsersBase.username
             ).where(
-                models.UsersBase.id.in_(ids)
+                cast(models.UsersBase.id, String).in_(ids)
             )
         )
         users_data = query.mappings().all()
@@ -191,7 +232,7 @@ class DataRepository:
         query = await self.db.execute(
             select(
                 models.UsersBase.nickname,
-                models.UsersBase.id,
+                cast(models.UsersBase.id, String),
                 models.UsersBase.username
             ).where(
                 models.UsersBase.username.in_(usernames)
@@ -205,12 +246,12 @@ class DataRepository:
         
         return models.UsersResponse.model_validate({"users":users_data})
     
-    async def set_user_nickname(self, nickname: str, user_id: int) -> None:
+    async def set_user_nickname(self, nickname: str, user_id: str) -> None:
         query = await self.db.execute(
             update(
                 models.UsersBase
             ).where(
-                models.UsersBase.id == user_id
+                models.UsersBase.id == int(user_id)
             ).values(
                 nickname=nickname
             )

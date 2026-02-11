@@ -62,7 +62,7 @@ class DataService:
         if request.chat_id:
             avarible_chats = await self.user_chats.get_user_chats(user_id)
             logger.info("Checking permissions...")
-            if int(request.chat_id) not in avarible_chats:
+            if request.chat_id not in avarible_chats:
                 logger.warning("User have not permission to send message")
                 raise err.NoWritePermissionError(request)
                 
@@ -82,9 +82,9 @@ class DataService:
         chat_id = await self.user_chats.add_chat(permissions)
         return chat_id
 
-    async def get_messages(self, user_id: int, chat_id: str, offset: int, limit: int) -> models.MessagesResponse:
+    async def get_messages(self, user_id: str, chat_id: str, offset: int, limit: int) -> models.MessagesResponse:
         avarible_chats = await self.user_chats.get_user_chats(user_id)
-        if int(chat_id) in avarible_chats:
+        if chat_id in avarible_chats:
             messages = await self.user_messages.get_messages_by_chat(
                 chat_id,
                 limit,

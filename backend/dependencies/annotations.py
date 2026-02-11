@@ -1,9 +1,10 @@
 from typing import Annotated
-from fastapi import Depends, Request
+from fastapi import Depends, Request, WebSocket
 from sqlalchemy.ext.asyncio import AsyncSession
 from pymongo.asynchronous.database import AsyncDatabase
 from backend.utils.security.password_encrypt import PasswordEncrypterRepository
 from backend.utils.cloud import AvatarLoaderRepository
+from backend.utils.websocket import WebSocketManager
 from backend import errors as err
 from typing import AsyncGenerator
 from logging import getLogger
@@ -18,7 +19,9 @@ async def get_async_db(request: Request) -> AsyncGenerator[AsyncSession, None]:
         except err.NoCommitException:
             await session.rollback()
             raise
-            
+
+def get_websocket_manager(websocket: WebSocket) -> WebSocketManager:
+    return websocket.app.state.manager
 
 def get_messages_session(request: Request) -> AsyncDatabase:
     return request.app.state.mg_session
