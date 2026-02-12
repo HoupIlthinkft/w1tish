@@ -116,7 +116,7 @@ class DataService:
         raise err.InvalidArgumentsError("Noone argument was getted")
         
     async def set_avatar(self, file: BinaryIO, user_id: int) -> None:
-        avatar_bytes = file.read(settings.MAX_AVATAR + 1)
+        avatar_bytes = file.read(settings.MAX_AVATAR)
         if file.read(1):
             raise err.TooBigFileError(max_size=settings.MAX_AVATAR)
         

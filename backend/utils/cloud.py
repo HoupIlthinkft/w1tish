@@ -4,12 +4,16 @@ from backend.core.config import settings, config
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, UnidentifiedImageError
 import random
 import asyncio
+from backend import errors as err
 
 from logging import getLogger
 logger = getLogger(__name__)
+
+from pillow_heif import register_heif_opener
+register_heif_opener()
 
 @asynccontextmanager
 async def s3_lifespan(app: FastAPI):
@@ -30,15 +34,19 @@ class AvatarLoaderRepository:
         self.executor = executor
 
     def _sync_resize_avatar(self, avatar_file: bytes) -> bytes:
-        with Image.open(BytesIO(avatar_file)) as img:
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
+        try:
+            with Image.open(BytesIO(avatar_file)) as img:
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
 
-            img = ImageOps.fit(img, (256, 256), Image.Resampling.LANCZOS)
-        
-            out_buffer = BytesIO()
-            img.save(out_buffer, format="JPEG", quality=85, optimize=True)
-            return out_buffer.getvalue()
+                img = ImageOps.fit(img, (256, 256), Image.Resampling.LANCZOS)
+            
+                out_buffer = BytesIO()
+                img.save(out_buffer, format="JPEG", quality=85, optimize=True)
+                return out_buffer.getvalue()
+            
+        except UnidentifiedImageError:
+            raise err.InvalidImageError()
         
     async def _resize_avatar(self, avatar_file: bytes) -> bytes:
         loop = asyncio.get_event_loop()

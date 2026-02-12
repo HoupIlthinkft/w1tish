@@ -6,8 +6,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 def invalid_argument_handler(
-        request: Request,
-        exc: err.InvalidArgumentsError
+    request: Request,
+    exc: err.InvalidArgumentsError
 ):
     logger.warning(exc.message)
     return JSONResponse(
@@ -16,6 +16,19 @@ def invalid_argument_handler(
             "detail": exc.message
         }
     )
+
+def invalid_image_handler(
+    request: Request,
+    exc: err.InvalidImageError
+):
+    logger.warning("Invalid image")
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        content = {
+            "detail": "Invalid image signature"
+        }
+    )
+
 
 def user_exist_handler(
     request: Request,
@@ -159,6 +172,7 @@ def too_long_nickname_handlers(
 
 HANDLERS = {
     err.InvalidArgumentsError:  invalid_argument_handler,
+    err.InvalidImageError:      invalid_image_handler,
     err.UserExistError:         user_exist_handler,
     err.UserNotFoundError:      user_not_found_handler,
     err.ChatNotFoundError:      chat_not_found_handler,
