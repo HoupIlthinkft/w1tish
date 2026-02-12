@@ -12,23 +12,24 @@ async function load_chat(user_id, chat_id, members_chat) {
                 else message_container.className = "user message";
             
             let row_format = [];
-                        let code = "";
-                        for (let row in data.messages[Number(message)].content.split("<br>")) {
-                            if ((data.messages[Number(message)].content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
-                                                                    
-                                code += `${data.messages[Number(message)].content.split("<br>")[row]}`;
+            let code = "";
+            for (let row in data.messages[Number(message)].content.split("<br>")) {
+                if ((data.messages[Number(message)].content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
+                                                                                                    
+                    code += `${data.messages[Number(message)].content.split("<br>")[row]}`;
 
-                                if (data.messages[Number(message)].content.split("<br>")[row] != "```") code += "<br>";
+                    if (data.messages[Number(message)].content.split("<br>")[row] != "```") code += "<br>";
 
-                                if ((code.split("```").length > 2) && (data.messages[Number(message)].content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
-                                
-                                continue
-                            }
-                            row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
-                        }    
-                        
-                        message_container.innerHTML = row_format.join("");
-            
+                    if ((code.split("```").length > 2) && (data.messages[Number(message)].content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
+                                                                
+                    continue
+                }
+
+                row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+            } 
+                               
+            message_container.innerHTML = row_format.join("");
+                   
             chat_for_oponent.append(message_container);
         }
     }
@@ -36,10 +37,24 @@ async function load_chat(user_id, chat_id, members_chat) {
         var data_members = await get_data_users_ids(members_chat);
         for (let message in data.messages) {
             const message_container = document.createElement("div");
-
+            
             let row_format = [];
-            console.log(data.messages[Number(message)].content);
-            for (let row in data.messages[Number(message)].content.split("<br>")) row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+            let code = "";
+            
+            for (let row in data.messages[Number(message)].content.split("<br>")) {
+                if ((data.messages[Number(message)].content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
+                                                          
+                    code += `${data.messages[Number(message)].content.split("<br>")[row]}`;
+
+                    if (data.messages[Number(message)].content.split("<br>")[row] != "```") code += "<br>";
+
+                    if ((code.split("```").length > 2) && (data.messages[Number(message)].content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
+                      
+                    continue
+                }
+
+                row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+            } 
 
             if (data.messages[Number(message)].sender == user_id) {
 
