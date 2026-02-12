@@ -16,7 +16,7 @@ async function request_add_new_message(chat_id, message, user_id) {
 
 
 async function request_get_messages(chat_id) {
-    var data = await fetch((window.ENV.API_URL + `/web/data/messages?chat_id=${Number(chat_id)}&offset=0&limit=50`), {
+    var data = await fetch((window.ENV.API_URL + `/web/data/messages?chat_id=${String(chat_id)}&offset=0&limit=50`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
