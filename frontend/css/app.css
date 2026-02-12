@@ -126,7 +126,6 @@ p {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    anchor-name: --profile_user_view;
 }
 
 
@@ -139,7 +138,7 @@ p {
     justify-content: flex-start;
 }
 
-.detailed_info, .profile_user_view {
+.profile_user_view {
     height: 48px;
     min-width: fit-content;
 
@@ -151,17 +150,27 @@ p {
     background-color: #d9d9d9;
 }
 
-#detailed_info_id, #detailed_info_username {
-    display: flex;
-    flex-flow: row nowrap;
-}
-
-#nickname {
+#user_username, #nickname {
     font-size: max(1vw, 10pt);
-
+    
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+
+    transition: all 0.3s cubic-bezier(.12,.61,.35,.43);
+}
+
+#user_username {
+    height: 0;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.user_view:hover #user_username, .user_view:hover #nickname {
+    height: auto;
+    opacity: 1;
+    margin-top: 5px;
+    transform: translateY(0);
 }
 
 .logo, .used_logo {
@@ -191,27 +200,6 @@ p {
     align-self: center;
     
     padding-left: 5px;
-}
-
-.detailed_info {
-    position: absolute;
-    z-index: -1;
-    position-anchor: --profile_user_view;
-
-    width: calc(anchor-size(width) - 1vw);
-    margin-bottom: 4vh;
-
-    display: flex;
-    flex-flow: column nowrap;
-
-    transition: z-index 0.1s cubic-bezier(0, 0.68, 0.93, 0.93), transform 0.1s cubic-bezier(0, 0.68, 0.93, 0.93);
-}
-
-#profile:hover .detailed_info {
-    z-index: 2;
-    transform: translateY(-54px);
-
-    transition: z-index 0.4s cubic-bezier(0, 0.68, 0.93, 0.93), transform 0.1s cubic-bezier(0, 0.68, 0.93, 0.93);
 }
 
 /* ----------Ожидание действий------------ */

@@ -4,12 +4,7 @@ async function request_add_new_message(chat_id, message, user_id) {
         headers: {  'accept': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
-        body: JSON.stringify({
-                    "chat_id": chat_id,
-                    "content": message,
-                    "sender": user_id,
-                    "created_at": `${new Date(Date.now()).toJSON().slice(0, -1)}`  
-        })
+        body: JSON.stringify()
     });
 
 }

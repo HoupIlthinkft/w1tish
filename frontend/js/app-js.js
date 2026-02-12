@@ -15,7 +15,6 @@ function starting_after() {
 function load_profile() {
     document.getElementById("logo_user").src = localStorage.getItem("avatar"); 
     document.getElementById("nickname").textContent = localStorage.getItem("nickname");
-    document.getElementById("user_id").textContent = "  " + localStorage.getItem("id");
     document.getElementById("user_username").textContent = "  " + localStorage.getItem("username");
     document.getElementById("setting_avatar_user").src = localStorage.getItem("avatar");
     document.getElementById("nickname_user").textContent = localStorage.getItem("nickname")
@@ -24,7 +23,7 @@ function load_profile() {
 }
 
 async function send_message() {
-    var user_id = document.getElementById("user_id").textContent; 
+    var user_id = localStorage.id; 
     var chat_id = "";
 
     let contact_names = []; 
@@ -62,7 +61,7 @@ async function send_message() {
 
     input.value = "";
 
-    request_add_new_message(chat_id, message, user_id);
+    send_new_message(chat_id, message, user_id);
 
     setTimeout(() => {
         load_chat(user_id, chat_id, localStorage.getItem("chat_members").split(","))

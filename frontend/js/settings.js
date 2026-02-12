@@ -28,7 +28,7 @@ function edit_nickname() {
     edit_nickname_input.type = "text";
     edit_nickname_input.value = localStorage.getItem("nickname");
     edit_nickname_input.maxLength = 42;
-    edit_nickname_input.placeholder = "Введите nickname";
+    edit_nickname_input.placeholder = "Enter nickname";
 
     let approve_nickname = document.createElement("i");
     approve_nickname.id = "approve_nickname";
@@ -86,7 +86,7 @@ async function edit_avatar() {
 
     const response = await requset_editing_avatar(formdata);
     
-    if (!response) console.log("size very big");
-        else if (response) console.log("edit entry");
+    if (response == true) console.log("size very big");
+        else if (response == false) console.log("edit entry");
             else console.log("error");
 }

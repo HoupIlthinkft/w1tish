@@ -12,21 +12,22 @@ async function load_chat(user_id, chat_id, members_chat) {
                 else message_container.className = "user message";
             
             let row_format = [];
-            let code = "";
-            for (let row in data.messages[Number(message)].content.split("<br>")) {
-                if ((data.messages[Number(message)].content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
-                    
-                    code += `${data.messages[Number(message)].content.split("<br>")[row]}`;
+                        let code = "";
+                        for (let row in data.messages[Number(message)].content.split("<br>")) {
+                            if ((data.messages[Number(message)].content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
+                                                                    
+                                code += `${data.messages[Number(message)].content.split("<br>")[row]}`;
 
-                    if (data.messages[Number(message)].content.split("<br>")[row] != "```") code += "<br>";
+                                if (data.messages[Number(message)].content.split("<br>")[row] != "```") code += "<br>";
 
-                    if ((code.split("```").length > 2) && (data.messages[Number(message)].content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
-                    continue
-                }
-                row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
-            }    
-            
-            message_container.innerHTML = row_format.join("");
+                                if ((code.split("```").length > 2) && (data.messages[Number(message)].content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
+                                
+                                continue
+                            }
+                            row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+                        }    
+                        
+                        message_container.innerHTML = row_format.join("");
             
             chat_for_oponent.append(message_container);
         }
@@ -131,7 +132,7 @@ async function load_chat_container() {
     const chat = document.createElement("div");
     chat.id = "chat";
 
-    load_chat(document.getElementById("user_id").textContent, document.getElementById(this.id).firstElementChild.id, contact_id);
+    load_chat(localStorage.id, document.getElementById(this.id).firstElementChild.id, contact_id);
 
     const send = document.createElement("div");
     send.id = "send";
