@@ -51,7 +51,8 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     response_model=models.OKResponse,
     summary=config.docs.add_messages.summary,
     description=config.docs.add_messages.description,
-    responses=config.docs.add_messages.responses
+    responses=config.docs.add_messages.responses,
+    deprecated=True
 )
 async def add_new_message(
     request: models.MessageModel,
@@ -129,5 +130,3 @@ async def set_user_nickname(
     logger.info("[PATCH] Trying to update nickname...")
     await service.set_nickname(nickname.nickname, user_id)
     return models.OKResponse()
-
-# TODO добавить доставку сообщений в реальном времени через WebSocket

@@ -89,6 +89,7 @@ backend
     ├── cloud.py                # Загрузка данных в S3
     ├── exceptions_handlers.py  # Глобальная обработка исключений
     ├── security                # Утилиты безопасности
+    │   ├── id_generator.py     # Генерация айди юзеров и чатов по snowflake
     │   ├── password_encrypt.py # Проверка и шифрование паролей
     │   └── token_generator.py  # Генерация и валидация JWT токенов
     │
