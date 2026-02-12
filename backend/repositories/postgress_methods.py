@@ -112,6 +112,7 @@ class ChatRepository:
     
     @asynccontextmanager
     async def set_chat(self, message: models.MessageModel) -> AsyncGenerator[None, None]:
+        logger.info("Starting update data...")
         await self.db.execute(
             update(
                 models.ChatsBase
@@ -123,7 +124,9 @@ class ChatRepository:
                 last_message_time = message.created_at
             )
         )
+        logger.info(message.model_dump())
         yield
+        logger.info("Done!")
 
     async def get_chat_by_id(self, chat_id: str) -> models.ChatModel:
         query = await self.db.execute(
