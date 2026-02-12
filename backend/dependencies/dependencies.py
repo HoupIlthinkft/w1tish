@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from typing import Annotated
 
 from backend.utils import services
+from backend.utils.security import id_generator
 from backend.dependencies import annotations
 from backend import repositories as repo
 from backend.utils.cloud import s3_lifespan
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
     app.state.executor = ThreadPoolExecutor(
         max_workers=settings.WORKERS_COUNT
     )
+    app.state.generator = id_generator.SnowflakeIdGenerator()
     async with AsyncExitStack() as stack:
         await stack.enter_async_context(bases_lifespan(app))
         await stack.enter_async_context(s3_lifespan(app))
@@ -31,19 +33,21 @@ def get_auth_service(
     session: annotations.Database,
     collection: annotations.MessageBase,
     encrypter: annotations.PasswordEncrypter,
-    avatars_repo: annotations.AvatarLoader
+    avatars_repo: annotations.AvatarLoader,
+    id_generator: annotations.IdGenerator
 ) -> services.AuthService:
     blacklist_repo = repo.BlacklistRepository(collection)
-    auth_repo = repo.AuthRepository(session, encrypter)
+    auth_repo = repo.AuthRepository(session, encrypter, id_generator)
     return services.AuthService(auth_repo, blacklist_repo, avatars_repo)
 
 def get_data_service(
     session: annotations.Database,
     collection: annotations.MessageBase,
-    avatar_loader: annotations.AvatarLoader
+    avatar_loader: annotations.AvatarLoader,
+    id_generator: annotations.IdGenerator
 ) -> services.DataService:
     data_repo = repo.DataRepository(session)
-    chats_repo = repo.ChatRepository(session)
+    chats_repo = repo.ChatRepository(session, id_generator)
     mess_repo = repo.MessagesRepository(collection)
     return services.DataService(
         data_repo,

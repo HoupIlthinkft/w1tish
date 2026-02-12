@@ -3,6 +3,7 @@ from fastapi import Depends, Request, WebSocket
 from sqlalchemy.ext.asyncio import AsyncSession
 from pymongo.asynchronous.database import AsyncDatabase
 from backend.utils.security.password_encrypt import PasswordEncrypterRepository
+from backend.utils.security.id_generator import SnowflakeIdGenerator
 from backend.utils.cloud import AvatarLoaderRepository
 from backend.utils.websocket import WebSocketManager
 from backend import errors as err
@@ -32,7 +33,11 @@ def get_encrypter(request: Request) -> PasswordEncrypterRepository:
 def get_avatar_loader(request: Request) -> AvatarLoaderRepository:
     return AvatarLoaderRepository(request.app.state.executor, request.app.state.s3_client)
 
+def get_id_generator(request: Request) -> SnowflakeIdGenerator:
+    return request.app.state.generator
+
 Database = Annotated[AsyncSession, Depends(get_async_db)]
 MessageBase = Annotated[AsyncDatabase, Depends(get_messages_session)]
 PasswordEncrypter = Annotated[PasswordEncrypterRepository, Depends(get_encrypter)]
 AvatarLoader = Annotated[AvatarLoaderRepository, Depends(get_avatar_loader)]
+IdGenerator = Annotated[SnowflakeIdGenerator, Depends(get_id_generator)]

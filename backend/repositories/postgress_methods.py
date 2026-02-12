@@ -4,67 +4,28 @@ from sqlalchemy import select, cast, String, update
 
 from backend import errors as err
 from backend import models
-from backend.core.config import settings
 from backend.interfaces import protocols
 
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncGenerator
-import os, asyncio, time, hashlib
-import struct
+
 
 from logging import getLogger
 logger = getLogger(__name__)
 
-SERVER = 5
-WORKER_ID = os.getpid() % 32
-
-class IdGenerator:
-    def __init__(self, server: int):
-        self.server = server
-        self._seq = 0
-        self._last_time = time.perf_counter_ns() // 1_000_000
-        self._lock = asyncio.Lock()
-
-    async def _get_increment(self):
-        async with self._lock:
-            now = time.perf_counter_ns() // 1_000_000
-            if self._seq >= 4095:
-                while now <= self._last_time:
-                    await asyncio.sleep(0) # отдаем управление
-                    now = time.perf_counter_ns() // 1_000_000
-
-                self._seq = 0
-                self._last_time = time.perf_counter_ns() // 1_000_000
-            else:
-                if now > self._last_time:
-                    self._seq = 0
-                    self._last_time = now
-                else:
-                    self._seq += 1
-            
-            return self._seq
-
-    async def generate_userid(self, worker: int):
-        time_mark = round(datetime.now().timestamp() * 1000) - 1577836800000
-        counter = await self._get_increment()
-        user_id = (
-            (time_mark << 22) | (self.server << 17) | (worker << 12) | counter
-        )
-        return user_id
-    
-    def generate_chatid(self, users: list[int]):
-        users.sort()    # не критично если изменим оригинал
-        hash_64 = int(hashlib.blake2b(struct.pack(f">{len(users)}Q", *users), digest_size=8).hexdigest(), base=16)
-        return 0xFFFFFFFFFFFFFFF & hash_64
-
-generator = IdGenerator(SERVER)
 
 class AuthRepository:
 
-    def __init__(self, db: AsyncSession, encrypter: protocols.IPasswordEncrypter):
+    def __init__(
+        self,
+        db: AsyncSession,
+        encrypter: protocols.IPasswordEncrypter,
+        generator: protocols.IIdGenerator
+    ):
         self.db = db
         self.encrypter = encrypter
+        self.generator = generator
 
     async def register_new(
         self, 
@@ -73,7 +34,7 @@ class AuthRepository:
         password: str
     ) -> str:
         encrypted_password = await self.encrypter.encrypt_password(password)
-        user_id = await generator.generate_userid(WORKER_ID)
+        user_id = await self.generator.generate_userid()
         try:
             new_user = models.UsersBase(
                 id=user_id,
@@ -110,11 +71,16 @@ class AuthRepository:
         if await self.encrypter.validate_password(password, user.password_hash):
             return str(user.id)
         
-        raise err.WrongPasswordError()
-    
+        raise err.WrongPasswordError()   
 
 class ChatRepository:
-    def __init__(self, db: AsyncSession): self.db = db
+    def __init__(
+        self,
+        db: AsyncSession,
+        generator: protocols.IIdGenerator
+    ):
+        self.db = db
+        self.generator = generator
     
     async def get_user_chats(self, user_id: str) -> list[str]:
         query = await self.db.execute(
@@ -130,7 +96,7 @@ class ChatRepository:
         return chats
 
     async def add_chat(self, permissions: dict) -> str:
-        chat_id = generator.generate_chatid([int(k) for k in permissions])
+        chat_id = self.generator.generate_chatid([int(k) for k in permissions])
         try:
             new_chat = models.ChatsBase(
                 id=chat_id,

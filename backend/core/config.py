@@ -41,7 +41,9 @@ class Settings(BaseSettings):
     MAX_AVATAR: int = 1024 * 1024 * 5
     MAX_ROOM_SIZE: int = 7
 
+    APP_EPOCH: int = 1235030400
     WORKERS_COUNT: int = 8
+    SERVER_ID: int = 1
 
     model_config = SettingsConfigDict(env_file=".env")
 
