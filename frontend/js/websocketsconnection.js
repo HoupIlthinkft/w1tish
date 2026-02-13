@@ -62,6 +62,8 @@ socket.addEventListener("message", (event) => {
     
                 chat_for_oponent.append(message);
             }
+
+           break 
         }
     }
 
