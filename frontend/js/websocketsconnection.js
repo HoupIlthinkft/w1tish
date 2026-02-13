@@ -15,6 +15,7 @@ socket.addEventListener("message", (event) => {
             const open_chat_nicknames = [];
             for (let j in document.getElementById("chat_container").getElementsByClassName("oponent_name")) open_chat_nicknames.push(document.getElementById("chat_container").getElementsByClassName("oponent_name").item(j).textContent);
             
+            console.log(contact_nickname.join(" "), open_chat_nicknames.join(" "), contact_nickname.join(" ") == open_chat_nicknames.join(" "));
             if ((contact_nicknames.join(" ") == open_chat_nicknames.join(" ")) && (data.sender != localStorage.id)) {
 
                 const chat_for_oponent = document.getElementByid("chat_for_oponent");
