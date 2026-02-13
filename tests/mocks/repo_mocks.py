@@ -100,3 +100,7 @@ class MessMock(protocols.IMessagesRepository):
                 )
             ]
         )
+    
+class SockMock(protocols.ISockManager):
+
+    async def new_chat(self, chat_id, users): ...

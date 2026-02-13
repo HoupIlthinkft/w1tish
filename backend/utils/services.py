@@ -51,12 +51,14 @@ class DataService:
         data_repo: protocols.IDataRepository,
         chats_repo: protocols.IChatRepository,
         mess_repo: protocols.IMessagesRepository,
-        avatars_repo: protocols.IAvatarLoader
+        avatars_repo: protocols.IAvatarLoader,
+        sock_manager: protocols.ISockManager
     ):
         self.user_data = data_repo
         self.user_chats = chats_repo
         self.user_messages = mess_repo
         self.user_avatars = avatars_repo
+        self.sock_manager = sock_manager
 
     async def add_message(self, user_id: int, request: models.MessageModel) -> None:
         if request.chat_id:
@@ -81,6 +83,7 @@ class DataService:
         if len(permissions) < 2 or len(permissions) > 7: raise err.InvalidArgumentsError("You should create chat with 2 - 7 users")
 
         chat_id = await self.user_chats.add_chat(permissions)
+        await self.sock_manager.new_chat(chat_id, request.members_ids)
         return chat_id
 
     async def get_messages(self, user_id: str, chat_id: str, offset: int, limit: int) -> models.MessagesResponse:

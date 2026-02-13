@@ -4,5 +4,6 @@ from tests.mocks.repo_mocks import (
     BlackListMock,
     DataMock,
     MessMock,
-    ChatMock
+    ChatMock,
+    SockMock
 )

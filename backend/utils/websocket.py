@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from logging import getLogger
 from pydantic import ValidationError
 from json.decoder import JSONDecodeError
-import asyncio
+import asyncio, json
 
 logger = getLogger(__name__)
 
@@ -72,12 +72,12 @@ class WebSocketManager:
             else:
                 self.pool.pop(user_id, None)
 
-    async def _send_message(self, message: models.MessageModel, user_id: str) -> None:
+    async def _send_message(self, message: str, user_id: str) -> None:
         logger.info("Checking connection to " + str(user_id))
         if user_id in self.pool:
             logger.info("Connected to user")
             tasks = [
-                sock.send_text(message.model_dump_json())
+                sock.send_text(message)
                 for sock in self.pool.get(user_id)
             ]
             logger.info("Waiting broadcast...")
@@ -122,4 +122,16 @@ class WebSocketManager:
 
         for user_id in chat.permissions:
             logger.info("Trying send message to " + user_id)
-            await self._send_message(message, user_id)
+            await self._send_message(message.model_dump_json(), user_id)
+
+    async def new_chat(self, chat_id, users):
+        for user_id in users:
+            logger.info("Trying send chat to " + user_id)
+            await self._send_message(
+                json.dumps({
+                    "type":"system",
+                    "event":"chat_create",
+                    "chat_id": str(chat_id)
+                }),
+                user_id
+            )

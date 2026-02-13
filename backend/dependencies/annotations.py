@@ -21,8 +21,11 @@ async def get_async_db(request: Request) -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             raise
 
-def get_websocket_manager(websocket: WebSocket) -> WebSocketManager:
-    return websocket.app.state.manager
+def get_websocket_manager(websocket: WebSocket = None, request: Request = None) -> WebSocketManager:
+    if request:
+        return request.app.state.manager
+    if websocket:
+        return websocket.app.state.manager
 
 def get_messages_session(request: Request) -> AsyncDatabase:
     return request.app.state.mg_session
@@ -41,3 +44,4 @@ MessageBase = Annotated[AsyncDatabase, Depends(get_messages_session)]
 PasswordEncrypter = Annotated[PasswordEncrypterRepository, Depends(get_encrypter)]
 AvatarLoader = Annotated[AvatarLoaderRepository, Depends(get_avatar_loader)]
 IdGenerator = Annotated[SnowflakeIdGenerator, Depends(get_id_generator)]
+SockManager = Annotated[WebSocketManager, Depends(get_websocket_manager)]

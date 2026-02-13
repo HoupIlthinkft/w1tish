@@ -44,7 +44,8 @@ def get_data_service(
     session: annotations.Database,
     collection: annotations.MessageBase,
     avatar_loader: annotations.AvatarLoader,
-    id_generator: annotations.IdGenerator
+    id_generator: annotations.IdGenerator,
+    sock_manager: annotations.SockManager
 ) -> services.DataService:
     data_repo = repo.DataRepository(session)
     chats_repo = repo.ChatRepository(session, id_generator)
@@ -53,7 +54,8 @@ def get_data_service(
         data_repo,
         chats_repo,
         mess_repo,
-        avatar_loader
+        avatar_loader,
+        sock_manager
     )
 
 AuthServiceDep = Annotated[services.AuthService, Depends(get_auth_service)]

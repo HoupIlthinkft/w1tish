@@ -34,9 +34,10 @@ class MessagesRepository:
             offset: int
     ) -> MessagesResponse:
         messages = await self.mb.find(
-            {"chat_id": chat_id},
-            {"_id": 0}
-        ).skip(offset).limit(limit).to_list(length=limit)
+            {"chat_id": chat_id}
+        ).sort("_id", -1).skip(offset).limit(limit).to_list(length=limit)
+        messages.reverse()
+        logger.info(messages)
         return MessagesResponse.model_validate({"messages": messages})
     
 class BlacklistRepository:

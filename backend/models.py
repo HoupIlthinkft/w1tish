@@ -31,7 +31,7 @@ class ChatModel(BaseModel):
 class MessageModel(BaseModel):
     chat_id: str = Field(..., examples=["42"], description="Айди чата")
     content: str = Field(..., examples=["Васап бро"], description="Сообщение")
-    sender: int = Field(..., examples=[52], description="Айди отправителя")
+    sender: str = Field(..., examples=["52"], description="Айди отправителя")
     created_at: datetime = Field(..., examples=["2026-01-31T21:35:10.161344"], description="Дата отправки")
 
 

@@ -31,7 +31,8 @@ def data_mock():
         mocks.DataMock(),
         mocks.ChatMock(),
         mocks.MessMock(),
-        mocks.AvatarMock()
+        mocks.AvatarMock(),
+        mocks.SockMock()
     )
     return mocked_service
 

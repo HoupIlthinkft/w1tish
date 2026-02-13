@@ -49,5 +49,5 @@ class SnowflakeIdGenerator:
                 digest_size=8).hexdigest(),
 
             base=16
-        ) & 0xFFFF_FFFF_FFFF_FFFF
+        ) & 0xFFFF_FFFF_FFFF_FFF
         return hash_64
