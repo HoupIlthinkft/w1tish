@@ -166,7 +166,7 @@ p {
     transform: translateY(10px);
 }
 
-.user_view:hover #user_username, .user_view:hover #nickname {
+#profile:hover #user_username, #profile:hover #nickname {
     height: auto;
     opacity: 1;
     margin-top: 5px;

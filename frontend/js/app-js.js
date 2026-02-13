@@ -1,5 +1,4 @@
 function starting_after() {
-    autosize(document.getElementById("send_message"));
     document.getElementById("add_new_chat").addEventListener("click", open_add_chat);
     document.getElementById("close_btn").addEventListener("click", close_add_chat);
     document.getElementById("add_btn").addEventListener("click", add_user_in_invitation);
