@@ -9,7 +9,6 @@ socket.addEventListener("message", (event) => {
         if (contact.item(i).firstChild.id == data["chat_id"]) {
             contact.item(i).getElementsByClassName("view_message").item(0).innerHTML = markdownit().render(data.content.replaceAll("<br>", " "));
             
-            console.log(contact_nicknames, open_chat_nicknames, contact_nicknames.join(" ") == open_chat_nicknames.join(" "));
             if ((document.getElementById("chat").value == data.chat_id) && (data.sender != localStorage.id)) {
 
                 const chat_for_oponent = document.getElementById("chat_for_oponent");
