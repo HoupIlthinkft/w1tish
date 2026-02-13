@@ -43,18 +43,18 @@ socket.addEventListener("message", (event) => {
 
                 let row_format = [];
                 let code = "";
-                for (let row in data.messages[Number(message)].content.split("<br>")) {
-                    if ((data.messages[Number(message)].content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
+                for (let row in data.content.split("<br>")) {
+                    if ((data.content.split("<br>")[row].split("```").length == 2) || (code.includes("```"))) {
                                 
                         code += `${data.messages[Number(message)].content.split("<br>")[row]}`;
 
-                        if (data.messages[Number(message)].content.split("<br>")[row] != "```") code += "<br>";
+                        if (data.content.split("<br>")[row] != "```") code += "<br>";
 
-                        if ((code.split("```").length > 2) && (data.messages[Number(message)].content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
+                        if ((code.split("```").length > 2) && (data.content.split("<br>")[row].includes("```"))) row_format.push(markdownit({html: true, breaks: true}).render(code).replaceAll("&lt;br&gt;", "<br>")), code = "";
             
                         continue
                     }
-                    row_format.push(markdownit({html: true, breaks: true}).render(data.messages[Number(message)].content.split("<br>")[row]));
+                    row_format.push(markdownit({html: true, breaks: true}).render(data.content.split("<br>")[row]));
                 }    
     
                 message_content.innerHTML = row_format.join("");
