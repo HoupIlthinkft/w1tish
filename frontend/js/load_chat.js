@@ -146,6 +146,7 @@ async function load_chat_container() {
 
     const chat = document.createElement("div");
     chat.id = "chat";
+    chat.value = this.firstElementChild.id;
 
     load_chat(localStorage.id, document.getElementById(this.id).firstElementChild.id, contact_id);
 

@@ -9,16 +9,10 @@ socket.addEventListener("message", (event) => {
         if (contact.item(i).firstChild.id == data["chat_id"]) {
             contact.item(i).getElementsByClassName("view_message").item(0).innerHTML = markdownit().render(data.content.replaceAll("<br>", " "));
             
-            const contact_nicknames = [];
-            for (let j in contact.item(i).getElementsByClassName("name_contact")) contact_nicknames.push(contact.item(i).getElementsByClassName("name_contact").item(j).textContent);
-            
-            const open_chat_nicknames = [];
-            for (let j in document.getElementById("chat_container").getElementsByClassName("oponent_name")) open_chat_nicknames.push(document.getElementById("chat_container").getElementsByClassName("oponent_name").item(j).textContent);
-            
             console.log(contact_nicknames, open_chat_nicknames, contact_nicknames.join(" ") == open_chat_nicknames.join(" "));
-            if ((contact_nicknames.join(" ") == open_chat_nicknames.join(" ")) && (data.sender != localStorage.id)) {
+            if (document.getElementById("chat").value == data.chat_id) && (data.sender != localStorage.id)) {
 
-                const chat_for_oponent = document.getElementByid("chat_for_oponent");
+                const chat_for_oponent = document.getElementById("chat_for_oponent");
 
                 const message = document.createElement("div");
 
