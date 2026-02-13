@@ -10,7 +10,7 @@ socket.addEventListener("message", (event) => {
             contact.item(i).getElementsByClassName("view_message").item(0).innerHTML = markdownit().render(data.content.replaceAll("<br>", " "));
             
             const contact_nicknames = [];
-            for (let j in contact.item(i).getElementsByClassName("contact_nickname")) contact_nicknames.push(contact.item(i).getElementsByClassName("name_contact").item(j).textContent);
+            for (let j in contact.item(i).getElementsByClassName("name_contact")) contact_nicknames.push(contact.item(i).getElementsByClassName("name_contact").item(j).textContent);
             
             const open_chat_nicknames = [];
             for (let j in document.getElementById("chat_container").getElementsByClassName("oponent_name")) open_chat_nicknames.push(document.getElementById("chat_container").getElementsByClassName("oponent_name").item(j).textContent);
