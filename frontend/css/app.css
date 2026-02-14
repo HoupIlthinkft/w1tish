@@ -58,7 +58,7 @@ p {
     width: 100%;
     max-height: 100%;
 
-    gap: 20px;
+    gap: 2vh;
     padding-right: 15px;
 
     display: flex;
@@ -81,7 +81,7 @@ p {
     
     border-radius: 10px;
     padding: 4%;
-    gap: 10px;
+    gap: 0.5vw;
     
     cursor: pointer;
 }
@@ -91,11 +91,11 @@ p {
     min-height: 50%;
     
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     align-items: center;
     
     text-align: start;
-    gap: 10px;
+    gap: 0.5vw;
 }
 
 .view_message {
@@ -105,6 +105,10 @@ p {
     align-items: center;
     
     text-align: start;
+}
+
+.view_message * {
+    margin: 0;
 }
 
 .view_message p { 
@@ -150,27 +154,32 @@ p {
     background-color: #d9d9d9;
 }
 
-#user_username, #nickname {
+#user_username, #nickname{
     font-size: max(1vw, 10pt);
     
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis;   
+}
 
-    transition: all 0.3s cubic-bezier(.12,.61,.35,.43);
+#nickname {
+    transform: translateY(10px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)
 }
 
 #user_username {
-    height: 0;
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(15px);
+    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)
 }
 
-#profile:hover #user_username, #profile:hover #nickname {
-    height: auto;
+#profile:hover #user_username { 
     opacity: 1;
-    margin-top: 5px;
-    transform: translateY(0);
+    transform: translateY(0px)
+}
+
+#profile:hover #nickname {
+    transform: translateY(0px);
 }
 
 .logo, .used_logo {

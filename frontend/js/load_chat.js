@@ -97,7 +97,7 @@ async function load_chat(user_id, chat_id, members_chat) {
     }
     
     const chat = document.getElementById("chat");
-
+    
     setTimeout(() => {
         chat.innerHTML = '';
         chat.append(chat_for_oponent);
@@ -198,3 +198,4 @@ function scrollBottom() {
         lastMessage.scrollIntoView({ behavior: 'instant', block: 'end' });
     }
 }
+

@@ -86,7 +86,7 @@ async function edit_avatar() {
 
     const response = await requset_editing_avatar(formdata);
     
-    if (response == true) console.log("size very big");
-        else if (response == false) console.log("edit entry");
-            else console.log("error");
+    if (response == 200) console.log("edit_entry");
+    else if (response == 413) console.log("size to big");
+    else console.log(response);    
 }

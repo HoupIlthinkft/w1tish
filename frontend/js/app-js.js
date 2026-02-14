@@ -61,10 +61,6 @@ async function send_message() {
     input.value = "";
 
     send_new_message(chat_id, message, user_id);
-
-    setTimeout(() => {
-        load_chat(user_id, chat_id, localStorage.getItem("chat_members").split(","))
-    }, 50);
 }
 
 

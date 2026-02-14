@@ -66,8 +66,6 @@ async function requset_editing_avatar(new_avatar) {
         body: new_avatar
     });
 
-    if (response.status === 200) return true;
-        else if (response.status === 413) return false;
-            else if ((response.status === 422) || (response.status === 401)) getProtectedData();
-                else console.log(response.status, response.statusText); 
+    if ((response.status === 422) || (response.status === 401)) getProtectedData();
+        else return response.status; 
 }

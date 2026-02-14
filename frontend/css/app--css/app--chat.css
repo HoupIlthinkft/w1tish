@@ -57,6 +57,14 @@
     
 }
 
+.message * {
+    margin: 0;
+}
+
+.message code {
+    background-color: #777777;
+}
+
 .message {
     width: max-content;
     max-width: 50%;
@@ -70,6 +78,8 @@
     word-break: break-all;
     background-color: #9D9D9D;
 }
+
+
 
 .user {
     border-bottom-right-radius: 0px;
