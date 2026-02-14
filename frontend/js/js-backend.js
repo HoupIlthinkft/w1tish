@@ -69,6 +69,7 @@ async function getProtectedData() {
             localStorage.setItem("avatar", await get_avatar_url_by_id(data.id));
             localStorage.setItem("chats", JSON.stringify(data.chats));
             localStorage.setItem("id", data.id);
+            create_connection();
 
             if (window.location.pathname == "/app.html") load_contacts(); load_profile();
         }
