@@ -83,7 +83,7 @@ class DataService:
         if len(permissions) < 2 or len(permissions) > 7: raise err.InvalidArgumentsError("You should create chat with 2 - 7 users")
 
         chat_id = await self.user_chats.add_chat(permissions)
-        await self.sock_manager.new_chat(chat_id, request.members_ids)
+        await self.sock_manager.new_chat(models.ChatModel(id=chat_id, permissions=permissions))
         return chat_id
 
     async def get_messages(self, user_id: str, chat_id: str, offset: int, limit: int) -> models.MessagesResponse:

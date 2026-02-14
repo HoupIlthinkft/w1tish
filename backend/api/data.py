@@ -110,7 +110,6 @@ async def set_avatar(
     user_id: CurrentUser,
     file: UploadFile = File(..., description="Новый аватар пользователя")
 ):
-    # TODO сделать проверку типа поступаемого изображения
     logger.info("[PATCH] Trying to upload avatar...")
     await service.set_avatar(file.file, user_id)
     return models.OKResponse()
