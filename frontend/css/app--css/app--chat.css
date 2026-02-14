@@ -61,7 +61,7 @@
     margin: 0;
 }
 
-.message code {
+.message:has(code) p:has(code) {
     background-color: #777777;
 }
 
