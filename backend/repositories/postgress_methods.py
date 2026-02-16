@@ -82,7 +82,7 @@ class ChatRepository:
         self.db = db
         self.generator = generator
     
-    async def get_user_chats(self, user_id: str) -> list[str]:
+    async def get_user_chats(self, user_id: str) -> set[str]:
         query = await self.db.execute(
             select(
                 cast(models.ChatsBase.id, String)
@@ -93,7 +93,7 @@ class ChatRepository:
         chats = query.scalars().all()
         if not chats:
             raise err.ChatNotFoundError()
-        return chats
+        return set(chats)
 
     async def add_chat(self, permissions: dict) -> str:
         chat_id = self.generator.generate_chatid([int(k) for k in permissions])

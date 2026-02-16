@@ -25,7 +25,7 @@ class NoPermissionError(BaseAppException): ...
 class NoReadPermissionError(BaseAppException): ...
 
 class NoWritePermissionError(BaseAppException):
-    def __init__(self, message: dict):
+    def __init__(self, message = "User has not permissions to write"):
         super().__init__()
         self.error_message = message
 

@@ -16,6 +16,7 @@ logger = getLogger(__name__)
 
 async def val_err_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"Invalid message format"})
 async def json_decode_err_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"Invalid JSON format"})
+async def no_perms_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"User hasnt permissions to write in this chat"})
 async def sock_disc_err_hand(socket: WebSocket): raise WebSocketDisconnect()
 
 class WebSockResponse(BaseModel):
@@ -25,7 +26,8 @@ class WebSockResponse(BaseModel):
 HANDLERS = {
     ValidationError: val_err_hand,
     JSONDecodeError: json_decode_err_hand,
-    WebSocketDisconnect: sock_disc_err_hand
+    WebSocketDisconnect: sock_disc_err_hand,
+    err.NoWritePermissionError: no_perms_hand
 }
 
 @asynccontextmanager
@@ -154,16 +156,20 @@ class WebSocketManager(SocketBase):
                 continue
 
             async with self.app.state.pg_session_maker() as session:
-                chat_repo = self.chat_repo_temlate(session, self.app.state.generator)
+                chat_repo: IChatRepository = self.chat_repo_temlate(session, self.app.state.generator)
                 
                 if message.type == "message":
-                    chat: models.ChatModel = await chat_repo.get_chat_by_id(message.content.chat_id)
+                    chat = await chat_repo.get_chat_by_id(message.content.chat_id)
+                    awarible_chats = await chat_repo.get_user_chats(message.content.sender)
+                    if message.content.chat_id not in awarible_chats: raise err.NoWritePermissionError()
+
                     try:
                         await self._send_messages(message, chat_repo, chat)
                     except:
                         await session.rollback()
                         raise
-                    else: await session.commit()
+                    else:
+                        await session.commit()
 
     async def new_chat(self, chat: models.ChatModel):
         response = WebSockResponse(type="chat", content=chat)
