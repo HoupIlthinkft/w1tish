@@ -25,7 +25,7 @@ async function request_get_messages(chat_id) {
 
 
 async function request_create_new_chat(oponents_id) {
-    await fetch((window.ENV.API_URL + '/web/data/chats'), {
+    const response = await fetch((window.ENV.API_URL + '/web/data/chats'), {
         method: 'POST',
         headers: {  'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
@@ -33,6 +33,14 @@ async function request_create_new_chat(oponents_id) {
             "members_ids": oponents_id
         })
     });
+
+    if ((response.status === 401)) || (response.status === 422) {
+        await refreshToken();
+        await request_create_new_chat(oponents_id);
+    } 
+    else if (response.status === 409) {
+        console.log("Чат уже создан");
+    }
 }
 
 

@@ -88,12 +88,7 @@ function create_new_chat() {
         }
         
 
-        create_chat(list_id);
+        request_create_new_chat(list_id);
         close_add_chat();
     }
-}
-
-async function create_chat(oponents_id) {
-    request_create_new_chat(oponents_id);
-    getProtectedData();
 }
