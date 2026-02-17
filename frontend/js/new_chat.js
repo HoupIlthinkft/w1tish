@@ -1,6 +1,6 @@
 function open_add_chat() {
     document.getElementById("overlay").style.visibility = "visible";
-    document.getElementById("settings").style.visibility = "hidden";
+    document.getElementById("add_chat").style.visibility = "visible";
 }
 
 function close_add_chat() {
@@ -12,7 +12,7 @@ function close_add_chat() {
 
     document.getElementById("input_id").value = ""
     document.getElementById("overlay").style.visibility = "";
-    document.getElementById("settings").style.visibility = "";
+    document.getElementById("add_chat").style.visibility = "";
 }
 
 async function add_user_in_invitation() {

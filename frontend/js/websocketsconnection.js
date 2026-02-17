@@ -22,27 +22,29 @@ function create_connection() {
                         const message = document.createElement("div");
 
                         if (data.sender == localStorage.id) message.className = "user message";
-                            else message.className = "oponent message";
+                            else {
+                                message.className = "oponent message";
 
+                                if (document.getElementsByClassName("oponent_name").length > 1) {
+                                    const message_sender_header = document.createElement("div");
+                                    message_sender_header.className = "sender_header"
 
-                        if (document.getElementsByClassName("oponent_name").length > 1) {
-                            const message_sender_header = document.createElement("div");
-                            message_sender_header.className = "sender_header"
+                                    get_data_by_user_id(data.sender).then((oponent_data) => {
 
-                            const oponent_data = get_data_by_user_id(data.sender);
+                                    const message_sender_avatar = document.createElement("img");
+                                    message_sender_avatar.className = "logo logo_oponent";
+                                    get_avatar_url_by_id(data.sender).then((url) => message_sender_avatar.src = url);
 
-                            const message_sender_avatar = document.createElement("img");
-                            message_sender_avatar.className = "logo logo_oponent";
-                            message_sender_avatar.src = get_avatar_url_by_id(data.sender);
+                                    const message_sender_nickname = document.createElement("p");
+                                    message_sender_nickname.textContent = oponent_data.users[0].nickname;
+                                    message_sender_nickname.className = "sender_nickname";
+                            
+                                    message_sender_header.append(message_sender_avatar, message_sender_nickname);
 
-                            const message_sender_nickname = document.createElement("p");
-                            message_sender_nickname.textContent = oponent_data.users[0].id;
-                            message_sender_nickname.className = "sender_nickname";
-                    
-                            message_sender_header.append(message_sender_avatar, message_sender_nickname);
-
-                            message.append(message_sender_header);
-                        }
+                                    message.append(message_sender_header);
+                                    });
+                                }
+                            }
 
 
                         const message_content = document.createElement("div");
@@ -99,7 +101,7 @@ async function create_contact(data) {
 
     for (let id in data.permissions) if (document.getElementById("setting_user_id").textContent != id) contact_id.push(id);
 
-    contact.id = contact_id.join(" ");
+    contact.id = contact_id.join(" ") + " ";
     
     const data_members_chat = await get_data_users_ids(contact_id);
 
@@ -132,4 +134,6 @@ async function create_contact(data) {
     contact.append(view_contact, view_message);
 
     contacts.append(contact);
+
+    contact.addEventListener("click", load_chat_container, true);
 }

@@ -112,13 +112,17 @@ async function load_chat_container() {
     chat_container.id = "chat_container";
 
 
-    const oponent_header = document.createElement("div");
-    oponent_header.classList.add("oponent_header");
+    const oponent_header_chat = document.createElement("div");
+    oponent_header_chat.classList.add("oponent_header_chat");
     
     const contact_id = this.id.split(" ").slice(0, -1);
     localStorage.setItem("chat_members", contact_id);
 
     for (let i in contact_id) {
+        const oponent_header = document.createElement("div");
+        oponent_header.className = "oponent_header";
+        oponent_header.id = contact_id[i];
+
         let response_user_avatar = await get_avatar_url_by_id(contact_id[i]);
         let response_user_nickname = await get_nickname_by_id(contact_id[i]);
         
@@ -142,6 +146,8 @@ async function load_chat_container() {
 
         oponent_info.append(oponent_name, oponent_state);
         oponent_header.append(logo_oponent, oponent_info);
+        oponent_header_chat.append(oponent_header);
+        oponent_header.addEventListener("click", view_profile_user, true);     
     }
 
     const chat = document.createElement("div");
@@ -167,7 +173,7 @@ async function load_chat_container() {
     send.append(message_send, send_img);
 
 
-    chat_container.append(oponent_header, chat, send);
+    chat_container.append(oponent_header_chat, chat, send);
 
     const parent = document.getElementById("main_container");
     

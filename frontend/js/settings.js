@@ -1,6 +1,6 @@
 function open_settings() {
     document.getElementById("overlay").style.visibility = "visible";
-    document.getElementById("add_chat").style.visibility = "hidden";
+    document.getElementById("settings").style.visibility = "visible";
 
     if (document.getElementById("setting_avatar_user").src == "") document.getElementById("setting_avatar_user").src = localStorage.getItem("avatar_url");
     if (document.getElementById("setting_nickname").childNodes.item(0).textContent == "") document.getElementById("setting_nickname").childNodes.item(0).textContent = localStorage.getItem("nickname");
@@ -10,7 +10,7 @@ function close_settings() {
     recovery_editing();
 
     document.getElementById("overlay").style.visibility = "";
-    document.getElementById("add_chat").style.visibility = "";
+    document.getElementById("settings").style.visibility = "";
 }
 
 async function exit_account() {

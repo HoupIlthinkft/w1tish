@@ -2,7 +2,7 @@
 
 
 #chat_container {
-    width: 80%;
+    width: 75vw;
     
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -14,26 +14,44 @@
     background-color: #666666;
 }
 
+.oponent_header_chat {
+    height: fit-content;
+
+    margin: 1vh 0.5vw;
+    gap: 0.5vw;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    overflow: hidden;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
 .oponent_header {
     width: max-content;
+    height: fit-content;
     
-    padding: 15px 30px;
-    margin: 10px;
+    padding: 1.5vh 1vw;
     margin-right: 0px;
     border-radius: 35px;
-    gap: 10px;
+    gap: 0.5vw;
     
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     
+    cursor: pointer;
     background-color: #9D9D9D;
 }
 
+#oponent_name {
+    white-space: nowrap;
+}
+
 #chat {
-    height: 100%;
-    max-height: 100%;
+    height: 66vh;
 
     display: flex;
     flex-flow: column nowrap;
@@ -96,11 +114,11 @@
 #send {
     width: auto;
     height: auto;
-    min-height: 32px;
-    max-height: 250px;
+    min-height: 3vh;
+    max-height: 25vh;
     
-    padding: 20px 15px;
-    margin: 10px;
+    padding: 2vh 0.75vw;
+    margin: 1vh 0.5vw;
     border-radius: 30px;
     
     display: flex;
@@ -115,7 +133,7 @@
 #send_message {
     width: 100%;
     max-width: 100%;
-    max-height: 140px;
+    max-height: 14vh;
 
     border-radius: 15px;
     
@@ -138,14 +156,14 @@
 }
 
 #message_send {
-    margin-right: 10px;
-    margin-left: 5px;
+    margin-right: 0.5vw;
+    margin-left: 0.25vw;
     
     cursor: pointer;
 }
 
 .sender_header {
-    gap: 5px;
+    gap: 0.25vw;
 
     display: flex;
     flex-flow: row nowrap;

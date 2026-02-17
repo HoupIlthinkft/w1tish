@@ -26,6 +26,8 @@
 }
 
 #add_chat {
+    visibility: hidden;
+
     width: 25%;
     min-width: 360px;
     height: auto;

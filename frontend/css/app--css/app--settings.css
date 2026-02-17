@@ -3,6 +3,7 @@
 
 #settings {
     position: absolute;
+    visibility: hidden;
     
     width: 60vw;
     height: 80vh;
