@@ -51,8 +51,11 @@ async function load_contacts() {
         
         const view_message = document.createElement("div");
         view_message.classList.add("view_message");
-        view_message.innerHTML = markdownit().render(chats[chat].last_message.replaceAll("<br>", " ")); 
-
+        if (chats[chat].last_message.split("<br>").length > 1) {
+            view_message.innerHTML = markdownit().render(chats[chat].last_message.split("<br>")[0] + "↓"); 
+        } else {
+            view_message.innerHTML = markdownit().render(chats[chat].last_message);
+        }
         contact.append(view_contact, view_message);
         contacts.append(contact);
     }

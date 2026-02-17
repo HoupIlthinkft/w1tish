@@ -13,8 +13,13 @@ function create_connection() {
 
             for (let i in contact) {
                 if (contact.item(i).firstChild.id == data["chat_id"]) {
-                    contact.item(i).getElementsByClassName("view_message").item(0).innerHTML = markdownit().render(data.content.replaceAll("<br>", " "));
-                
+                    if (data.content.split("<br>").length > 1) {
+                        contact.item(i).getElementsByClassName("view_message").item(0).innerHTML = markdownit().render(data.content.split("<br>")[0] + "↓");
+                    }
+                    else {
+                        contact.item(i).getElementsByClassName("view_message").item(0).innerHTML = markdownit().render(data.content);
+                    };
+                                    
                     if (document.getElementById("chat").value == data.chat_id) {
                     
                         const chat_for_oponent = document.getElementById("chat_for_oponent");
