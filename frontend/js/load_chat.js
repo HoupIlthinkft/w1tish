@@ -1,9 +1,16 @@
-async function load_chat(user_id, chat_id, members_chat) {
-    var data = await request_get_messages(chat_id);
+async function load_chat(user_id, chat_id, members_chat, offset) {
+    var data = await request_get_messages(chat_id, offset);
 
-    const chat_for_oponent = document.createElement("div");
-    chat_for_oponent.id = "chat_for_oponent";
+    var chat_for_oponent;
 
+    if (offset == 0) {
+        chat_for_oponent = document.createElement("div");
+        chat_for_oponent.id = "chat_for_oponent";
+    } else {
+        data.messages = data.messages.reverse();
+        chat_for_oponent = document.getElementById("chat_for_oponent");
+    }
+    
     if (members_chat.length == 1) {
         for (let message in data.messages) {
             const message_container = document.createElement("div"); 
@@ -29,8 +36,11 @@ async function load_chat(user_id, chat_id, members_chat) {
             } 
                                
             message_container.innerHTML = row_format.join("");
-                   
-            chat_for_oponent.append(message_container);
+            if (offset == 0) {
+                chat_for_oponent.append(message_container);
+            } else {
+                chat_for_oponent.insertBefore(message_container, chat_for_oponent.getElementsByClassName("message").item(0));
+            }
         }
     }
     else {
@@ -92,18 +102,32 @@ async function load_chat(user_id, chat_id, members_chat) {
                 message_container.append(sender_header, message_content);
             }
             
-            chat_for_oponent.append(message_container);
+            if (offset == 0) {
+                chat_for_oponent.append(message_container);
+            } else {
+                chat_for_oponent.insertBefore(message_container, chat_for_oponent.getElementsByClassName("message").item(0));
+            }
         }
     }
     
-    const chat = document.getElementById("chat");
-    
-    setTimeout(() => {
-        chat.innerHTML = '';
-        chat.append(chat_for_oponent);
-        
-        scrollBottom();
-    }, 100);
+    chat_for_oponent.addEventListener("scroll", () => {
+        if (chat_for_oponent.scrollTop <= 1) {
+            if (document.getElementsByClassName("message").length % 50 == 0) {
+                const height_scroll = chat_for_oponent.scrollHeight;
+                load_chat(user_id, chat_id, members_chat, document.getElementsByClassName("message").length);
+                setTimeout(() => {
+                    chat_for_oponent.scrollTop = chat_for_oponent.scrollHeight - height_scroll;
+                }, 25);
+            }
+        }
+    });
+
+    if (offset == 0) {
+        setTimeout(() => {
+            document.getElementById("chat").append(chat_for_oponent);
+            scrollBottom();
+        }, 100);
+    }
 }
 
 async function load_chat_container() {
@@ -153,8 +177,8 @@ async function load_chat_container() {
     const chat = document.createElement("div");
     chat.id = "chat";
     chat.value = this.firstElementChild.id;
-
-    load_chat(localStorage.id, document.getElementById(this.id).firstElementChild.id, contact_id);
+    
+    const chat_id = document.getElementById(this.id).firstElementChild.id;
 
     const send = document.createElement("div");
     send.id = "send";
@@ -177,6 +201,8 @@ async function load_chat_container() {
 
     const parent = document.getElementById("main_container");
     
+    load_chat(localStorage.id, chat_id, contact_id, 0);
+
     setTimeout(parent.append(chat_container), 1000);
     
     scrollBottom();
@@ -190,6 +216,7 @@ async function load_chat_container() {
 
     });
 
+    
     document.getElementById("message_send").addEventListener("click", send_message);
 }
 
