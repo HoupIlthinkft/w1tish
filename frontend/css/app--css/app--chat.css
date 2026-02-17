@@ -51,7 +51,7 @@
 }
 
 #chat {
-    height: 66vh;
+    height: 73vh;
 
     display: flex;
     flex-flow: column nowrap;
