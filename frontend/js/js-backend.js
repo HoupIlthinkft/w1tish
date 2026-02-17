@@ -9,7 +9,7 @@ async function register_user(username, email, password) {
         const data = await response.json();
         localStorage.setItem("accessToken", data.access_token);
         window.location.replace("app.html"); 
-    } else if (response.status === 409) document.getElementById("error").textContent = "Вы ввели занятый логин/почту";                            
+    } else if (response.status === 409) document.getElementById("error").textContent = "", show_notifications("Вы ввели занятый логин/почту, введите другие значения", "error");                            
         else console.log("Ошибка: ", response.status);
 }
 
@@ -23,13 +23,14 @@ async function login(username, password) {
     
     if (response.status === 422) console.log("Виноват фронтендер");
         else if (response.status === 404) create_registration_container();
-            else if (response.status === 500) console.log("Виноват бэкэндер");
+            else if (response.status === 500) document.getElementById("error").textContent = "", show_notifications("Сервер лег поспать, попробуйте позже", "error");
                 else if (response.status === 200) {                            
                     const data = await response.json();
                     localStorage.setItem("accessToken", data.access_token);
                     window.location.replace("app.html");
-                } else if (response.status === 401) {
-                    document.getElementById("error").textContent = "Неверный логин или пароль";
+                } else if (response.status === 401) { 
+                    document.getElementById("error").textContent = "";
+                    show_notifications("Введен неверный логин или пароль, попробуйте ввести правильный логин/пароль", "error");
                 } 
                 else console.log("Error", response.status);
 }
@@ -50,17 +51,18 @@ async function getProtectedData() {
         });
 
         if ((response.status === 401) || (response.status === 422)) { 
-            console.log("Нужно обновить токен (refresh)");
             await refreshToken();
 
         } else if (response.status === 500) {
-            console.log("Виноват бэкэндер");
+            document.getElementById("error").textContent = "",
+            show_notifications("Сервер лег поспать, попробуйте позже", "error");
 
         } else if (response.status === 404) {
             localStorage.removeItem("accessToken");
             window.location.replace("index.html");
             create_sign_in_container();
-
+            show_notifications("Пользователя с данным логином/почтой не существует, попробуйте зарегистрироваться", "error");
+            
         } else {
             const data = await response.json();
 
@@ -91,8 +93,8 @@ async function refreshToken() {
         getProtectedData();
 
     } else if (response.status === 500) {
-        console.log("Iternal server error");
-        // TODO сделай функцию которая будет показывать ошибку на фронте
+        document.getElementById("error").textContent = "";
+        show_notifications("Сервер лег поспать, попробуйте позже", "error");
 
     } else if ((response.status === 422) || (response.status === 401)) {
         localStorage.removeItem("accessToken");

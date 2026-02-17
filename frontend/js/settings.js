@@ -86,7 +86,7 @@ async function edit_avatar() {
 
     const response = await requset_editing_avatar(formdata);
     
-    if (response == 200) console.log("edit_entry");
-    else if (response == 413) console.log("size to big");
+    if (response == 200) show_notifications("Иземение аватарки произошло успешно, перезагрузите страницу, для отображения актульных данных", "great");
+    else if (response == 413) show_notifications("Размер аватарки слишком большой, максимальный размер - 4МБ", "error");
     else console.log(response);    
 }

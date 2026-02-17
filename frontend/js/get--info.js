@@ -35,7 +35,7 @@ async function get_data_by_username(username) {
     });
 
     if (data.status === 200) return data.json();
-        else if (data.status === 404) return null;
+        else if (data.status === 404) show_notifications("Пользователя с данным username не существует", "error");
             else console.log(data.status + data.statusText);
 }
 

@@ -39,7 +39,9 @@ async function request_create_new_chat(oponents_id) {
         await request_create_new_chat(oponents_id);
     } 
     else if (response.status === 409) {
-        console.log("Чат уже создан");
+        show_notifications("Чат с таким набором пользователей уже существует, добавьте иного пользователя/удалите ненужного", "error");
+    } else if (response.status === 201) {
+        show_notifications("Чат создан, желаем плодотворного общения :)", "great");
     }
 }
 

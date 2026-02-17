@@ -1,0 +1,59 @@
+.notification {
+    position: absolute;
+    z-index: 99999;
+    bottom: 0;
+    right: 0;
+    opacity: 1;
+
+    width: min(376px, 12.5vw);
+    height: min:(128px, 12vh);
+
+    padding: 2vh 1vw;
+    margin: 2vh 1vw;
+    gap: 1vh;
+    border-radius: 20px;
+
+    display: flex;
+    flex-flow: column nowrap;
+
+    background-color: #AAAAAA;
+    font-family: Inter;
+    
+    transition: opacity 2000ms ease;
+}
+
+.notification p {
+    margin: 0;
+}
+
+.error {
+    background-color: #d4abab;
+    color: #b52222;
+}
+
+.great {
+    background-color: #bad4ab;
+    color: #31b522;
+}
+
+.notification_header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification_header_content {
+    font-size: 16pt;
+}
+
+.notification_content {
+    color: #000000;
+}
+
+#close_notification {
+    height: fit-content;
+    width: fit-content;
+    cursor: pointer;
+}
+
