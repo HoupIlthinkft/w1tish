@@ -71,8 +71,6 @@ p {
 
 .contact {
     height: fit-content;
-    
-    min-height: 64px;
 
     display: flex;
     flex-flow: column nowrap;

@@ -74,9 +74,10 @@ function create_connection() {
                 }
             }
         }
+
+        else create_contact(JSON.parse(event.data).content);
     });
 }
-
 
 function send_new_message(chat_id, message, user_id) {
     window.socket.send(JSON.stringify({
@@ -84,5 +85,51 @@ function send_new_message(chat_id, message, user_id) {
                         "content": message,
                         "sender": user_id,
                         "created_at": `${new Date(Date.now()).toJSON().slice(0, -1)}`  
-            }));
+    }));
+}
+
+
+async function create_contact(data) {
+    const contacts = document.getElementById("contacts");
+
+    const contact = document.createElement("div");
+    contact.className = "contact";
+
+    let contact_id = [];
+
+    for (let id in data.permissions) if (document.getElementById("setting_user_id").textContent != id) contact_id.push(id);
+
+    contact.id = contact_id.join(" ");
+    
+    const data_members_chat = await get_data_users_ids(contact_id);
+
+    const view_contact = document.createElement("div");
+    view_contact.className = "view_contact";
+    view_contact.id = data.id;
+
+    for (let member in data_members_chat["users"]) {
+        const logo = document.createElement("img");
+        logo.className = "logo";
+        logo.alt = "logo";
+        logo.src = await get_avatar_url_by_id(data_members_chat.users[member].id);
+
+        const name_contact = document.createElement("p");
+        name_contact.className = "name_contact";
+        name_contact.textContent = data_members_chat.users[member].nickname;
+
+
+        view_contact.append(logo, name_contact);
+    }
+
+    const view_message = document.createElement("div");
+    view_message.className = "view_message";
+
+    const view_message_content = document.createElement("p");
+    view_message_content.innerHTML = "<i>Чат создан</i>";
+
+    view_message.append(view_message_content);
+
+    contact.append(view_contact, view_message);
+
+    contacts.append(contact);
 }
