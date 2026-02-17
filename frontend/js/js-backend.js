@@ -49,7 +49,7 @@ async function getProtectedData() {
             }
         });
 
-        if (response.status === 401 || response.status === 422) { 
+        if ((response.status === 401) || (response.status === 422)) { 
             console.log("Нужно обновить токен (refresh)");
             await refreshToken();
 
@@ -69,8 +69,8 @@ async function getProtectedData() {
             localStorage.setItem("avatar", await get_avatar_url_by_id(data.id));
             localStorage.setItem("chats", JSON.stringify(data.chats));
             localStorage.setItem("id", data.id);
-
-            create_connection();
+            
+            if (window.socket == null) create_connection();
 
             if (window.location.pathname == "/app.html") load_contacts(); load_profile();
         }
@@ -94,7 +94,7 @@ async function refreshToken() {
         console.log("Iternal server error");
         // TODO сделай функцию которая будет показывать ошибку на фронте
 
-    } else if (response.status === 422 || response.status === 401) {
+    } else if ((response.status === 422) || (response.status === 401)) {
         localStorage.removeItem("accessToken");
         window.location.replace("index.html");
         create_sign_in_container();

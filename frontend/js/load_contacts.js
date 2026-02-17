@@ -5,6 +5,15 @@ async function load_contacts() {
 
     const chats = JSON.parse(localStorage.getItem("chats"))
 
+    let members_chats = [];
+
+    for (let chat in chats) {
+        for (let member in chats[chat].permissions) 
+            members_chats.push(member);
+    }
+
+    const data_members_chats_users = await get_data_users_ids(members_chats);
+    const data_members_chats = data_members_chats_users.users;
     for (let chat in chats) {
         const contact = document.createElement("div");
         contact.classList.add("contact");
@@ -15,10 +24,16 @@ async function load_contacts() {
 
         for (let members in chats[chat].permissions) {
             if (members != localStorage.getItem("id")) {
-                let member_data = await get_data_by_user_id(members);
+                let member_data = {};
+
+                data_members_chats.forEach((member) => {
+                    if (member.id == members) {
+                        member_data = member;
+                    } 
+                });
+
                 let member_data_avatar = await get_avatar_url_by_id(members);
 
-                member_data = member_data["users"][0];
                 contact.id += `${members} `;
 
                 const img = document.createElement("img");

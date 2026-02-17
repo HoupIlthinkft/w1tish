@@ -34,7 +34,7 @@ async function request_create_new_chat(oponents_id) {
         })
     });
 
-    if ((response.status === 401)) || (response.status === 422) {
+    if ((response.status === 401) || (response.status === 422)) {
         await refreshToken();
         await request_create_new_chat(oponents_id);
     } 
