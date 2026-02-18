@@ -7,6 +7,8 @@
 
     width: min(376px, 12.5vw);
     height: min:(128px, 12vh);
+    min-width: fit-content;
+    min-height: fit-content;
 
     padding: 2vh 1vw;
     margin: 2vh 1vw;
