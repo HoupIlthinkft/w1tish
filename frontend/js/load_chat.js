@@ -117,7 +117,7 @@ async function load_chat(user_id, chat_id, members_chat, offset) {
                 load_chat(user_id, chat_id, members_chat, document.getElementsByClassName("message").length);
                 setTimeout(() => {
                     chat_for_oponent.scrollTop = chat_for_oponent.scrollHeight - height_scroll;
-                }, 25);
+                }, 30);
             }
         }
     });

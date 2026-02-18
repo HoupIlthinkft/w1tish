@@ -96,6 +96,12 @@ p {
     gap: 0.5vw;
 }
 
+.name_contact {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .view_message {
     height: fit-content;
     
