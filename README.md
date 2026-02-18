@@ -1,6 +1,6 @@
 ![CI](https://github.com/KIriLOsck/w1tish/actions/workflows/build.yml/badge.svg)
 ![CI](https://github.com/KIriLOsck/w1tish/actions/workflows/unit.yml/badge.svg)
-![License](https://img.shields.io/github/license/KIriLOsck/w1tish)
+[![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/License-Polyfrom_shield_1.0.0-orange)](https://polyformproject.org/licenses/shield/1.0.0)
 ![Python Version](https://img.shields.io/badge/python-3.12+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
 
