@@ -20,6 +20,19 @@
     background-color: #C9C9C9;
 }
 
+#settings_header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#settings_header_content {
+    font-family: Inter;
+    font-size: 24pt;
+    font-weight: bold;
+}
+
 #setting_header {
     height: 63vh;
     

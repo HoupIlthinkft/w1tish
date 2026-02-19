@@ -1,11 +1,13 @@
 async function request_add_new_message(chat_id, message, user_id) {
-    await fetch((window.ENV.API_URL + '/web/data/messages'), {
+    var data = await fetch((window.ENV.API_URL + '/web/data/messages'), {
         method: 'POST',
         headers: {  'accept': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
                     'Content-Type': 'application/json' },
         body: JSON.stringify()
     });
+    
+    if (data.status === 401 || data.status === 422) refreshToken(), request_add_new_message(chat_id, message, user_id);
 
 }
 

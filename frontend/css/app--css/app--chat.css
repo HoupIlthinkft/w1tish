@@ -44,6 +44,12 @@
     
     cursor: pointer;
     background-color: #9D9D9D;
+
+    transition: background-color 0.3s ease;
+}
+
+.oponent_header:hover {
+    background-color: #7d7d7d;
 }
 
 #oponent_name {

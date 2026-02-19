@@ -43,6 +43,23 @@
     background-color: #D9D9D9;
 }
 
+#add_chat_header { 
+    width: 100%;
+
+    margin-left: 1vw;
+
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#add_chat_header_content {
+    font-family: Inter;
+    font-size: 24pt;
+    font-weight: bold;
+}
+
 #input_id {
     width: auto;
     
@@ -85,7 +102,7 @@
     align-self: flex-end;
 }
 
-p#add_chat {
+#add_chat_content {
     width: fit-content;
     
     margin-bottom: 2%;
@@ -96,6 +113,7 @@ p#add_chat {
 
 #contaiter_input_add_chat {
     gap: 20px;
+    padding-top: 20px;
     
     display: flex;
     flex-flow: column nowrap;

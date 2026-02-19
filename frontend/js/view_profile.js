@@ -2,6 +2,13 @@ async function view_profile_user() {
     const view_profile = document.createElement("div");
     view_profile.id = "view_profile";
 
+    const view_profile_header = document.createElement("div");
+    view_profile_header.id = "view_profile_header";
+
+    const view_profile_header_content = document.createElement("p");
+    view_profile_header_content.id = "view_profile_header_content";
+    view_profile_header_content.textContent = "W1tish";
+
     const close = document.createElement("i");
     close.className = "fas fa-solid fa-times fa-2x used_logo";
     close.id = "close_view_profile";
@@ -36,7 +43,8 @@ async function view_profile_user() {
     profile_header_user.append(profile_nickname, profile_username, profile_id);
     profile_content.append(profile_user_logo, profile_header_user);
     
-    view_profile.append(close, profile_content);
+    view_profile_header.append(view_profile_header_content, close);
+    view_profile.append(view_profile_header, profile_content);
 
     document.getElementById("overlay").append(view_profile);
     overlay.style.visibility = "visible";
