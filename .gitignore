@@ -6,3 +6,8 @@ data
 .pytest_cache
 .vscode
 *.log
+
+node_modules
+dist
+dist-ssr
+*.local

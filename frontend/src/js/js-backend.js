@@ -10,7 +10,7 @@ async function register_user(username, email, password) {
         localStorage.setItem("accessToken", data.access_token);
         window.location.replace("app.html"); 
     } else if (response.status === 409) document.getElementById("error").textContent = "", show_notifications("Вы ввели занятый логин/почту, введите другие значения", "error");                            
-        else console.log("Ошибка: ", response.status);
+        else show_notifications("Ошибка сервера: " + response.status, "error");
 }
 
 
@@ -31,8 +31,8 @@ async function login(username, password) {
                 } else if (response.status === 401) { 
                     document.getElementById("error").textContent = "";
                     show_notifications("Введен неверный логин или пароль, попробуйте ввести правильный логин/пароль", "error");
-                } 
-                else console.log("Error", response.status);
+                } else show_notifications("Ошибка сервера: " + response.status, "error");
+
 }
 
 

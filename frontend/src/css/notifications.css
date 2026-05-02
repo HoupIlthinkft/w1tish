@@ -13,7 +13,7 @@
     padding: 2vh 1vw;
     margin: 2vh 1vw;
     gap: 1vh;
-    border-radius: 20px;
+    border-radius: 15px;
 
     display: flex;
     flex-flow: column nowrap;
@@ -46,11 +46,12 @@
 }
 
 .notification_header_content {
-    font-size: 16pt;
+    font-size: clamp(1rem,2vw,2rem);
 }
 
 .notification_content {
     color: #000000;
+    font-size: clamp(0.5rem,1vw,1rem);
 }
 
 #close_notification {

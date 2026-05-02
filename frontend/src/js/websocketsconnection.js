@@ -1,7 +1,7 @@
 function create_connection() {
     window.socket = new WebSocket(`ws${window.ENV.API_URL.slice([4])}/ws?token=${localStorage.accessToken}`);
     
-    const socket = window.socket;
+    let socket = window.socket;
 
     socket.addEventListener("message", (event) => {
 
@@ -83,6 +83,12 @@ function create_connection() {
         }
 
         else create_contact(JSON.parse(event.data).content);
+    });
+    
+
+    socket.addEventListener("error", () => {
+        window.socket = new WebSocket(`ws${window.ENV.API_URL.slice([4])}/ws?token=${localStorage.accessToken}`);
+        socket = window.socket;
     });
 }
 
