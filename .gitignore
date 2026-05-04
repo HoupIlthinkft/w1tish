@@ -9,3 +9,4 @@ data
 .github
 *.log
 *.local
+dist/
