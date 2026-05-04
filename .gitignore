@@ -10,3 +10,4 @@ data
 *.log
 *.local
 dist/
+static/

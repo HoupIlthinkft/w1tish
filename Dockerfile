@@ -3,7 +3,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY /frontend ./frontend
-RUN npm install --prefix frontend && npm run build --prefix frontend
+RUN npm install --prefix frontend && npm run vite build --prefix frontend
 
 FROM python:3.12-slim
 

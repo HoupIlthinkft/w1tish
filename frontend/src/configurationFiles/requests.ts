@@ -1,5 +1,6 @@
 import {    useDataStore, useProfileStore } from "./config.ts";
 import { callNotification } from "../Notification/notifications.tsx";
+import { getData } from '@api';
 
 export async function register_user(username, email, password) {
     const response = await fetch((window as any).ENV.API_URL + '/web/auth/register', {
@@ -17,6 +18,7 @@ export async function register_user(username, email, password) {
 
 
 export async function login(username, password) {
+    getData();
     const response = await fetch((window as any).ENV.API_URL + '/web/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
