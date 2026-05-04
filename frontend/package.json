@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "tauri": "tauri",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -11,9 +12,9 @@
     "tw": "tailwindcss -i ./src/style.css -o ./dist/output.css --watch"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.2.4",
     "@splidejs/react-splide": "^0.7.12",
     "@splidejs/splide-extension-auto-scroll": "^0.5.3",
+    "@tailwindcss/vite": "^4.2.4",
     "autosize": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "immer": "^11.1.4",
@@ -25,6 +26,7 @@
     "@eslint/js": "^9.39.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@tailwindcss/vite": "^4.2.4",
+    "@tauri-apps/cli": "^2.11.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
