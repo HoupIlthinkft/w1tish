@@ -2,12 +2,10 @@ __pycache__
 app
 data
 .env
+.github
 .DS_Store
 .pytest_cache
 .vscode
+.github
 *.log
-
-node_modules
-dist
-dist-ssr
 *.local

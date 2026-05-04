@@ -69,4 +69,4 @@ async def custom_swagger_ui_html():
         swagger_ui_parameters=config.swagger
     )
 
-app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
