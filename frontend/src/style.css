@@ -12,6 +12,20 @@
 @theme {
     --color-plate-bg: #7E7E7E;
     --color-text-bg: #777777;
+
+    --color-plate-accent: #D9D9D9;
+    --color-plate-muted: #FFFFFF;
+    
+    --color-plate-hover: #AAAAAA;
+
+    
+}
+
+:root {
+    --color-notification-error-plate: #d4abab;
+    --color-notification-error-text: #b52222;
+    --color-notification-success-plate: #bad4ab; 
+    --color-notification-success-text: #31b522;
 }
 
 #root {
