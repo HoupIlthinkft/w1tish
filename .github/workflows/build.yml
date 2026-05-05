@@ -93,20 +93,17 @@ jobs:
         run: |
           npm run tauri android init
 
-      - name: Install Android SDK components
-        if: matrix.target == 'android'
-        run: sdkmanager "build-tools;34.0.0"
-
       - name: Prepare Android Signing
         if: matrix.target == 'android'
         run: |
+          mkdir -p frontend/src-tauri/gen/android/app
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > frontend/src-tauri/gen/android/app/release.jks
           
           echo "password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > frontend/src-tauri/gen/android/keystore.properties
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> frontend/src-tauri/gen/android/keystore.properties
           echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> frontend/src-tauri/gen/android/keystore.properties
           
-          echo "storeFile=release.jks" >> frontend/src-tauri/gen/android/keystore.properties
+          echo "storeFile=app/release.jks" >> frontend/src-tauri/gen/android/keystore.properties
 
       - name: Build Android app
         if: matrix.target == 'android'
