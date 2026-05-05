@@ -98,6 +98,17 @@ jobs:
         working-directory: ./frontend
         run: npm run tauri android build
 
+      - name: Sign APK
+        if: matrix.target == 'android'
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: frontend/src-tauri/gen/android/app/build/outputs/apk/universal/release/
+          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
+          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
         with:
