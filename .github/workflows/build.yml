@@ -41,12 +41,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Init Android depends
-        if: matrix.target == 'android'
-        working-directory: ./frontend
-        run: |
-          npm run tauri android init
-
       - name: Setup Java (for Android)
         if: matrix.target == 'android'
         uses: actions/setup-java@v4
@@ -92,6 +86,17 @@ jobs:
         if: matrix.target == 'macos'
         working-directory: ./frontend
         run: npm run tauri build
+
+      - name: Init Android depends
+        if: matrix.target == 'android'
+        working-directory: ./frontend
+        run: |
+          npm run tauri android init
+
+      - name: Build Android app
+        if: matrix.target == 'android'
+        working-directory: ./frontend
+        run: npm run tauri android build
 
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
