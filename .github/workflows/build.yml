@@ -3,8 +3,8 @@ name: Build Draft Release
 on:
   push:
     branches:
-      - main          # или ваша ветка для автоматической сборки
-  workflow_dispatch:  # возможность запуска вручную
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies (Ubuntu skipped for now, but we use macOS/Windows)
         run: |
-          npm ci   # или pnpm install, yarn install
+          cd frontend && npm install   # или pnpm install, yarn install
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli
@@ -55,7 +55,7 @@ jobs:
       - name: Build macOS app
         if: matrix.target == 'macos'
         run: npm run tauri build
-        
+
       # ---- Сборка артефактов для релиза ----
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
