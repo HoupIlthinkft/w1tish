@@ -47,21 +47,24 @@ jobs:
           workspaces: "src-tauri -> target"
 
       - name: Install dependencies (Ubuntu skipped for now, but we use macOS/Windows)
+        working-directory: ./frontend
         run: |
-          npm install --prefix frontend 
+          npm install
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
       - name: Build Windows app
         if: matrix.target == 'windows'
-        run: npm run tauri build --prefix frontend 
+        working-directory: ./frontend
+        run: npm run tauri build
         env:
           TAURI_BUILD: true
 
       - name: Build macOS app
         if: matrix.target == 'macos'
-        run: npm run tauri build --prefix frontend
+        working-directory: ./frontend
+        run: npm run tauri build
 
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
