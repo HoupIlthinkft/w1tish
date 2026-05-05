@@ -97,10 +97,16 @@ jobs:
         if: matrix.target == 'android'
         run: sdkmanager "build-tools;34.0.0"
 
-      - name: Prepare Keystore
+      - name: Prepare Android Signing
         if: matrix.target == 'android'
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > frontend/src-tauri/gen/android/app/release.jks
+          
+          echo "password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > frontend/src-tauri/gen/android/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> frontend/src-tauri/gen/android/keystore.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> frontend/src-tauri/gen/android/keystore.properties
+          
+          echo "storeFile=release.jks" >> frontend/src-tauri/gen/android/keystore.properties
 
       - name: Build Android app
         if: matrix.target == 'android'
