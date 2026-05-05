@@ -93,25 +93,24 @@ jobs:
         run: |
           npm run tauri android init
 
+      - name: Install Android SDK components
+        if: matrix.target == 'android'
+        run: sdkmanager "build-tools;34.0.0"
+
+      - name: Prepare Keystore
+        if: matrix.target == 'android'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > frontend/src-tauri/gen/android/app/release.jks
+
       - name: Build Android app
         if: matrix.target == 'android'
         working-directory: ./frontend
-        run: npm run tauri android build
-
-      - name: Add build tools to PATH
-        if: matrix.target == 'android'
-        run: echo "${ANDROID_HOME}/build-tools/34.0.0" >> $GITHUB_PATH
-
-      - name: Sign APK
-        if: matrix.target == 'android'
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: frontend/src-tauri/gen/android/app/build/outputs/apk/universal/release/
-          signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE }}
-          alias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: npm run tauri android build -- --release
+        env:
+          TAURI_ANDROID_KEYSTORE_PATH: "release.jks"
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
