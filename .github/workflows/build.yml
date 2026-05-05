@@ -18,10 +18,14 @@ jobs:
         include:
           - os: windows-latest
             target: windows
-            artifact_name: '*.exe *.msi'
+            artifact_patterns: |
+              frontend/src-tauri/target/release/bundle/msi/*.msi
+              frontend/src-tauri/target/release/bundle/setup/*.exe
           - os: macos-latest
             target: macos
-            artifact_name: '*.app *.dmg'
+            artifact_patterns: |
+              frontend/src-tauri/target/release/bundle/dmg/*.dmg
+              frontend/src-tauri/target/release/bundle/macos/*.app
 
     steps:
       - name: Checkout repository
@@ -62,10 +66,9 @@ jobs:
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
         with:
+          files: ${{ matrix.artifact_patterns }}
           draft: true
           name: "Draft Release ${{ github.sha }}"
           tag_name: "draft-${{ github.run_number }}"
-          files: |
-            src-tauri/target/release/bundle/**/${{ matrix.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
