@@ -26,6 +26,11 @@ jobs:
             artifact_patterns: |
               frontend/src-tauri/target/release/bundle/dmg/*.dmg
               frontend/src-tauri/target/release/bundle/macos/*.app
+          - os: ubuntu-latest
+            target: android
+            artifact_patterns: |
+              frontend/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+              frontend/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
 
     steps:
       - name: Checkout repository
@@ -36,10 +41,31 @@ jobs:
         with:
           node-version: 20
 
+      - name: Init Android depends
+        if: matrix.target == 'android'
+        run: |
+          npm run tauri android init
+
+      - name: Setup Java (for Android)
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        if: matrix.target == 'android'
+        uses: android-actions/setup-android@v3
+
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           target: wasm32-unknown-unknown
+
+      - name: Install Rust Android targets
+        if: matrix.target == 'android'
+        run: |
+          rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
       - name: Rust Cache
         uses: swatinem/rust-cache@v2
