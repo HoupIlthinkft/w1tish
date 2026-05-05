@@ -1,33 +1,69 @@
-name: Build
+name: Build Draft Release
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main          # или ваша ветка для автоматической сборки
+  workflow_dispatch:  # возможность запуска вручную
 
 jobs:
-  test_build:
-    runs-on: ubuntu-latest
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+            artifact_name: '*.exe *.msi'
+          - os: macos-latest
+            target: macos
+            artifact_name: '*.app *.dmg'
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Create .env file for CI
-      run: |
-        cat > .env << EOF
-        JWT_SECRET=iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA=
-        S3_ENDPOINT=https://s3.w1tish.ru
-        S3_AVATARS=https://avatars.w1tish
-        S3_ACCESS=fake_access_key
-        S3_SECRET=fake_secret_key
-        S3_BUKKET=w1tish
-        EOF
-    - name: Install Docker Compose
-      run: |
-        sudo curl -L "https://github.com/docker/compose/releases/download/v5.0.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        sudo chmod +x /usr/local/bin/docker-compose
-        docker-compose --version
-    - name: Start services with Docker Compose
-      run: |
-        docker-compose up -d --build
-        docker-compose ps
-        sleep 15
-    - name: Stop services
-      if: always()
-      run: docker-compose down -v
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ---- Общие шаги для всех платформ ----
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'   # измените на 'pnpm' или 'yarn' при необходимости
+
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-unknown-unknown  # требуется для Tauri
+
+      - name: Install dependencies (Ubuntu skipped for now, but we use macOS/Windows)
+        run: |
+          npm ci   # или pnpm install, yarn install
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
+      # ---- Windows ----
+      - name: Build Windows app
+        if: matrix.target == 'windows'
+        run: npm run tauri build
+        env:
+          TAURI_BUILD: true
+
+      # ---- macOS ----
+      - name: Build macOS app
+        if: matrix.target == 'macos'
+        run: npm run tauri build
+        
+      # ---- Сборка артефактов для релиза ----
+      - name: Upload artifacts to draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: "Draft Release ${{ github.sha }}"
+          tag_name: "draft-${{ github.run_number }}"
+          files: |
+            src-tauri/target/release/bundle/**/${{ matrix.artifact_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
