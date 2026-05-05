@@ -98,6 +98,10 @@ jobs:
         working-directory: ./frontend
         run: npm run tauri android build
 
+      - name: Add build tools to PATH
+        if: matrix.target == 'android'
+        run: echo "${ANDROID_HOME}/build-tools/34.0.0" >> $GITHUB_PATH
+
       - name: Sign APK
         if: matrix.target == 'android'
         uses: r0adkll/sign-android-release@v1
