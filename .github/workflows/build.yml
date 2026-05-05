@@ -50,7 +50,7 @@ jobs:
 
       - name: Build macOS app
         if: matrix.target == 'macos'
-        run: npm run tauri build --prefix frontend 
+        run: npm run tauri build --prefix frontend
 
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
