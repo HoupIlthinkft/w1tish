@@ -57,7 +57,7 @@ jobs:
       - name: Build Windows app
         if: matrix.target == 'windows'
         working-directory: ./frontend
-        run: npm run tauri build
+        run: npm run build:windows
         env:
           TAURI_BUILD: true
 
