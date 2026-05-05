@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies (Ubuntu skipped for now, but we use macOS/Windows)
         run: |
-          cd frontend && npm install   # или pnpm install, yarn install
+          npm install --prefix frontend   # или pnpm install, yarn install
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli
