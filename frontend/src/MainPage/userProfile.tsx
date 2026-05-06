@@ -41,8 +41,14 @@ export function UserProfileComponent() {
                                 <div className="flex flex-row gap-[clamp(5px,1vw,20px)]">
                                     <div className='flex flex-col group justify-center'>
                                         <img className="w-[clamp(64px,13vw,256px)] h-[clamp(64px,13vw,256px)] rounded-[10px]" src={profile.avatar} alt="setting_avatar_user" />
-                                        <input className="absolute z-[2] text-transparent opacity-[0] bg-white/33 group-hover:opacity-[1] duration-500 transition-all ease cursor-pointer w-[256px] h-[256px]" onChange={() => {
-                                            requset_editing_avatar();
+                                        <input className="absolute z-[2] text-transparent opacity-[0] bg-white/33 group-hover:opacity-[1] duration-500 transition-all ease cursor-pointer w-[256px] h-[256px]" onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (!file) return;
+
+                                            const formData = new FormData();
+                                            formData.append("file", file, file.name);
+
+                                            requset_editing_avatar(formData);
                                         }} type="file" accept=".png, .jpeg, .jpg, .webp" />
                                         <span className="material-symbols-outlined absolute text-white/33 w-fit self-center scale-[calc(8/3)] opacity-[0] group-hover:opacity-[1] duration-300 transition-all ease">compare</span>
                                     </div>

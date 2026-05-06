@@ -57,6 +57,13 @@ export const useProfileStore = create<ProfileStoreIntf>()(
     immer((set) => ({
         profile: null,
         setProfile: (data) => set((state) => {state.profile = data}),
+        addContact: (data) => set((state) => {state.profile.chats = [data, ...state.profile.chats]}),
+        addMessage: (data) => set((state) => {state.profile.chats.forEach((chat, index) => {
+            if (chat == data["chat_id"]) {
+                state.profile.chats[index].last_message_author = data["sender"];
+                state.profile.chats[index].last_message_text = data["content"];
+                state.profile.chats[index].last_message_time = data["created_at"];
+        }})})
     }))
 )
 
@@ -70,9 +77,11 @@ export const useContactStore = create<ContactStoreIntf>()(
 
 export const useChatStore = create(
     immer((set) => ({
+        activityChat: null,
         chatStory: null,
         setChatStory: (data) => set((state) => {state.chatStory = data}),
-        addChatStory: (data) => set((state) => {[...data, ...state.chatStory]})
+        loadChatStory: (data) => set((state) => {[...data, ...state.chatStory]}),
+        addChatStory: (data) => set((state) => {[...state.chatStory, data]}),
     }))
 )
 

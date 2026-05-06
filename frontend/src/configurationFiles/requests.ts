@@ -173,7 +173,7 @@ export async function requset_editing_nickname(new_nickname) {
             headers: {  'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                         'Content-Type': 'application/json' },
             body: JSON.stringify({
-                "nickname": new_nickname
+                "nickname": new_nickname,
             })
         });
     }

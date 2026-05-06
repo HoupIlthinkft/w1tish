@@ -1,6 +1,10 @@
+import { useRef } from "react";
+
 import { useChatStore, useProfileStore } from "../configurationFiles/config.ts";
 
 export function ChatComponent() {
+    const inputMessage = useRef(null);
+
     const chatStory = useChatStore((state) => state.chatStory);
 
     return (
@@ -10,7 +14,7 @@ export function ChatComponent() {
                 <>
                     <div>
                         {
-                            chatActivity.members.map((member, index) => (
+                            chatStory.members.map((member, index) => (
                                 <>
                                     {
                                         member.nickname != useProfileStore.getState().profile.nickname ? (
@@ -34,8 +38,8 @@ export function ChatComponent() {
                         }
                     </div>
                     <div>
-                        <textarea className="h-fit max-h-[20vh]" placeholder="Введите сообщение..." />
-                        <span>send</span>
+                        <textarea ref={inputMessage} className="h-fit max-h-[20vh]" placeholder="Введите сообщение..." />
+                        <span className="material-symbols-outlined" onClick={send_new_message(useChatStore.getState().activityChat, inputMessage.current.value, useProfileStore.getState().profile.id)}>send</span>
                     </div>
                 </>
                 ) : (
