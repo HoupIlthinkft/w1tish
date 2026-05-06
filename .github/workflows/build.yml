@@ -98,22 +98,16 @@ jobs:
         run: |
           mkdir -p frontend/src-tauri/gen/android/app
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > frontend/src-tauri/gen/android/app/release.jks
-          
-          echo "password=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > frontend/src-tauri/gen/android/keystore.properties
-          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> frontend/src-tauri/gen/android/keystore.properties
-          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> frontend/src-tauri/gen/android/keystore.properties
-          
-          echo "storeFile=app/release.jks" >> frontend/src-tauri/gen/android/keystore.properties
 
       - name: Build Android app
         if: matrix.target == 'android'
         working-directory: ./frontend
         run: npm run tauri android build
         env:
-          TAURI_ANDROID_KEYSTORE_PATH: "release.jks"
-          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          TAURI_ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEYSTORE_PATH: "app/release.jks"
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
 
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
