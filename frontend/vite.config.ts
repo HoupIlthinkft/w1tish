@@ -8,6 +8,7 @@ const isTauriBuild = process.env.TAURI_BUILD === 'true';
 
 // https://vite.dev/config/
 export default defineConfig({
+  envDir: '../',
   build: {
     outDir: "../static",
     emptyOutDir: true
