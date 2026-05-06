@@ -35,6 +35,7 @@ class Settings(BaseSettings):
 
     LOGS_FILE: str = f"{datetime.now().strftime("%d-%m-%Y_%H:%M")}.log"
     API_URL: str = "http://localhost"
+    VITE_API_URL: str = ""
 
     JWT_ALGORITHM: str = "HS256"
 
