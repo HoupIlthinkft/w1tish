@@ -64,6 +64,7 @@ export const useContactStore = create<ContactStoreIntf>()(
     immer((set) => ({
         contacts: null,
         setContacts: (data) => set((state) => {state.contacts = data}),
+        addContact: (id, data) => set((state) => {state.contacts[id] = data})
     }))
 )
 
@@ -71,6 +72,7 @@ export const useChatStore = create(
     immer((set) => ({
         chatStory: null,
         setChatStory: (data) => set((state) => {state.chatStory = data}),
+        addChatStory: (data) => set((state) => {[...data, ...state.chatStory]})
     }))
 )
 

@@ -35,7 +35,7 @@ export function AuthRegFormComponent() {
                     if (password.current.value.length >= 8) {
                         if (password.current.value.toLowerCase() != password.current.value) {
                             if (password.current.value.toUpperCase() != password.current.value) {
-                                login(username, password);
+                                login(username.current.value, password.current.value);
                             } else callNotification("Нету символа(ов) нижнего регистра в пароле", "error");
                         } else callNotification("Нету символа(ов) верхнего регистра в пароле", "error");
                     } else callNotification("Длина пароля меньше 8", "error");

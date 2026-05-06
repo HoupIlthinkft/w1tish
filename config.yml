@@ -1,6 +1,6 @@
 # основные настройки
 avatars:
-  default_count: 5
+  default_count: 1
 
 limits:
   nickname_len: 42

@@ -3,7 +3,7 @@ import { callNotification } from "../Notification/notifications.tsx";
 import { getData } from '@api';
 
 export async function register_user(username, email, password) {
-    const response = await fetch((window as any).ENV.API_URL + '/web/auth/register', {
+    const response = await fetch('/web/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
@@ -19,7 +19,7 @@ export async function register_user(username, email, password) {
 
 export async function login(username, password) {
     getData();
-    const response = await fetch((window as any).ENV.API_URL + '/web/auth', {
+    const response = await fetch('/web/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -45,13 +45,14 @@ export async function getProtectedData() {
         useProfileStore.getState().setProfile(null);
         useDataStore.getState().setAccessToken(accessToken);
 
-        const response = await fetch((window as any).ENV.API_URL + '/web/data', {
+        const response = await fetch('/web/data', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
                 'Authorization': `Bearer ${accessToken}`
             }
         });
+        
 
         if ((response.status === 401) || (response.status === 422)) { 
             await refreshToken();
@@ -73,9 +74,16 @@ export async function getProtectedData() {
                 chats: JSON.stringify(data.chats),
                 id: data.id,
             })
-           // if ((window as any).socket == null) create_connection();
+            
+            const membersChats = [];
 
-           // if (useDataStore.getState().accessToken != null) load_contacts(); load_profile();
+            for (let chat in JSON.stringify(data.chats)) {
+                for (let member in chat.permissions) {
+                    membersChats.push(member);
+                }
+            }
+
+            useContactStore.getState().setContacts(await get_data_users_ids([...new Set(membersChats)]));
         }
     } else await refreshToken();
 }
@@ -83,7 +91,7 @@ export async function getProtectedData() {
 
 export async function refreshToken() {
 
-    const response = await fetch((window as any).ENV.API_URL + '/web/auth/session/refresh', {
+    const response = await fetch('/web/auth/session/refresh', {
         method: "POST",
         headers: { 'Content-Type': 'application/json' }
     });
@@ -102,7 +110,7 @@ export async function refreshToken() {
 }
 
 export async function request_add_new_message(chat_id, message, user_id) {
-    var data = await fetch(((window as any).ENV.API_URL + '/web/data/messages'), {
+    var data = await fetch(('/web/data/messages'), {
         method: 'POST',
         headers: {  'accept': 'application/json',
                     'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
@@ -116,7 +124,7 @@ export async function request_add_new_message(chat_id, message, user_id) {
 
 
 export async function request_get_messages(chat_id, offset=0) {
-    var data = await fetch(((window as any).ENV.API_URL + `/web/data/messages?chat_id=${String(chat_id)}&offset=${offset}&limit=50`), {
+    var data = await fetch((`/web/data/messages?chat_id=${String(chat_id)}&offset=${offset}&limit=50`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
             'Authorization': `Bearer ${useDataStore.getState().accessToken}`
@@ -130,7 +138,7 @@ export async function request_get_messages(chat_id, offset=0) {
 
 
 export async function request_create_new_chat(oponents_id) {
-    const response = await fetch(((window as any).ENV.API_URL + '/web/data/chats'), {
+    const response = await fetch(('/web/data/chats'), {
         method: 'POST',
         headers: {  'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                     'Content-Type': 'application/json' },
@@ -152,7 +160,7 @@ export async function request_create_new_chat(oponents_id) {
 
 
 export async function request_reset_token() {
-    await fetch(((window as any).ENV.API_URL + '/web/auth/session/logout'), {
+    await fetch(('/web/auth/session/logout'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -160,7 +168,7 @@ export async function request_reset_token() {
 
 export async function requset_editing_nickname(new_nickname) {
     if (new_nickname != useProfileStore.getState().profile.nickname) {
-        await fetch(((window as any).ENV.API_URL + '/web/data/nickname'), {
+        await fetch(('/web/data/nickname'), {
             method: 'PATCH',
             headers: {  'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                         'Content-Type': 'application/json' },
@@ -188,7 +196,7 @@ export async function requset_editing_avatar(new_avatar) {
 
 
 export async function get_data_by_user_id(user_id) {
-    const data = await fetch(((window as any).ENV.API_URL + `/web/data/user?user_id=${user_id}`), {
+    const data = await fetch((`/web/data/user?user_id=${user_id}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -206,7 +214,7 @@ export async function get_data_users_ids(users_ids) {
         user_id.push(`user_id=${users_ids[i]}`)
     }
 
-    const data = await fetch(((window as any).ENV.API_URL + `/web/data/user?${user_id.join("&")}`), {
+    const data = await fetch((`/web/data/user?${user_id.join("&")}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -218,7 +226,7 @@ export async function get_data_users_ids(users_ids) {
 
 
 export async function get_data_by_username(username) {
-    const data = await fetch(((window as any).ENV.API_URL + `/web/data/user?username=${username}`), {
+    const data = await fetch((`/web/data/user?username=${username}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -229,7 +237,7 @@ export async function get_data_by_username(username) {
 }
 
 
-export async function get_avatar_url_by_id(id) {
+export function get_avatar_url_by_id(id) {
     return (window as any).ENV.AVATARS_URL + `/avatars/${id}.jpeg`
 }
 
