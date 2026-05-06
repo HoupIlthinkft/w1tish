@@ -87,12 +87,6 @@ jobs:
         working-directory: ./frontend
         run: npm run tauri build
 
-      - name: Init Android depends
-        if: matrix.target == 'android'
-        working-directory: ./frontend
-        run: |
-          npm run tauri android init
-
       - name: Prepare Android Signing
         if: matrix.target == 'android'
         run: |
