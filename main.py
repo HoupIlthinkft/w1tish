@@ -41,25 +41,6 @@ app.add_middleware(
 async def status():
     return {"status":"ok"}
 
-
-@app.get(
-    "/config.js",
-    summary=config.docs.config.summary,
-    description=config.docs.config.description
-)
-def get_config():
-    env_variables = {
-        "API_URL": settings.API_URL,
-        "AVATARS_URL": settings.S3_AVATARS
-    }
-    content = ", ".join([f"{k}: '{v}'" for k, v in env_variables.items()])
-    content = f"window.ENV = {{{content}}};"
-    
-    return Response(
-        content=content, 
-        media_type="application/javascript"
-    )
-
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html():
     return get_swagger_ui_html(

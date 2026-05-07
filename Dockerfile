@@ -12,9 +12,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY /backend ./backend
 COPY --from=build /app/static ./static
-COPY /tests ./tests
+COPY ./frontend/swagger.css ./static/
 COPY main.py .
-COPY pytest.ini .
 COPY .env .
 COPY config.yml .
 
