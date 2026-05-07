@@ -60,7 +60,8 @@ class DataService:
         self.user_avatars = avatars_repo
         self.sock_manager = sock_manager
 
-    async def add_message(self, user_id: int, request: models.MessageModel) -> None:
+    async def add_message(self, user_id: str, request: models.MessageModel) -> None:
+        if user_id != request.sender: raise err.NoWritePermissionError("Cant send message from another user!")
         if request.chat_id:
             avarible_chats = await self.user_chats.get_user_chats(user_id)
             logger.info("Checking permissions...")
