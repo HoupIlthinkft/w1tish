@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+/// <reference types="vite/client" />
+
+>>>>>>> 5807b35a306075c1a50ccb039cdeed7650370f26
 const apiURL: string = import.meta.env.API_URL;
 
 export class WSClient {
