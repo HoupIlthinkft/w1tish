@@ -61,7 +61,8 @@ class DataService:
         self.sock_manager = sock_manager
 
     async def add_message(self, user_id: str, request: models.MessageModel) -> None:
-        if user_id != request.sender: raise err.NoWritePermissionError("Cant send message from another user!")
+        if user_id != request.sender: 
+            raise err.NoWritePermissionError("Cant send message from another user!")
         if request.chat_id:
             avarible_chats = await self.user_chats.get_user_chats(user_id)
             logger.info("Checking permissions...")
@@ -81,7 +82,7 @@ class DataService:
         
         permissions = {str(member): "user" for member in request.members_ids}
         permissions[str(user_id)] = "owner"
-        if len(permissions) < 2 or len(permissions) > 7: raise err.InvalidArgumentsError("You should create chat with 2 - 7 users")
+        if len(permissions) != 2: raise err.InvalidArgumentsError("You should create chat with 2 users")
 
         chat_id = await self.user_chats.add_chat(permissions)
         await self.sock_manager.new_chat(models.ChatModel(id=chat_id, permissions=permissions))
