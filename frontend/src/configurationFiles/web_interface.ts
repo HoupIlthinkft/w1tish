@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-/// <reference types="vite/client" />
-
->>>>>>> 161a29b440d3dd88689cbbefb2624a4b02c9e360
 const apiURL: string = import.meta.env.API_URL;
 
 export class WSClient {
@@ -34,7 +29,7 @@ export async function makeRequest(
   content: Record<string, any>,
   query?: Record<string, string>
 ) {
-  let renderURL = `${apiURL}/${apiMethod}`;
+  let renderURL = `${apiURL}${apiMethod}`;
 
   if (query) {
       renderURL += "?";

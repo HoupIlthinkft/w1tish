@@ -19,7 +19,6 @@ export async function register_user(username, email, password) {
 
 
 export async function login(username, password) {
-    getData();
     const response = await makeRequest('/web/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
