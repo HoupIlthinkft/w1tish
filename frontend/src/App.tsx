@@ -39,6 +39,7 @@ function App() {
                     <div className="w-[75%] h-[100%]">
                         <ChatComponent />
                     </div>
+                    <NotificationComponent />
                 </div>
             )
     )

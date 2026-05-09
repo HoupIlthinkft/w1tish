@@ -43,7 +43,7 @@ export function NotificationComponent() {
 
     return (
         <div ref={notificationRef} 
-            className={`hidden border-2 border-solid px-[clamp(5px,2vw,20px)] md:px-[clamp(5px,1vw,20px)] py-[clamp(1px,1vh,10px)] md:py-[clamp(5px,2vh,20px)] mx-[clamp(5px,1vw,20px)] rounded-[15px] absolute z-[5] ease-in right-[0%] top-[-10%] [transition:opacity_1s,translate_0.5s]`}
+            className={`w-fit max-w-[20vw] hidden border-2 border-solid px-[clamp(5px,2vw,20px)] md:px-[clamp(5px,1vw,20px)] py-[clamp(1px,1vh,10px)] md:py-[clamp(5px,2vh,20px)] mx-[clamp(5px,1vw,20px)] rounded-[15px] absolute z-[5] ease-in right-[0%] top-[-10%] [transition:opacity_1s,translate_0.5s]`}
             style={{ "borderColor": `var(--color-notification-${typeNotification}-text)`, "background": `var(--color-notification-${typeNotification}-plate)`}}>
             <div className='flex flex-row gap-[clamp(10px,2vw,30px)] justify-between'>
                 <p className="font-semibold text-[clamp(0.75rem,1.5vw,1.5rem)]" style={{color: `var(--color-notification-${typeNotification}-text)`}}>{typeNotification == "error" ? "Ошибка" : "Успешно"}</p>

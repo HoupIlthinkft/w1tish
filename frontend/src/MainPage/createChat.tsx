@@ -9,6 +9,7 @@ export function CreateChatComponent() {
     const inputMember = useRef<HTMLInputElement | null>(null);
 
     const addMember = async () => {
+        
         if (inputMember.current.value.trim() != "") {
             if (inputMember.current.value != useProfileStore.getState().profile.username) {
                 if (members.every((el) => el.username != inputMember.current.value)) { 
@@ -53,9 +54,13 @@ export function CreateChatComponent() {
                             <div className="flex flex-row justify-between">
                                 <button className="bg-plate-accent rounded-[20px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] hover:scale-[1.1] duration-300 ease" onClick={() => addMember()}>Добавить участника</button>
                                 <button className="bg-plate-accent rounded-[20px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] hover:scale-[1.1] duration-300 ease" onClick={() => {
-                                    request_create_new_chat(members.map((member) => member.id));
-                                    setMembers([]);
-                                    setActivityCreateChat(!activityCreateChat);
+                                    if (JSON.stringify(members) != "[]") {
+                                        if (Object.values(useProfileStore.getState().profile.chats).every((chat) => JSON.stringify(Object.keys(chat.permissions)) == JSON.stringify(members.map((member) => member.id)))) {
+                                            request_create_new_chat(members.map((member) => member.id));
+                                            setMembers([]);
+                                            setActivityCreateChat(!activityCreateChat);
+                                        } else callNotification("К сожалению нельзя сделать два одиннаковых чата, многопоточность запрещена на территории w1tish", "error");
+                                    } else callNotification("К сожалению нельзя общаться с пустотой, админ запретил", "error");
                                 }}>Созидать</button>
                             </div>
                         </div>
