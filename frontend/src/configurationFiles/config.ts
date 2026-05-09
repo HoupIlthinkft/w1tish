@@ -70,16 +70,18 @@ export const useProfileStore = create<ProfileStoreIntf>()(
             chat.last_message_author = data["sender"];
             chat.last_message = data["content"];
             chat.last_message_time = data["created_at"];
-        }
-        ))
+        })),
+        setNickname: (newNickname) => set(produce((state) => {
+            state.profile.nickname = newNickname;
+        }))            
     }))
 )
 
 export const useContactStore = create<ContactStoreIntf>()(
     immer((set) => ({
-        contacts: null,
+        contacts: [],
         setContacts: (data) => set((state) => {state.contacts = data}),
-        addContact: (id, data) => set(produce((state) => {state.contacts[id] = data}))
+        addContact: (data) => set(produce((state) => {state.contacts.push(data)}))
     }))
 )
 

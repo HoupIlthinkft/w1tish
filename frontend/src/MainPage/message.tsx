@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown'
 import { useProfileStore, useContactStore } from "../configurationFiles/config.ts";
 import { get_avatar_url_by_id } from "../configurationFiles/requests.ts";
 
@@ -17,7 +18,7 @@ export function MessageComponent({message}) {
                     </div>
                 ) : <></>
             }
-            <div>{content}</div>
+            <div><ReactMarkdown>{content}</ReactMarkdown></div>
         </div>
     )
 }

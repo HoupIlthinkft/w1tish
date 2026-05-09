@@ -173,7 +173,7 @@ export async function requset_editing_nickname(new_nickname) {
 }
 
 export async function requset_editing_avatar(new_avatar) {
-    const response = await fetch(((window as any).ENV.API_URL  + "/web/data/avatar"), {
+    const response = await fetch(("/web/data/avatar"), {
         method: 'PATCH',
         headers: {
             'accept': 'application/json', 

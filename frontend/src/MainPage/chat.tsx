@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { useChatStore, useProfileStore, useContactStore } from "../configurationFiles/config.ts";
 import { get_avatar_url_by_id } from "../configurationFiles/requests.ts";
@@ -7,6 +7,7 @@ import { send_new_message } from "../configurationFiles/webSocketsConnection.ts"
 import { MessageComponent } from "./message.tsx";
 
 export function ChatComponent() {
+    const [activityMemberProfile, setActivityMemberProfile] = useState(false);
     const inputMessage = useRef(null);
 
     const profile = useProfileStore((state) => state.profile);
@@ -27,10 +28,31 @@ export function ChatComponent() {
                                     const member = membersData.find(memberData => memberData.id == memberId);
 
                                     return (
-                                        <div key={index}>   
-                                            <img src={get_avatar_url_by_id(memberId)} />
-                                            <p>{member.nickname}</p>
-                                        </div>
+                                        <>
+                                            <div key={index} onClick={() => setActivityMemberProfile(!activityMemberProfile)}>   
+                                                <img src={get_avatar_url_by_id(memberId)} />
+                                                <p>{member.nickname}</p>
+                                            </div>
+                                            {
+                                                activityMemberProfile ? (
+                                                    <div className="absolute z-[2] top-0 left-0 flex justify-center items-center w-screen h-screen bg-black/66">
+                                                        <div className="flex flex-col justify-start bg-white w-[50vw] h-[50vh] px-[clamp(10px,2vw,40px)] py-[clamp(10px,4vh,40px)] rounded-[20px]">
+                                                            <div className="flex flex-row justify-between w-[100%]">
+                                                                <p className="text-[clamp(1rem,6vw,6rem)] font-medium">W1tish</p>
+                                                                <span className="material-symbols-outlined w-fit self-start scale-[calc(8/3)] cursor-pointer" onClick={() => setActivityMemberProfile(!activityMemberProfile)}>close</span>
+                                                            </div>
+                                                            <div className="flex flex-row gap-[clamp(5px,1vw,20px)]">
+                                                                <img className="w-[clamp(64px,13vw,256px)] h-[clamp(64px,13vw,256px)] rounded-[10px]" src={get_avatar_url_by_id(memberId)} />
+                                                                <div className="flex flex-col gap-[clamp(5px,2vh,20px)]">
+                                                                    <p className="text-[clamp(1rem,4vw,4rem)]">{member.nickname}</p>
+                                                                    <p className="text-[clamp(1rem,2vw,2rem)]">{member.username}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ) : <></>
+                                            }
+                                        </>
                                     )
                                 }
                             })

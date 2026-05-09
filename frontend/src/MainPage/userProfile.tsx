@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useProfileStore, useDataStore } from "../configurationFiles/config.ts";
-import { requset_editing_nickname, getProtectedData, request_reset_token } from "../configurationFiles/requests.ts";
+import { requset_editing_nickname, requset_editing_avatar, getProtectedData, request_reset_token } from "../configurationFiles/requests.ts";
 
 
 export function UserProfileComponent() {
@@ -62,6 +62,7 @@ export function UserProfileComponent() {
                                                             <span className="material-symbols-outlined w-fit self-center scale-[calc(8/3)] cursor-pointer" onClick={() => setEditingNickname(false)}>close</span>
                                                             <span className="material-symbols-outlined w-fit self-center scale-[calc(8/3)] cursor-pointer" onClick={() => {
                                                                 requset_editing_nickname(editNicknameRef.current.value);
+                                                                useProfileStore.getState().setNickname(editNicknameRef.current.value);
                                                                 setEditingNickname(false);
                                                             }}>check</span>
                                                         </div>

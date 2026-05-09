@@ -28,7 +28,7 @@ export function ContactsListComponent() {
     
 
     return (
-        usersData != null ? (
+        JSON.stringify(usersData) != '[]' ? (
         <div className="h-[100%] w-[100%] bg-white rounded-[15px] overflow-y-auto">
             {
                 Object.entries(userContact).map((contact, index) => (

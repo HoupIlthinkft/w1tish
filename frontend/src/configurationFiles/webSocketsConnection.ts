@@ -1,4 +1,5 @@
-import { useDataStore, useProfileStore, useChatStore } from "./config.ts";
+import { useDataStore, useProfileStore, useChatStore, useContactStore } from "./config.ts";
+import { get_data_users_ids } from "./requests.ts";
 import { WSClient } from "./web_interface.ts";
 
 const client = new WSClient();
@@ -18,7 +19,10 @@ export function createConnection() {
                 useChatStore.getState().addChatStory(data.content);
             }
         } else {
-            useProfileStore.getState().addContact(data.content);
+            get_data_users_ids(Object.keys(data.content.permissions)).then(value => {
+                value.users.forEach((el) => useContactStore.getState().contacts.every(member => member.id != el.id) ? useContactStore.getState().addContact(el) : "");
+                useProfileStore.getState().addContact(data.content);
+            })
         }
     });
 }

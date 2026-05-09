@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown'
+
 import { useContactStore, useChatStore, useProfileStore } from "../configurationFiles/config.ts";
 import { get_avatar_url_by_id, request_get_messages } from "../configurationFiles/requests.ts";
 
@@ -24,7 +26,7 @@ export function ContactComponent({contact}) {
                     ))
                 }
             </div>
-            <div>{contact[1].last_message}</div>
+            <div><ReactMarkdown>{contact[1].last_message}</ReactMarkdown></div>
         </div>
     )
 }
