@@ -1,10 +1,10 @@
 import { useDataStore, useProfileStore, useContactStore } from "./config.ts";
 import { createConnection } from "./webSocketsConnection.ts";
 import { callNotification } from "../Notification/notifications.tsx";
-import { getData } from '@api';
+import { makeRequest } from '@api';
 
 export async function register_user(username, email, password) {
-    const response = await fetch('/web/auth/register', {
+    const response = await makeRequest('/web/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password })
@@ -20,7 +20,7 @@ export async function register_user(username, email, password) {
 
 export async function login(username, password) {
     getData();
-    const response = await fetch('/web/auth', {
+    const response = await makeRequest('/web/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -46,7 +46,7 @@ export async function getProtectedData() {
         useProfileStore.getState().setProfile(null);
         useDataStore.getState().setAccessToken(accessToken);
 
-        const response = await fetch('/web/data', {
+        const response = await makeRequest('/web/data', {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json', 
@@ -84,7 +84,7 @@ export async function getProtectedData() {
 
 export async function refreshToken() {
 
-    const response = await fetch('/web/auth/session/refresh', {
+    const response = await makeRequest('/web/auth/session/refresh', {
         method: "POST",
         headers: { 'Content-Type': 'application/json' }
     });
@@ -103,7 +103,7 @@ export async function refreshToken() {
 }
 
 export async function request_add_new_message(chat_id, message, user_id) {
-    var data = await fetch(('/web/data/messages'), {
+    var data = await makeRequest(('/web/data/messages'), {
         method: 'POST',
         headers: {  'accept': 'application/json',
                     'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
@@ -117,7 +117,7 @@ export async function request_add_new_message(chat_id, message, user_id) {
 
 
 export async function request_get_messages(chat_id, offset=0) {
-    var data = await fetch((`/web/data/messages?chat_id=${String(chat_id)}&offset=${offset}&limit=50`), {
+    var data = await makeRequest((`/web/data/messages?chat_id=${String(chat_id)}&offset=${offset}&limit=50`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
             'Authorization': `Bearer ${useDataStore.getState().accessToken}`
@@ -131,7 +131,7 @@ export async function request_get_messages(chat_id, offset=0) {
 
 
 export async function request_create_new_chat(oponents_id) {
-    const response = await fetch(('/web/data/chats'), {
+    const response = await makeRequest(('/web/data/chats'), {
         method: 'POST',
         headers: {  'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                     'Content-Type': 'application/json' },
@@ -153,7 +153,7 @@ export async function request_create_new_chat(oponents_id) {
 
 
 export async function request_reset_token() {
-    await fetch(('/web/auth/session/logout'), {
+    await makeRequest(('/web/auth/session/logout'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -161,7 +161,7 @@ export async function request_reset_token() {
 
 export async function requset_editing_nickname(new_nickname) {
     if (new_nickname != useProfileStore.getState().profile.nickname) {
-        await fetch(('/web/data/nickname'), {
+        await makeRequest(('/web/data/nickname'), {
             method: 'PATCH',
             headers: {  'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                         'Content-Type': 'application/json' },
@@ -173,7 +173,7 @@ export async function requset_editing_nickname(new_nickname) {
 }
 
 export async function requset_editing_avatar(new_avatar) {
-    const response = await fetch(("/web/data/avatar"), {
+    const response = await makeRequest(("/web/data/avatar"), {
         method: 'PATCH',
         headers: {
             'accept': 'application/json', 
@@ -189,7 +189,7 @@ export async function requset_editing_avatar(new_avatar) {
 
 
 export async function get_data_by_user_id(user_id) {
-    const data = await fetch((`/web/data/user?user_id=${user_id}`), {
+    const data = await makeRequest((`/web/data/user?user_id=${user_id}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -207,7 +207,7 @@ export async function get_data_users_ids(users_ids) {
         user_id.push(`user_id=${users_ids[i]}`)
     }
 
-    const data = await fetch((`/web/data/user?${user_id.join("&")}`), {
+    const data = await makeRequest((`/web/data/user?${user_id.join("&")}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
@@ -219,7 +219,7 @@ export async function get_data_users_ids(users_ids) {
 
 
 export async function get_data_by_username(username) {
-    const data = await fetch((`/web/data/user?username=${username}`), {
+    const data = await makeRequest((`/web/data/user?username=${username}`), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     });
