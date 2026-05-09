@@ -5,6 +5,7 @@ WORKDIR /app
 COPY /frontend/package*.json frontend/
 RUN npm install --prefix frontend
 
+COPY .env .
 COPY /frontend ./frontend
 RUN npm run vite build --prefix frontend
 
