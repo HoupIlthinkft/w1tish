@@ -10,7 +10,7 @@ export function ContactsListComponent() {
     const usersData = useContactStore((state) => state.contacts);
 
     useEffect(() => {
-        if (userContact == undefined || userContact == null) return;
+        if (JSON.stringify(userContact) == "{}" || userContact == undefined) return;
 
         const usersInContact = new Set(
             Object.entries(userContact).flatMap(

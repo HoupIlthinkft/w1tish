@@ -17,7 +17,9 @@ export function createConnection() {
             if (useChatStore.getState().activityChat == data.content["chat_id"]) {               
                 useChatStore.getState().addChatStory(data.content);
             }
-        } else useProfileStore.getState().addContact(data.content);
+        } else {
+            useProfileStore.getState().addContact(data.content);
+        }
     });
 }
 

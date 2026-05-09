@@ -58,7 +58,12 @@ export const useProfileStore = create<ProfileStoreIntf>()(
     immer((set) => ({
         profile: null,
         setProfile: (data) => set((state) => {state.profile = data}),
-        addContact: (data) => set((state) => {state.profile.chats = [data, ...state.profile.chats]}),
+        addContact: (data) => set(produce((state) => {state.profile.chats[data.id] = {
+            permissions: data.permissions,
+            last_message: "_Чат создан_",
+            last_message_author: 0,
+            last_message_time: new Date().toJSON(),
+        }})),
         addMessage: (data) => set(produce((state) => {
             const chat = state.profile.chats[data["chat_id"]];
                                   
