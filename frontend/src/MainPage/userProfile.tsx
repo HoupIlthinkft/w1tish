@@ -9,13 +9,8 @@ export function UserProfileComponent() {
     
     const editNicknameRef = useRef<HTMLElement | null>(null);
 
-    let profile = useProfileStore((state) => state.profile);
+    const profile = useProfileStore((state) => state.profile);
 
-    useEffect(() => {
-        getProtectedData();
-    }, [])
-    
-    if (profile == null) return;
 
     return (
         <>

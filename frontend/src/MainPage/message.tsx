@@ -1,16 +1,19 @@
 import { useProfileStore, useContactStore } from "../configurationFiles/config.ts";
-import { get_avatart_url_by_id } from "../configurationFiles/requests.ts";
+import { get_avatar_url_by_id } from "../configurationFiles/requests.ts";
 
-export function MessageComponent() {
-    const profile = useProfileStore.getState().profile;
+export function MessageComponent({message}) {
+    const profile = useProfileStore((state) => state.profile);
     
+    const sender = message.sender;
+    const content = message.content;
+
     return (
         <div>
             {
                 profile.id != sender ? (
                     <div>
                         <img href={get_avatar_url_by_id(sender)} />
-                        <p>{useContactStore.getState().contact.sender.nickname}</p>
+                        <p>{useContactStore.getState().contacts[sender].nickname}</p>
                     </div>
                 ) : <></>
             }

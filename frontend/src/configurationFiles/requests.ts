@@ -1,4 +1,5 @@
-import {    useDataStore, useProfileStore } from "./config.ts";
+import { useDataStore, useProfileStore, useContactStore } from "./config.ts";
+import { createConnection } from "./webSocketsConnection.ts";
 import { callNotification } from "../Notification/notifications.tsx";
 import { getData } from '@api';
 
@@ -71,19 +72,11 @@ export async function getProtectedData() {
                 username: data.username,
                 nickname: data.nickname,
                 avatar: await get_avatar_url_by_id(data.id),
-                chats: JSON.stringify(data.chats),
+                chats: data.chats,
                 id: data.id,
             })
-            
-            const membersChats = [];
 
-            for (let chat in JSON.stringify(data.chats)) {
-                for (let member in chat.permissions) {
-                    membersChats.push(member);
-                }
-            }
-
-            useContactStore.getState().setContacts(await get_data_users_ids([...new Set(membersChats)]));
+            createConnection();
         }
     } else await refreshToken();
 }
@@ -238,7 +231,7 @@ export async function get_data_by_username(username) {
 
 
 export function get_avatar_url_by_id(id) {
-    return (window as any).ENV.AVATARS_URL + `/avatars/${id}.jpeg`
+    return `/avatars/${id}.jpeg`
 }
 
 

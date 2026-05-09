@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { produce } from "immer";
 
 interface DataStoreIntf {
     accessToken: null | string;
@@ -58,12 +59,14 @@ export const useProfileStore = create<ProfileStoreIntf>()(
         profile: null,
         setProfile: (data) => set((state) => {state.profile = data}),
         addContact: (data) => set((state) => {state.profile.chats = [data, ...state.profile.chats]}),
-        addMessage: (data) => set((state) => {state.profile.chats.forEach((chat, index) => {
-            if (chat == data["chat_id"]) {
-                state.profile.chats[index].last_message_author = data["sender"];
-                state.profile.chats[index].last_message_text = data["content"];
-                state.profile.chats[index].last_message_time = data["created_at"];
-        }})})
+        addMessage: (data) => set(produce((state) => {
+            const chat = state.profile.chats[data["chat_id"]];
+                                  
+            chat.last_message_author = data["sender"];
+            chat.last_message = data["content"];
+            chat.last_message_time = data["created_at"];
+        }
+        ))
     }))
 )
 
@@ -71,7 +74,7 @@ export const useContactStore = create<ContactStoreIntf>()(
     immer((set) => ({
         contacts: null,
         setContacts: (data) => set((state) => {state.contacts = data}),
-        addContact: (id, data) => set((state) => {state.contacts[id] = data})
+        addContact: (id, data) => set(produce((state) => {state.contacts[id] = data}))
     }))
 )
 
@@ -79,9 +82,10 @@ export const useChatStore = create(
     immer((set) => ({
         activityChat: null,
         chatStory: null,
+        setActivityChat: (data) => set((state) => {state.activityChat = data}),
         setChatStory: (data) => set((state) => {state.chatStory = data}),
-        loadChatStory: (data) => set((state) => {[...data, ...state.chatStory]}),
-        addChatStory: (data) => set((state) => {[...state.chatStory, data]}),
+        loadChatStory: (data) => set(produce((state) => {state.chatStory = [...data, ...state.chatStory]})),
+        addChatStory: (data) => set(produce((state) => {state.chatStory = [...state.chatStory, data]})),
     }))
 )
 

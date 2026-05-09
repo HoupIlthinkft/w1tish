@@ -4,7 +4,7 @@ export class WSClient {
   private socket: WebSocket | null = null;
 
   async connect(token: string) {
-    this.socket = new WebSocket(`${apiURL}/ws?token=${token}`);
+    this.socket = new WebSocket(`/ws?token=${token}`);
     return new Promise<void>((res) => {
       this.socket!.onopen = () => res();
     });
