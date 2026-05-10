@@ -81,6 +81,13 @@ class ChatRepository:
     ):
         self.db = db
         self.generator = generator
+
+    def generate_id(self, user_id1: str, user_id2: str) -> str:
+        return str(
+            self.generator.generate_chatid(
+                [int(user_id1), int(user_id2)]
+            )
+        )
     
     async def get_user_chats(self, user_id: str) -> set[str]:
         query = await self.db.execute(

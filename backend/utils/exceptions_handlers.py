@@ -5,7 +5,7 @@ import backend.errors as err
 import logging
 logger = logging.getLogger(__name__)
 
-def keys_already_added(
+def keys_exist_handler(
     request: Request,
     exc: err.KeysExistError
 ):
@@ -14,6 +14,18 @@ def keys_already_added(
         status_code=status.HTTP_409_CONFLICT,
         content = {
             "detail": "Keys for this user already exists. Use keys/signed, keys/identity or keys/pre"
+        }
+    )
+
+def chat_exist_handler(
+    request: Request,
+    exc: err.ChatExistError
+):
+    logger.warning("Attemp to replace chat")
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content = {
+            "detail": "Chat already exist! Use websockets to message..."
         }
     )
 
@@ -183,7 +195,8 @@ def too_long_nickname_handlers(
     )
 
 HANDLERS = {
-    err.KeysExistError:         keys_already_added,
+    err.KeysExistError:         keys_exist_handler,
+    err.ChatExistError:         chat_exist_handler,
     err.InvalidArgumentsError:  invalid_argument_handler,
     err.InvalidImageError:      invalid_image_handler,
     err.UserExistError:         user_exist_handler,

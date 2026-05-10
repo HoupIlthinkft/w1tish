@@ -33,6 +33,7 @@ async def get_user_data_by_id(
     return await service.get_users_data(user_id, username)
 
 
+
 @data_router.get(
     "",
     response_model=models.UserResponse,
@@ -44,22 +45,27 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     logger.info("[GET] Trying get user data...")
     return await service.get_user_data(user_id)
 
+
+
 @data_router.post(
     "/message",
     status_code=status.HTTP_201_CREATED,
-    response_model=models.OKResponse,
+    # response_model=models.OKResponse,
     summary=config.docs.add_messages.summary,
     description=config.docs.add_messages.description,
     responses=config.docs.add_messages.responses
 )
-async def add_new_message(
-    request: models.MessageModel,
+async def add_new_chat(
+    request: models.FirstMessageModel,
     service: DataServiceDep,
     user_id: CurrentUser
 ):
     logger.info("[POST] Trying to add new message...")
-    await service.add_message(user_id, request)
-    return models.OKResponse()
+    chat_id = await service.first_message(user_id, request)
+    return {"chat_id": chat_id}
+
+
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 @data_router.get(
     "/messages",
@@ -97,6 +103,9 @@ async def create_new_chat(
     logger.info("[POST] Trying to create chat...")
     chat_id = await service.add_chat(user_id, request)
     return models.CreateChatResponse(chat_id=chat_id)
+
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 @data_router.patch(
     "/avatar",

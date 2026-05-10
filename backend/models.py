@@ -28,6 +28,13 @@ class ChatModel(BaseModel):
         }]
     )
 
+class FirstMessageModel(BaseModel):
+    reciver: str = Field(..., examples=["42526713371488"], description="Айди получателя")
+    sender: str = Field(..., examples=["52426714881337"], description="Айди отправителя")
+    encrypt: str = Field(..., examples=["5242/@5235FejFENWIfnNEMFNIwefnJEIf"], description="Данные о шифровании")
+    content: str = Field(..., examples=["FEJNKJlgkjeNELEKgjnKSEjgnlkjnfjnep"], description="Сообщение")
+    created_at: datetime = Field(..., examples=["2026-01-31T21:35:10.161344"], description="Дата создания чата")
+
 class MessageModel(BaseModel):
     chat_id: str = Field(..., examples=["42"], description="Айди чата")
     content: str = Field(..., examples=["Васап бро"], description="Сообщение")

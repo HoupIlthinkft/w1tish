@@ -76,19 +76,25 @@ class DataService:
         await self.user_keys.add_public_keys(user_id, keys.identity_key, keys.signed_key)
         self.user_keys.add_prekeys(user_id, keys.pre_keys)
 
-    async def add_message(self, user_id: str, request: models.MessageModel) -> None:
+    async def first_message(self, user_id: str, request: models.FirstMessageModel) -> str:
         if user_id != request.sender: 
             raise err.NoWritePermissionError("Cant send message from another user!")
-        if request.chat_id:
-            avarible_chats = await self.user_chats.get_user_chats(user_id)
-            logger.info("Checking permissions...")
-            if request.chat_id not in avarible_chats:
-                logger.warning("User have not permission to send message")
-                raise err.NoWritePermissionError(request)
-                
-            async with self.user_chats.set_chat(request):
-                await self.user_messages.add_message(request)
-        else: raise err.InvalidArgumentsError("Chat id cant be emply")
+        
+        permissions = {request.sender: "member", request.reciver: "member"}
+        chat_id = await self.user_chats.add_chat(permissions)
+        message = models.MessageModel(
+            chat_id=chat_id,
+            content=request.content,
+            sender=request.sender,
+            created_at=request.created_at
+        )
+        await self.user_messages.add_message(message)
+        await self.sock_manager.new_chat(models.ChatModel(id=chat_id, permissions=permissions))
+        return chat_id
+    
+
+    
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
     async def add_chat(self, user_id: int, request: models.CreateChatRequestModel) -> str:
         chat_members = []
@@ -103,6 +109,10 @@ class DataService:
         chat_id = await self.user_chats.add_chat(permissions)
         await self.sock_manager.new_chat(models.ChatModel(id=chat_id, permissions=permissions))
         return chat_id
+    
+    # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
 
     async def get_messages(self, user_id: str, chat_id: str, offset: int, limit: int) -> models.MessagesResponse:
         avarible_chats = await self.user_chats.get_user_chats(user_id)
