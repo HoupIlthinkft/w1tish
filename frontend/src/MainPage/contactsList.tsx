@@ -23,7 +23,10 @@ export function ContactsListComponent() {
             )
         );
         
-        get_data_users_ids(Array.from(usersInContact)).then((value) => useContactStore.getState().setContacts(value.users));
+        get_data_users_ids(Array.from(usersInContact)).then((value) => {
+            useContactStore.getState().setContacts(value.users);
+            console.log(useContactStore.getState().contacts);
+    });
     }, [])
     
 

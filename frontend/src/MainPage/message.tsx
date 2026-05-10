@@ -14,7 +14,7 @@ export function MessageComponent({message}) {
                 profile.id != sender ? (
                     <div>
                         <img href={get_avatar_url_by_id(sender)} />
-                        <p>{useContactStore.getState().contacts[sender].nickname}</p>
+                        <p>{useContactStore.getState().contacts.find(contact => contact.id == sender).nickname}</p>
                     </div>
                 ) : <></>
             }
