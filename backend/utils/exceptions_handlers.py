@@ -5,6 +5,18 @@ import backend.errors as err
 import logging
 logger = logging.getLogger(__name__)
 
+def keys_already_added(
+    request: Request,
+    exc: err.KeysExistError
+):
+    logger.warning("Attemp to replace keys using keys [POST]")
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content = {
+            "detail": "Keys for this user already exists. Use keys/signed, keys/identity or keys/pre"
+        }
+    )
+
 def invalid_argument_handler(
     request: Request,
     exc: err.InvalidArgumentsError
@@ -171,6 +183,7 @@ def too_long_nickname_handlers(
     )
 
 HANDLERS = {
+    err.KeysExistError:         keys_already_added,
     err.InvalidArgumentsError:  invalid_argument_handler,
     err.InvalidImageError:      invalid_image_handler,
     err.UserExistError:         user_exist_handler,

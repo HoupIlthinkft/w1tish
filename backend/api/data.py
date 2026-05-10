@@ -44,16 +44,8 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     logger.info("[GET] Trying get user data...")
     return await service.get_user_data(user_id)
 
-@data_router.get(
-    "/keys",
-    response_model=models.UserKeysResponse,
-)
-async def get_user_keys(service: DataServiceDep, user_id: Annotated[str, Query(description="Айди пользователя")]):
-    logger.info("[GET] Trying get user data...")
-    return await service.get_user_keys(user_id)
-
 @data_router.post(
-    "/messages",
+    "/message",
     status_code=status.HTTP_201_CREATED,
     response_model=models.OKResponse,
     summary=config.docs.add_messages.summary,
@@ -74,7 +66,8 @@ async def add_new_message(
     response_model=models.MessagesResponse,
     summary=config.docs.get_messages.summary,
     description=config.docs.get_messages.description,
-    responses=config.docs.get_messages.responses
+    responses=config.docs.get_messages.responses,
+    deprecated=True
 )
 async def get_messages(
     service: DataServiceDep,

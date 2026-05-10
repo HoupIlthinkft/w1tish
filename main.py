@@ -9,7 +9,7 @@ from backend.core.logger import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
-from backend.api import auth, broadcast,data
+from backend.api import auth, broadcast, data, encrypt
 from backend.dependencies.dependencies import lifespan
 from backend.utils.exceptions_handlers import setup_exception_handlers
 
@@ -25,6 +25,7 @@ setup_exception_handlers(app)
 app.include_router(broadcast.socket_router)
 app.include_router(auth.auth_router)
 app.include_router(data.data_router)
+app.include_router(encrypt.encrypt_router)
 
 app.add_middleware(
     CORSMiddleware,

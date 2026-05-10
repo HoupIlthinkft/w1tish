@@ -58,6 +58,17 @@ class SendMessagesRequestModel(BaseModel):
 class SetNicknameModel(BaseModel):
     nickname: str = Field(..., description="Новый никнейм пользователя", examples=["Пельмень 228 котлета 336"])
 
+class SetAllKeysRequestModel(BaseModel):
+    identity_key: str = Field(..., examples=["FaKeIdenTiTyKeYwiThBase64EnCoDInG="], description="Идентификационный ключ пользователя")
+    signed_key: str = Field(..., examples=["FaKePrESigNEdKeYwiThBase64EnCoDInG="], description="Подписанный ключ шифоования пользователя")
+    pre_keys: list[str] = Field(..., examples=[["FaKeKeyOnE=", "FaKeKeyTwO=", "FakeKeyTrE="]], description="Разовые ключи для создания чата")
+
+class UpdateSignedKeyResponseModel(BaseModel):
+    signed_key: str = Field(..., examples=["FaKePrESigNEdKeYwiThBase64EnCoDInG="], description="Подписанный ключ шифоования пользователя")
+
+class AddPreKeysResponseModel(BaseModel):
+    pre_keys: list[str] = Field(..., examples=[["FaKeKeyOnE=", "FaKeKeyTwO=", "FakeKeyTrE="]], description="Разовые ключи для создания чата")
+
 
 # модели ответов
 
@@ -107,10 +118,6 @@ class ChatsBase(Base):
     last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
 
-
-from sqlalchemy import BigInteger, Text, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
-
 class Base(DeclarativeBase):
     pass
 
@@ -131,7 +138,7 @@ class PublicKeysBase(Base):
     __tablename__ = "public_keys"
 
     keys_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), nullable=False)
+    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), nullable=False, unique=True)
     
     identity_key: Mapped[str] = mapped_column(Text, nullable=False)
     signed_prekey: Mapped[str] = mapped_column(Text, nullable=False)

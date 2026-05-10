@@ -108,7 +108,7 @@ class ChatRepository:
             return str(chat_id)
     
         except IntegrityError:
-                raise err.ChatExistError()
+            raise err.ChatExistError()
     
     @asynccontextmanager
     async def set_chat(self, message: models.MessageModel) -> AsyncGenerator[None, None]:
@@ -246,14 +246,14 @@ class KeysRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
 
-    async def add_prekeys(self, user_id: str, keys: list[str]) -> None:
+    def add_prekeys(self, user_id: str, keys: list[str]) -> None:
         objects = [
             models.PreKeysBase(
                 id=int(user_id),
                 key=key
             ) for key in keys
         ]
-        await self.db.add_all(objects)
+        self.db.add_all(objects)
 
     async def get_prekey(self, user_id: str) -> str:
         query = await self.db.execute(
@@ -300,3 +300,16 @@ class KeysRepository:
             signed_key=public_keys.signed_prekey,
             pre_key=None
         )
+    
+    async def add_public_keys(self, user_id: str, identity_key: str, signed_key: str) -> None:
+        user_keys = models.PublicKeysBase(
+            id=int(user_id),
+            identity_key=identity_key,
+            signed_prekey=signed_key
+        )
+        try:
+            self.db.add(user_keys)
+            await self.db.flush()
+        except IntegrityError:
+            logger.info("Keys already exist!")
+            raise err.KeysExistError()
