@@ -274,7 +274,7 @@ class KeysRepository:
     async def update_signed_key(self, user_id: str, signed_key: str) -> None:
         query = await self.db.execute(
             update(
-                models.PublicKeysBase.signed_prekey
+                models.PublicKeysBase
             ).where(
                 models.PublicKeysBase.id == int(user_id)
             ).values(

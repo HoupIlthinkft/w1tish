@@ -40,3 +40,29 @@ async def set_user_keys(
     logger.info("[POST] Setting user keys...")
     await service.set_user_keys(user_id, keys)
     return models.OKResponse()
+
+@encrypt_router.post(
+    "/signed",
+    response_model=models.OKResponse
+)
+async def set_user_signed_prekey(
+    service: DataServiceDep,
+    user_id: CurrentUser,
+    key: models.UpdateSignedKeyResponseModel
+):
+    logger.info("[POST] Setting user signed prekey...")
+    await service.user_keys.update_signed_key(user_id, key.signed_key)
+    return models.OKResponse()
+
+@encrypt_router.post(
+    "/pre",
+    response_model=models.OKResponse
+)
+async def add_user_prekeys(
+    service: DataServiceDep,
+    user_id: CurrentUser,
+    keys: models.AddPreKeysResponseModel
+):
+    logger.info("[POST] Setting user signed prekey...")
+    service.user_keys.add_prekeys(user_id, keys.pre_keys)
+    return models.OKResponse()

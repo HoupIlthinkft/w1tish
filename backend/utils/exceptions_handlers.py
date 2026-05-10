@@ -9,7 +9,7 @@ def keys_already_added(
     request: Request,
     exc: err.KeysExistError
 ):
-    logger.warning("Attemp to replace keys using keys [POST]")
+    logger.warning("Attemp to replace keys using keys/public [POST]")
     return JSONResponse(
         status_code=status.HTTP_409_CONFLICT,
         content = {
