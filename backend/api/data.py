@@ -44,6 +44,13 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     logger.info("[GET] Trying get user data...")
     return await service.get_user_data(user_id)
 
+@data_router.get(
+    "/keys",
+    response_model=models.UserKeysResponse,
+)
+async def get_user_keys(service: DataServiceDep, user_id: Annotated[str, Query(description="Айди пользователя")]):
+    logger.info("[GET] Trying get user data...")
+    return await service.get_user_keys(user_id)
 
 @data_router.post(
     "/messages",
@@ -86,7 +93,8 @@ async def get_messages(
     response_model=models.CreateChatResponse,
     summary=config.docs.chats.summary,
     description=config.docs.chats.description,
-    responses=config.docs.chats.responses
+    responses=config.docs.chats.responses,
+    deprecated=True
 )
 async def create_new_chat(
     request: models.CreateChatRequestModel,

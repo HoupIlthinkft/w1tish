@@ -240,3 +240,63 @@ class DataRepository:
         )
         if not query.rowcount:
             raise err.UserNotFoundError()
+        
+
+class KeysRepository:
+    def __init__(self, session: AsyncSession):
+        self.db = session
+
+    async def add_prekeys(self, user_id: str, keys: list[str]) -> None:
+        objects = [
+            models.PreKeysBase(
+                id=int(user_id),
+                key=key
+            ) for key in keys
+        ]
+        await self.db.add_all(objects)
+
+    async def get_prekey(self, user_id: str) -> str:
+        query = await self.db.execute(
+            select(
+                models.PreKeysBase
+            ).where(
+                models.PreKeysBase.id == int(user_id)
+            ).limit(1)
+        )
+        key = query.scalar_one_or_none()
+        if key:
+            await self.db.delete(key)
+            return key.key
+        
+        logger.warning(f"Noone prekeys was searched for user '{user_id}'")
+        raise err.NoPreKeysError()
+    
+    async def update_signed_key(self, user_id: str, signed_key: str) -> None:
+        query = await self.db.execute(
+            update(
+                models.PublicKeysBase.signed_prekey
+            ).where(
+                models.PublicKeysBase.id == int(user_id)
+            ).values(
+                signed_prekey=signed_key
+            )
+        )
+        if not query.rowcount:
+            raise err.UserNotFoundError()
+    
+    async def get_user_keys(self, user_id: str) -> models.UserKeysResponse:
+        query = await self.db.execute(
+            select(
+                models.PublicKeysBase
+            ).where(
+                models.PublicKeysBase.id == int(user_id)
+            )
+        )
+        public_keys = query.scalar_one_or_none()
+        if not public_keys: raise err.UserNotFoundError()
+
+        return models.UserKeysResponse(
+            identity_key=public_keys.identity_key,
+            signed_key=public_keys.signed_prekey,
+            pre_key=None
+        )

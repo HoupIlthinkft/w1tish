@@ -48,6 +48,7 @@ def get_data_service(
     sock_manager: annotations.SockManager
 ) -> services.DataService:
     data_repo = repo.DataRepository(session)
+    keys_repo = repo.KeysRepository(session)
     chats_repo = repo.ChatRepository(session, id_generator)
     mess_repo = repo.MessagesRepository(collection)
     return services.DataService(
@@ -55,7 +56,8 @@ def get_data_service(
         chats_repo,
         mess_repo,
         avatar_loader,
-        sock_manager
+        sock_manager,
+        keys_repo
     )
 
 AuthServiceDep = Annotated[services.AuthService, Depends(get_auth_service)]

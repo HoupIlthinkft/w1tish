@@ -52,13 +52,25 @@ class DataService:
         chats_repo: protocols.IChatRepository,
         mess_repo: protocols.IMessagesRepository,
         avatars_repo: protocols.IAvatarLoader,
-        sock_manager: protocols.ISockManager
+        sock_manager: protocols.ISockManager,
+        keys_repo: protocols.IKeyRepository
     ):
         self.user_data = data_repo
         self.user_chats = chats_repo
         self.user_messages = mess_repo
         self.user_avatars = avatars_repo
         self.sock_manager = sock_manager
+        self.user_keys = keys_repo
+
+    async def get_user_keys(self, user_id: str) -> models.UserKeysResponse:
+        pre_key = None
+        try: pre_key = await self.user_keys.get_prekey(user_id)
+        except err.NoPreKeysError: logger.info("Set prekey to None")
+
+        public_keys = await self.user_keys.get_user_keys(user_id)
+        public_keys.pre_key = pre_key
+
+        return public_keys
 
     async def add_message(self, user_id: str, request: models.MessageModel) -> None:
         if user_id != request.sender: 

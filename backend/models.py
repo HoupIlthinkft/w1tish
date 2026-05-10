@@ -91,21 +91,12 @@ class UserResponse(UserModel):
 class UsersResponse(BaseModel):
     users: list[UserModel] = Field(..., description="Данные пользователей")
 
+class UserKeysResponse(BaseModel):
+    identity_key: str = Field(..., description="Публичный ключ идентификации пользователя")
+    signed_key: str = Field(..., description="Публичный, подписанный ключ шифрования пользователя")
+    pre_key: str | None = Field(..., description="Публичный, разовый ключ шифрования пользователя")
 
 # базы данных
-
-class UsersBase(Base):
-    __tablename__ = "users"
-    
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    username: Mapped[str] = mapped_column(Text, unique=True, index=True, nullable=False)
-    nickname: Mapped[str] = mapped_column(Text, nullable=False)
-    password_hash: Mapped[str] = mapped_column(Text, nullable=False)
-    email: Mapped[str] = mapped_column(Text, nullable=False)
-
-    public_keys = relationship("PublicKeysBase", back_populates="keys")
-    pre_keys = relationship("PreKeysBase", back_populates="pre_keys")
-
 
 class ChatsBase(Base):
     __tablename__ = "chats"
@@ -117,21 +108,45 @@ class ChatsBase(Base):
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
 
 
-class PublicKeysBase(Base):
-    __tablename__ = "keys"
+from sqlalchemy import BigInteger, Text, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 
-    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), primary_key=True)
+class Base(DeclarativeBase):
+    pass
+
+class UsersBase(Base):
+    __tablename__ = "users"
+    
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    username: Mapped[str] = mapped_column(Text, unique=True, index=True, nullable=False)
+    nickname: Mapped[str] = mapped_column(Text, nullable=False)
+    password_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+
+    public_keys: Mapped[list["PublicKeysBase"]] = relationship("PublicKeysBase", back_populates="user")
+    pre_keys: Mapped[list["PreKeysBase"]] = relationship("PreKeysBase", back_populates="user")
+
+
+class PublicKeysBase(Base):
+    __tablename__ = "public_keys"
+
+    keys_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), nullable=False)
+    
     identity_key: Mapped[str] = mapped_column(Text, nullable=False)
     signed_prekey: Mapped[str] = mapped_column(Text, nullable=False)
 
-    user = relationship("UsersBase", back_populates="keys")
+    user: Mapped["UsersBase"] = relationship("UsersBase", back_populates="public_keys")
 
 
 class PreKeysBase(Base):
     __tablename__ = "pre_keys"
 
-    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), primary_key=True)
+    key_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), nullable=False)
+    
     key: Mapped[str] = mapped_column(Text, nullable=False)
 
-    user = relationship("UsersBase", back_populates="pre_keys")
+    user: Mapped["UsersBase"] = relationship("UsersBase", back_populates="pre_keys")
+
 
