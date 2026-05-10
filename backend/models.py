@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field
 
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text, BigInteger
+from sqlalchemy import text, BigInteger, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 # основные модели
@@ -97,18 +97,41 @@ class UsersResponse(BaseModel):
 class UsersBase(Base):
     __tablename__ = "users"
     
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
-    username: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
-    nickname: Mapped[str] = mapped_column(nullable=False)
-    password_hash: Mapped[str] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(nullable=False)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    username: Mapped[str] = mapped_column(Text, unique=True, index=True, nullable=False)
+    nickname: Mapped[str] = mapped_column(Text, nullable=False)
+    password_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+
+    public_keys = relationship("PublicKeysBase", back_populates="keys")
+    pre_keys = relationship("PreKeysBase", back_populates="pre_keys")
+
 
 class ChatsBase(Base):
     __tablename__ = "chats"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
-    last_message_text: Mapped[str] = mapped_column(server_default=text("'_Чат создан_'"))
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    last_message_text: Mapped[str] = mapped_column(Text, server_default=text("'_Чат создан_'"))
     last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
     last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
+
+
+class PublicKeysBase(Base):
+    __tablename__ = "keys"
+
+    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), primary_key=True)
+    identity_key: Mapped[str] = mapped_column(Text, nullable=False)
+    signed_prekey: Mapped[str] = mapped_column(Text, nullable=False)
+
+    user = relationship("UsersBase", back_populates="keys")
+
+
+class PreKeysBase(Base):
+    __tablename__ = "pre_keys"
+
+    id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), primary_key=True)
+    key: Mapped[str] = mapped_column(Text, nullable=False)
+
+    user = relationship("UsersBase", back_populates="pre_keys")
 

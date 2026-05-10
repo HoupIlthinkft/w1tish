@@ -35,6 +35,8 @@ async def bases_lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(models.UsersBase.metadata.create_all)
         await conn.run_sync(models.ChatsBase.metadata.create_all)
+        await conn.run_sync(models.PreKeysBase.metadata.create_all)
+        await conn.run_sync(models.PublicKeysBase.metadata.create_all)
     
     await app.state.mg_session["messages"].create_index([("chat_id", 1)], name="idx_chat_id")
     await app.state.mg_session["messages"].create_index([("created_at", -1)], name="idx_created_at")
