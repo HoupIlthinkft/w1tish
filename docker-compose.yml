@@ -6,7 +6,6 @@ services:
       POSTGRES_USER: ${DB_USER:-admin}
       POSTGRES_PASSWORD: ${DB_PASS:-admin}
     volumes:
-      - "./backend/core/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
       - "./data/postgres/postgres_data:/var/lib/postgresql/data"
     ports:
       - "5432:5432"
