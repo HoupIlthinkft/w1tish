@@ -18,12 +18,7 @@ class MessagesRepository:
         message: BaseModel
     ) -> None:
         try:
-            await self.mb.insert_one(
-                {
-                    **message.model_dump(),
-                    "delivered": False
-                }
-            )
+            await self.mb.insert_one(message.model_dump())
 
         except TypeError as e:
             logger.error("Error occured: ", exc_info=e)
@@ -34,7 +29,7 @@ class MessagesRepository:
         
     async def get_undelivered_messages(self, reciver: str) -> MessagesResponse:
         messages = await self.mb.find(
-            {"delivered": False, "reciver": reciver}
+            {"reciver": reciver}
         ).to_list()
         return MessagesResponse.model_validate({"messages": messages})
     

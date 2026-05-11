@@ -127,6 +127,7 @@ class DataService:
 
     async def get_user_data(self, user_id: int) -> models.UserResponse:
         data = await self.user_data.get_user_data(user_id)
+        data.avatar = f"{settings.S3_AVATARS}/avatars/{user_id}.jpeg"
         return data
     
     async def get_users_data(
@@ -135,16 +136,18 @@ class DataService:
             users_usernames: list[str] = None
     ) -> models.UsersResponse:
         if users_ids and users_usernames: raise err.InvalidArgumentsError("Too many arguments. Select usernames or ids")
+        if not (users_ids or users_usernames): raise err.InvalidArgumentsError("Noone argument was getted")
 
         if users_ids:
             data = await self.user_data.get_users_by_ids(users_ids)
-            return data
         
         elif users_usernames:
             data = await self.user_data.get_users_by_usernames(users_usernames)
-            return data
         
-        raise err.InvalidArgumentsError("Noone argument was getted")
+        for user in data.users:
+            user.avatar = f"{settings.S3_AVATARS}/avatars/{user.id}.jpeg"
+
+        return data
         
     async def set_avatar(self, file: BinaryIO, user_id: int) -> None:
         avatar_bytes = file.read(settings.MAX_AVATAR)

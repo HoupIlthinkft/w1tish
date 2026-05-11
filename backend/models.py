@@ -16,6 +16,7 @@ class UserModel(BaseModel):
     id: str = Field(..., examples=["123456789012345678"], description="Айди пользователя")
     username: str = Field(..., examples=["Tralalelo_tralala"], description="Логин пользователя")
     nickname: str = Field(..., examples=["Гигачат 228 котлета 336"], description="Ник пользователя")
+    avatar: str = Field("", examples=["https://28a5e24f-0510-42cb-9cc1-a389ee992516.selstorage.ru/default/1.jpg"], description="Аватар пользователя")
 
 class ChatModel(BaseModel):
     id: str = Field(..., examples=["123456789012345678"], description="Айди чата")
