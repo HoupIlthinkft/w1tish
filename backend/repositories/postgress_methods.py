@@ -177,7 +177,7 @@ class DataRepository:
             raise err.UserNotFoundError()
 
         chats = {
-            row.chat_id: row.permissions
+            row.chat_id: list(row.permissions)
             for row in user_data if row.chat_id
         }
 
