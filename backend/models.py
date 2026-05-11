@@ -70,15 +70,16 @@ class SendMessagesRequestModel(BaseModel):
 class SetNicknameModel(BaseModel):
     nickname: str = Field(..., description="Новый никнейм пользователя", examples=["Пельмень 228 котлета 336"])
 
-class SetAllKeysRequestModel(BaseModel):
-    identity_key: str = Field(..., examples=["FaKeIdenTiTyKeYwiThBase64EnCoDInG="], description="Идентификационный ключ пользователя")
-    signed_key: str = Field(..., examples=["FaKePrESigNEdKeYwiThBase64EnCoDInG="], description="Подписанный ключ шифоования пользователя")
-    signature: str = Field(..., description="Подпись для подписанного ключа")
-    pre_keys: list[PreKeyModel] = Field(..., description="Разовые ключи для создания чата")
+class SignedPreKeyModel(BaseModel):
+    index: int = Field(..., examples=[1], description="Порядковый номер ключа")
+    signed_prekey: str = Field(..., examples=["blkBElfkjeblkJBWLEKjfbwlkjBWLKEfjbwlk"], description="Подписанный ключ шифоования пользователя")
+    signature: str = Field(..., examples=["JHEkjhfLKWJEhflkhfjekhwlKWJHEF"], description="Подпись ключа")
 
-class UpdateSignedKeyResponseModel(BaseModel):
-    signed_key: str = Field(..., examples=["FaKePrESigNEdKeYwiThBase64EnCoDInG="], description="Подписанный ключ шифоования пользователя")
-    signature: str = Field(..., description="Подпись для подписанного ключа")
+class SetAllKeysRequestModel(BaseModel):
+    registration_id: int = Field(..., examples=[1488], description="Уникальный айди регистрации пользователя (уникален на кождом девайсе)")
+    identity_key: str = Field(..., examples=["FaKeIdenTiTyKeYwiThBase64EnCoDInG="], description="Идентификационный ключ пользователя")
+    signed_key: SignedPreKeyModel = Field(..., description="Подписанный ключ шифоования пользователя")
+    pre_keys: list[PreKeyModel] = Field(..., description="Разовые ключи для создания чата")
 
 class AddPreKeysResponseModel(BaseModel):
     pre_keys: list[PreKeyModel] = Field(..., description="Разовые ключи для создания чата")
@@ -113,9 +114,9 @@ class UsersResponse(BaseModel):
     users: list[UserModel] = Field(..., description="Данные пользователей")
 
 class UserKeysResponse(BaseModel):
-    identity_key: str = Field(..., description="Публичный ключ идентификации пользователя")
-    signed_key: str = Field(..., description="Публичный, подписанный ключ шифрования пользователя")
-    signature: str = Field(..., description="Подпись для подписанного ключа")
+    registration_id: int = Field(..., examples=[1488], description="Уникальный айди регистрации пользователя (уникален на кождом девайсе)")
+    identity_key: str = Field(..., examples=["hjbjkHEBKJhbkfjhBKSJHEbfowiefhbWO"], description="Публичный ключ идентификации пользователя")
+    signed_key: SignedPreKeyModel = Field(..., description="Публичный, подписанный ключ шифрования пользователя")
     pre_key: PreKeyModel | None = Field(..., description="Публичный, разовый ключ шифрования пользователя")
 
 # базы данных
@@ -146,6 +147,9 @@ class PublicKeysBase(Base):
     id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), nullable=False, unique=True)
     
     identity_key: Mapped[str] = mapped_column(Text, nullable=False)
+    registration_id: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    index: Mapped[int] = mapped_column(Integer, nullable=False)
     signed_prekey: Mapped[str] = mapped_column(Text, nullable=False)
     signature: Mapped[str] = mapped_column(Text, nullable=False)
 

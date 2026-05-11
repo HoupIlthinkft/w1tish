@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WebSocket Tester — отправка нескольких JSON</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            margin: 0;
+            padding: 24px 20px;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* карточки */
+        .card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 2rem;
+            transition: all 0.1s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            border-bottom: 2px solid #eef2ff;
+            padding-bottom: 0.6rem;
+        }
+        .card-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+            color: #1e293b;
+            letter-spacing: -0.2px;
+        }
+        .badge {
+            background: #e6f0ff;
+            color: #1e40af;
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* подключение */
+        .connection-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .url-input {
+            flex: 3;
+            min-width: 240px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+        input, textarea, button {
+            border-radius: 14px;
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            background: #ffffff;
+            transition: 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        button {
+            background: #f8fafc;
+            font-weight: 500;
+            cursor: pointer;
+            border-color: #cbd5e1;
+            transition: all 0.2s;
+        }
+        button.primary {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        button.primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+        button.danger {
+            background: #fff1f0;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+        button.danger:hover {
+            background: #fee2e2;
+            border-color: #f87171;
+        }
+        .status {
+            background: #f1f5f9;
+            padding: 6px 15px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            background: #94a3b8;
+        }
+        .status-led.connected {
+            background: #10b981;
+            box-shadow: 0 0 0 2px #d1fae5;
+        }
+        .log-area {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Menlo', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            border-radius: 1rem;
+            padding: 1rem;
+            height: 280px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.45;
+        }
+        .log-line {
+            border-bottom: 1px solid #1e293b;
+            padding: 6px 5px;
+            font-family: monospace;
+        }
+        .log-time {
+            color: #7e8ba3;
+            margin-right: 12px;
+        }
+        .log-sent {
+            color: #facc15;
+        }
+        .log-received {
+            color: #4ade80;
+        }
+        .log-error {
+            color: #f87171;
+        }
+        .log-info {
+            color: #60a5fa;
+        }
+        .messages-panel {
+            margin-top: 0.5rem;
+        }
+        .message-item {
+            background: #fefce8;
+            border-left: 4px solid #eab308;
+            padding: 0.9rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            transition: 0.1s;
+        }
+        .message-json-input {
+            flex: 4;
+            min-width: 220px;
+            background: white;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        button.small {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+        .add-btn {
+            margin-top: 12px;
+            background: #eef2ff;
+            border-color: #c7d2fe;
+            color: #1e3a8a;
+        }
+        .send-all-btn {
+            background: #0f172a;
+            border-color: #334155;
+            color: white;
+            margin-left: 12px;
+        }
+        .toolbar-msg {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        hr {
+            margin: 1rem 0;
+            border-color: #e2e8f0;
+        }
+        @media (max-width: 700px) {
+            .card { padding: 1.2rem; }
+            .message-item { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Панель подключения -->
+    <div class="card">
+        <div class="card-header">
+            <h2>🔌 WebSocket клиент</h2>
+            <span class="badge">multiple JSON fields</span>
+        </div>
+        <div class="connection-bar">
+            <div class="url-input">
+                <label>🌐 Адрес сервера (ws:// или wss://)</label>
+                <input type="text" id="wsUrl" placeholder="wss://echo.websocket.org" value="wss://echo.websocket.org">
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 22px;">
+                <button id="connectBtn" class="primary">🔗 Connect</button>
+                <button id="disconnectBtn" class="danger">❌ Disconnect</button>
+            </div>
+            <div class="status" id="statusBadge">
+                <span class="status-led" id="statusLed"></span>
+                <span id="statusText">Отключён</span>
+            </div>
+        </div>
+        <div style="font-size: 0.75rem; color: #475569; margin-top: 8px;">
+            ⚡ Пример: wss://echo.websocket.org (эхо-сервер) или ваш собственный
+        </div>
+    </div>
+
+    <!-- Лог сообщений -->
+    <div class="card">
+        <div class="card-header">
+            <h2>📜 Лог событий</h2>
+            <button id="clearLogBtn" class="small" style="background:#f1f5f9;">🗑 Очистить лог</button>
+        </div>
+        <div class="log-area" id="logContainer">
+            <div class="log-line"><span class="log-time">▶</span> <span class="log-info">Готов к подключению</span></div>
+        </div>
+    </div>
+
+    <!-- Динамические JSON поля -->
+    <div class="card">
+        <div class="card-header">
+            <h2>📦 JSON-сообщения (несколько полей)</h2>
+            <div>
+                <button id="addMessageBtn" class="small add-btn">+ Добавить JSON поле</button>
+                <button id="sendAllBtn" class="small send-all-btn">📨 Отправить все</button>
+            </div>
+        </div>
+        <div class="messages-panel" id="messagesContainer">
+            <!-- сюда динамически добавляются сообщения -->
+        </div>
+        <div style="margin-top: 16px; font-size: 0.7rem; background:#f8fafc; padding: 8px 12px; border-radius: 20px; color:#334155;">
+            💡 Подсказка: каждое поле — независимый JSON. При отправке проверяется валидность. Полученные сообщения появляются в логе.
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DOM элементы ---
+    const wsUrlInput = document.getElementById('wsUrl');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const statusText = document.getElementById('statusText');
+    const statusLed = document.getElementById('statusLed');
+    const logContainer = document.getElementById('logContainer');
+    const clearLogBtn = document.getElementById('clearLogBtn');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const addMessageBtn = document.getElementById('addMessageBtn');
+    const sendAllBtn = document.getElementById('sendAllBtn');
+
+    // --- WebSocket состояние ---
+    let webSocket = null;
+    let connectionOpen = false;
+
+    // --- вспомогательные функции ---
+    function getTimestamp() {
+        const now = new Date();
+        return now.toLocaleTimeString('ru-RU', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+    }
+
+    // Добавление строки в лог
+    function addLog(message, type = 'info') {
+        const logDiv = document.createElement('div');
+        logDiv.className = 'log-line';
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'log-time';
+        timeSpan.textContent = `[${getTimestamp()}]`;
+        const contentSpan = document.createElement('span');
+        let styleClass = 'log-info';
+        if (type === 'sent') styleClass = 'log-sent';
+        else if (type === 'received') styleClass = 'log-received';
+        else if (type === 'error') styleClass = 'log-error';
+        else styleClass = 'log-info';
+        contentSpan.className = styleClass;
+        contentSpan.textContent = message;
+        logDiv.appendChild(timeSpan);
+        logDiv.appendChild(document.createTextNode(' '));
+        logDiv.appendChild(contentSpan);
+        logContainer.appendChild(logDiv);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    function clearLog() {
+        logContainer.innerHTML = '';
+        addLog('Лог очищен', 'info');
+    }
+
+    function updateStatusUI(connected) {
+        connectionOpen = connected;
+        if (connected) {
+            statusText.innerText = 'Подключён';
+            statusLed.classList.add('connected');
+        } else {
+            statusText.innerText = 'Отключён';
+            statusLed.classList.remove('connected');
+        }
+    }
+
+    // Закрыть соединение если открыто
+    function closeWebSocket() {
+        if (webSocket) {
+            if (webSocket.readyState === WebSocket.OPEN || webSocket.readyState === WebSocket.CONNECTING) {
+                webSocket.close();
+            }
+            webSocket = null;
+        }
+        updateStatusUI(false);
+        addLog('🔌 Соединение закрыто', 'info');
+    }
+
+    // Установка WebSocket
+    function connectWebSocket(url) {
+        if (!url) {
+            addLog('❌ Ошибка: введите адрес WebSocket (ws:// или wss://)', 'error');
+            return false;
+        }
+        // Проверка валидности URL (базовая)
+        if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+            addLog('⚠️ Предупреждение: адрес должен начинаться с ws:// или wss://', 'error');
+            // но всё равно пробуем
+        }
+        if (webSocket && (webSocket.readyState === WebSocket.OPEN || webSocket.readyState === WebSocket.CONNECTING)) {
+            addLog('⚠️ Сначала закройте текущее соединение (Disconnect)', 'error');
+            return false;
+        }
+
+        try {
+            addLog(`🔄 Подключение к ${url} ...`, 'info');
+            const ws = new WebSocket(url);
+            webSocket = ws;
+
+            ws.onopen = () => {
+                if (webSocket === ws) {
+                    addLog(`✅ Соединение установлено с ${url}`, 'info');
+                    updateStatusUI(true);
+                }
+            };
+
+            ws.onmessage = (event) => {
+                let receivedData = event.data;
+                let displayMessage = receivedData;
+                // Попытка красиво отобразить JSON, если это валидный JSON
+                try {
+                    const parsed = JSON.parse(receivedData);
+                    displayMessage = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    // не JSON — оставляем как есть
+                }
+                addLog(`📥 ПОЛУЧЕНО: ${displayMessage}`, 'received');
+            };
+
+            ws.onerror = (error) => {
+                if (webSocket === ws) {
+                    addLog(`⚠️ Ошибка WebSocket (см. консоль)`, 'error');
+                    console.error('WebSocket error:', error);
+                }
+            };
+
+            ws.onclose = (event) => {
+                if (webSocket === ws) {
+                    let reason = event.reason || 'причина не указана';
+                    addLog(`🔒 Соединение закрыто: код ${event.code}, причина: ${reason}`, 'info');
+                    updateStatusUI(false);
+                    if (webSocket === ws) webSocket = null;
+                }
+            };
+            return true;
+        } catch (err) {
+            addLog(`❌ Не удалось создать WebSocket: ${err.message}`, 'error');
+            webSocket = null;
+            updateStatusUI(false);
+            return false;
+        }
+    }
+
+    // --- Отправка JSON сообщения (валидация) ---
+    function sendJsonMessage(jsonString, sourceName = 'сообщение') {
+        if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
+            addLog(`🚫 Не удалось отправить "${sourceName}": WebSocket не открыт.`, 'error');
+            return false;
+        }
+
+        let trimmed = jsonString.trim();
+        if (trimmed === "") {
+            addLog(`⚠️ "${sourceName}" пустое — отправка отменена`, 'error');
+            return false;
+        }
+
+        // Проверка валидности JSON
+        let parsed;
+        try {
+            parsed = JSON.parse(trimmed);
+        } catch (e) {
+            addLog(`❌ "${sourceName}" — невалидный JSON: ${e.message}`, 'error');
+            return false;
+        }
+
+        // Для отправки используем строку (каноническая строка, можно красиво)
+        const toSend = JSON.stringify(parsed);
+        try {
+            webSocket.send(toSend);
+            addLog(`📤 ОТПРАВЛЕНО (${sourceName}): ${toSend}`, 'sent');
+            return true;
+        } catch (err) {
+            addLog(`❌ Ошибка отправки "${sourceName}": ${err.message}`, 'error');
+            return false;
+        }
+    }
+
+    // --- Управление динамическими JSON полями ---
+    let messageCounter = 0;
+
+    // Создаёт элемент сообщения с полем ввода и кнопками
+    function createMessageItem(initialJson = '{"type":"test","message":"hello"}', customId = null) {
+        const id = customId || `msg_${Date.now()}_${messageCounter++}`;
+        const div = document.createElement('div');
+        div.className = 'message-item';
+        div.dataset.id = id;
+
+        // поле ввода JSON
+        const inputField = document.createElement('input');
+        inputField.type = 'text';
+        inputField.className = 'message-json-input';
+        inputField.placeholder = 'Введите корректный JSON';
+        inputField.value = initialJson;
+        inputField.spellcheck = false;
+
+        // контейнер для кнопок
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'message-actions';
+
+        const sendBtn = document.createElement('button');
+        sendBtn.textContent = '📨 Отправить';
+        sendBtn.className = 'small';
+        sendBtn.style.background = '#e6f0ff';
+        sendBtn.style.borderColor = '#93c5fd';
+        sendBtn.addEventListener('click', () => {
+            const jsonValue = inputField.value;
+            sendJsonMessage(jsonValue, `поле #${id.slice(-4)}`);
+        });
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '✖ Удалить';
+        removeBtn.className = 'small danger';
+        removeBtn.style.marginLeft = '4px';
+        removeBtn.addEventListener('click', () => {
+            div.remove();
+            addLog(`🗑 Удалено JSON-поле (ID: ${id})`, 'info');
+        });
+
+        actionsDiv.appendChild(sendBtn);
+        actionsDiv.appendChild(removeBtn);
+        div.appendChild(inputField);
+        div.appendChild(actionsDiv);
+        return div;
+    }
+
+    // Добавить новое сообщение с дефолтным примером
+    function addNewMessageField() {
+        const examples = [
+            '{"action":"ping","timestamp":"auto"}',
+            '{"event":"subscribe","channel":"updates"}',
+            '{"type":"chat","text":"Привет, WebSocket!"}',
+            '{"method":"echo","data":{"id":42}}'
+        ];
+        const randomExample = examples[Math.floor(Math.random() * examples.length)];
+        const newMsg = createMessageItem(randomExample);
+        messagesContainer.appendChild(newMsg);
+        addLog(`➕ Добавлено новое JSON поле (пример: ${randomExample})`, 'info');
+    }
+
+    // Отправить все валидные JSON из всех полей
+    function sendAllMessages() {
+        if (!webSocket || webSocket.readyState !== WebSocket.OPEN) {
+            addLog('❌ Нельзя отправить все: WebSocket не подключён', 'error');
+            return;
+        }
+
+        const items = document.querySelectorAll('#messagesContainer .message-item');
+        if (items.length === 0) {
+            addLog('⚠️ Нет полей для отправки. Добавьте хотя бы одно.', 'info');
+            return;
+        }
+
+        let successCount = 0;
+        let failCount = 0;
+        items.forEach((item, idx) => {
+            const inputField = item.querySelector('.message-json-input');
+            if (!inputField) return;
+            const jsonRaw = inputField.value;
+            const shortId = `поле ${idx+1}`;
+            const trimmed = jsonRaw.trim();
+            if (trimmed === "") {
+                addLog(`⚠️ Пропускаем пустое поле ${shortId}`, 'error');
+                failCount++;
+                return;
+            }
+            try {
+                JSON.parse(trimmed);
+                // отправляем
+                webSocket.send(trimmed);
+                addLog(`📤 ОТПРАВЛЕНО (${shortId}): ${trimmed}`, 'sent');
+                successCount++;
+            } catch (e) {
+                addLog(`❌ Ошибка в ${shortId}: ${e.message} — JSON невалиден`, 'error');
+                failCount++;
+            }
+        });
+        if (successCount) addLog(`✅ Отправлено успешно: ${successCount} сообщений`, 'info');
+        if (failCount) addLog(`⚠️ Не отправлено: ${failCount} сообщений (ошибки JSON или пустые)`, 'error');
+    }
+
+    // ---- Инициализация начальных полей (несколько json полей) ----
+    function initDefaultMessages() {
+        messagesContainer.innerHTML = '';
+        // Создаём 2-3 демонстрационных поля для тестирования
+        const firstMsg = createMessageItem('{"greeting":"hello","room":"general"}', 'default1');
+        const secondMsg = createMessageItem('{"command":"status","requestId":101}', 'default2');
+        const thirdMsg = createMessageItem('{"action":"echo","payload":{"sample":true}}', 'default3');
+        messagesContainer.appendChild(firstMsg);
+        messagesContainer.appendChild(secondMsg);
+        messagesContainer.appendChild(thirdMsg);
+        addLog('✨ Загружены примеры JSON-полей (3 шт.) — можно добавлять новые', 'info');
+    }
+
+    // --- Обработчики кнопок подключения ---
+    connectBtn.addEventListener('click', () => {
+        let url = wsUrlInput.value.trim();
+        if (!url) {
+            addLog('⚠️ Укажите адрес WebSocket (например, wss://echo.websocket.org)', 'error');
+            return;
+        }
+        // Если уже открыт - сначала закроем? рекомендация
+        if (webSocket && (webSocket.readyState === WebSocket.OPEN || webSocket.readyState === WebSocket.CONNECTING)) {
+            addLog('Соединение уже активно. Сначала нажмите Disconnect', 'error');
+            return;
+        }
+        connectWebSocket(url);
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+        if (webSocket && (webSocket.readyState === WebSocket.OPEN || webSocket.readyState === WebSocket.CONNECTING)) {
+            webSocket.close();
+            addLog('🛑 Отключение по запросу пользователя', 'info');
+        } else {
+            addLog('Нет активного соединения для отключения', 'info');
+        }
+        updateStatusUI(false);
+        webSocket = null;
+    });
+
+    clearLogBtn.addEventListener('click', clearLog);
+    addMessageBtn.addEventListener('click', addNewMessageField);
+    sendAllBtn.addEventListener('click', sendAllMessages);
+
+    // при закрытии страницы корректно закрываем сокет
+    window.addEventListener('beforeunload', () => {
+        if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+            webSocket.close();
+        }
+    });
+
+    // Доп. удобство: если пользователь нажал Enter в поле URL (подключение)
+    wsUrlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            connectBtn.click();
+        }
+    });
+
+    // Проверка возможности отправки по кнопке отправить все: если соединение разорвано — предупредим (уже внутри)
+    // Загружаем стартовые поля
+    initDefaultMessages();
+    updateStatusUI(false);
+    addLog('🟢 Интерфейс готов. Подключитесь к WebSocket и отправляйте JSON сообщения.', 'info');
+    addLog('💡 Совет: используйте эхо-сервер wss://echo.websocket.org для теста.', 'info');
+</script>
+</body>
+</html>

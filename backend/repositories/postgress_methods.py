@@ -271,14 +271,15 @@ class KeysRepository:
         logger.warning(f"Noone prekeys was searched for user '{user_id}'")
         raise err.NoPreKeysError()
     
-    async def update_signed_key(self, user_id: str, signed_key: str, signature: str) -> None:
+    async def update_signed_key(self, user_id: str, signed_index: int, signed_prekey: str, signature: str) -> None:
         query = await self.db.execute(
             update(
                 models.PublicKeysBase
             ).where(
                 models.PublicKeysBase.id == int(user_id)
             ).values(
-                signed_prekey=signed_key,
+                index=signed_index,
+                signed_prekey=signed_prekey,
                 signature=signature
             )
         )
@@ -296,17 +297,24 @@ class KeysRepository:
         public_keys = query.scalar_one_or_none()
         if not public_keys: raise err.UserNotFoundError()
 
+        signed_key = models.SignedPreKeyModel(
+            index=public_keys.index,
+            signed_prekey=public_keys.signed_prekey,
+            signature=public_keys.signature
+        )
         return models.UserKeysResponse(
+            registration_id=public_keys.registration_id,
             identity_key=public_keys.identity_key,
-            signed_key=public_keys.signed_prekey,
-            signature=public_keys.signature,
+            signed_key=signed_key,
             pre_key=None
         )
     
-    async def add_public_keys(self, user_id: str, identity_key: str, signed_key: str, signature: str) -> None:
+    async def add_public_keys(self, user_id: str, register_id: int, identity_key: str, signed_index: int, signed_key: str, signature: str) -> None:
         user_keys = models.PublicKeysBase(
             id=int(user_id),
+            registration_id=register_id,
             identity_key=identity_key,
+            index=signed_index,
             signed_prekey=signed_key,
             signature=signature
         )

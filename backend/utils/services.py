@@ -73,7 +73,14 @@ class DataService:
         return public_keys
     
     async def set_user_keys(self, user_id: str, keys: models.SetAllKeysRequestModel) -> None:
-        await self.user_keys.add_public_keys(user_id, keys.identity_key, keys.signed_key, keys.signature)
+        await self.user_keys.add_public_keys(
+            user_id,
+            keys.registration_id,
+            keys.identity_key,
+            keys.signed_key.index,
+            keys.signed_key.signed_prekey,
+            keys.signed_key.signature
+        )
         self.user_keys.add_prekeys(user_id, keys.pre_keys)
 
     async def first_message(self, user_id: str, request: models.FirstMessageModel) -> str:
