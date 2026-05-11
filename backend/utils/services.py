@@ -76,13 +76,20 @@ class DataService:
         await self.user_keys.add_public_keys(user_id, keys.identity_key, keys.signed_key, keys.signature)
         self.user_keys.add_prekeys(user_id, keys.pre_keys)
 
-    async def first_message(self, user_id: str, request: models.MessageModel) -> str:
+    async def first_message(self, user_id: str, request: models.FirstMessageModel) -> str:
         if user_id != request.sender: 
             raise err.NoWritePermissionError("Cant send message from another user!")
         
         permissions = {request.sender: "member", request.reciver: "member"}
         chat_id = await self.user_chats.add_chat(permissions)
-        await self.user_messages.add_message(request)
+        message = models.MessageModel(
+            type=request.type,
+            chat_id=chat_id,
+            content=request.content,
+            sender=request.sender,
+            reciver=request.reciver
+        )
+        await self.user_messages.add_message(message)
         return chat_id
     
 
