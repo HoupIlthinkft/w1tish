@@ -1,4 +1,4 @@
-from fastapi import status, FastAPI
+from fastapi import FastAPI
 from starlette.websockets import WebSocketState, WebSocket, WebSocketDisconnect
 from backend.interfaces.protocols import IChatRepository, IMessagesRepository
 from backend import models
@@ -9,8 +9,11 @@ from contextlib import asynccontextmanager
 from logging import getLogger
 from pydantic import ValidationError
 from json.decoder import JSONDecodeError
-import asyncio, json
-from pydantic import BaseModel
+import asyncio
+
+import uuid
+from datetime import datetime
+from pydantic import BaseModel, Field
 
 logger = getLogger(__name__)
 
@@ -19,9 +22,18 @@ async def json_decode_err_hand(socket: WebSocket): await socket.send_json({"type
 async def no_perms_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"User hasnt permissions to write in this chat"})
 async def sock_disc_err_hand(socket: WebSocket): raise WebSocketDisconnect()
 
-class WebSockResponse(BaseModel):
-    type: str
-    content: models.MessageModel | models.ChatModel
+class ServerResponse(BaseModel):
+    '''
+    1 - (CIPHERTEXT) \n\n3 - (PREKEY) \n\n1001 - (MESSAGE) \n\n1003 - (ERROR) \n\n1004 - (DELIVERED)
+    '''
+    type: int
+    content: str
+    sender: str
+    reciver: str
+    chat_id: str
+
+    messuid: str = Field(default_factory=lambda: uuid.uuid4().hex)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 HANDLERS = {
     ValidationError: val_err_hand,
@@ -128,49 +140,29 @@ class WebSocketManager(SocketBase):
                 continue
             
             message.sender = user_id
-            response = WebSockResponse(type="message", content=message)
+            response = ServerResponse(
+                type=message.type,
+                content=message.content,
+                sender=user_id,
+                reciver=message.reciver,
+                chat_id=message.chat_id
+            )
             await self._stack.put(response)
 
-    async def _send_messages(
-        self,
-        message: WebSockResponse,
-        chat_repo: protocols.IChatRepository,
-        chat: models.ChatModel
-    ) -> None:
-            async with chat_repo.set_chat(message.content):
-                await self.mess_repo.add_message(message.content)
-            
-            response = message.model_dump_json()
-            for user_id in chat.permissions:
-                await self._send_message(response, user_id)
+    async def _send_messages(self, message: ServerResponse) -> None:
+        await self.mess_repo.add_message(message)
+        response = message.model_dump_json()
+        await self._send_message(response, message.reciver)
 
     async def _broadcast(self):
         while self.background_check:
-            message: WebSockResponse = await self._stack.get()
-
-            if message.type == "chat":
-                chat = message.content
-                response = message.model_dump_json()
-                for user_id in chat.permissions:
-                    await self._send_message(response, user_id)
-                continue
+            message: ServerResponse = await self._stack.get()
 
             async with self.app.state.pg_session_maker() as session:
                 chat_repo: IChatRepository = self.chat_repo_temlate(session, self.app.state.generator)
                 
-                if message.type == "message":
-                    chat = await chat_repo.get_chat_by_id(message.content.chat_id)
+                if message.type < 1003:
                     awarible_chats = await chat_repo.get_user_chats(message.content.sender)
                     if message.content.chat_id not in awarible_chats: raise err.NoWritePermissionError()
-
-                    try:
-                        await self._send_messages(message, chat_repo, chat)
-                    except:
-                        await session.rollback()
-                        raise
-                    else:
-                        await session.commit()
-
-    async def new_chat(self, chat: models.ChatModel):
-        response = WebSockResponse(type="chat", content=chat)
-        await self._stack.put(response)
+                
+                await self._send_messages(message)

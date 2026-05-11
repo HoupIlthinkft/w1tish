@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text, BigInteger, ForeignKey, Text
+from sqlalchemy import text, BigInteger, ForeignKey, Text, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -36,10 +36,15 @@ class FirstMessageModel(BaseModel):
     created_at: datetime = Field(..., examples=["2026-01-31T21:35:10.161344"], description="Дата создания чата")
 
 class MessageModel(BaseModel):
+    type: int = Field(..., examples=[1], description="Тип сообщения")
     chat_id: str = Field(..., examples=["42"], description="Айди чата")
     content: str = Field(..., examples=["Васап бро"], description="Сообщение")
     sender: str = Field(..., examples=["52"], description="Айди отправителя")
-    created_at: datetime = Field(..., examples=["2026-01-31T21:35:10.161344"], description="Дата отправки")
+    reciver: str = Field(..., examples=["42"], description="Айди получателя")
+
+class PreKeyModel(BaseModel):
+    pre_key: str = Field(..., examples=["FakEOneTimeKEuINBasE64"], description="Разовый ключ")
+    index: int = Field(..., examples=[2], description="Индекс ключа на клиенте")
 
 
 # модели запросов
@@ -68,13 +73,15 @@ class SetNicknameModel(BaseModel):
 class SetAllKeysRequestModel(BaseModel):
     identity_key: str = Field(..., examples=["FaKeIdenTiTyKeYwiThBase64EnCoDInG="], description="Идентификационный ключ пользователя")
     signed_key: str = Field(..., examples=["FaKePrESigNEdKeYwiThBase64EnCoDInG="], description="Подписанный ключ шифоования пользователя")
-    pre_keys: list[str] = Field(..., examples=[["FaKeKeyOnE=", "FaKeKeyTwO=", "FakeKeyTrE="]], description="Разовые ключи для создания чата")
+    signature: str = Field(..., description="Подпись для подписанного ключа")
+    pre_keys: list[PreKeyModel] = Field(..., description="Разовые ключи для создания чата")
 
 class UpdateSignedKeyResponseModel(BaseModel):
     signed_key: str = Field(..., examples=["FaKePrESigNEdKeYwiThBase64EnCoDInG="], description="Подписанный ключ шифоования пользователя")
+    signature: str = Field(..., description="Подпись для подписанного ключа")
 
 class AddPreKeysResponseModel(BaseModel):
-    pre_keys: list[str] = Field(..., examples=[["FaKeKeyOnE=", "FaKeKeyTwO=", "FakeKeyTrE="]], description="Разовые ключи для создания чата")
+    pre_keys: list[PreKeyModel] = Field(..., description="Разовые ключи для создания чата")
 
 
 # модели ответов
@@ -94,15 +101,11 @@ class CreateChatResponse(BaseModel):
     chat_id: str = Field(..., description="Айди чата", examples=["123456789012345678"])
 
 class UserResponse(UserModel):
-    chats: dict[str, dict] = Field(
+    chats: dict[str, list[str]] = Field(
         ...,
         description="Чаты пользователя",
         examples=[{
-            "id": "123456789012345678",
-            "last_message_text": "лох",
-            "last_message_time": "2026-01-31T21:35:10.161344",
-            "last_message_author": "123456789012345678",
-            "permissions": {"123456789012345678": "owner", '123456789012345677': "user"}
+            "123456789012345678": ["123456789012345678", "123456789012345677"]
         }]
     )
 
@@ -112,7 +115,8 @@ class UsersResponse(BaseModel):
 class UserKeysResponse(BaseModel):
     identity_key: str = Field(..., description="Публичный ключ идентификации пользователя")
     signed_key: str = Field(..., description="Публичный, подписанный ключ шифрования пользователя")
-    pre_key: str | None = Field(..., description="Публичный, разовый ключ шифрования пользователя")
+    signature: str = Field(..., description="Подпись для подписанного ключа")
+    pre_key: PreKeyModel | None = Field(..., description="Публичный, разовый ключ шифрования пользователя")
 
 # базы данных
 
@@ -120,13 +124,7 @@ class ChatsBase(Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    last_message_text: Mapped[str] = mapped_column(Text, server_default=text("'_Чат создан_'"))
-    last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
-    last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
-
-class Base(DeclarativeBase):
-    pass
 
 class UsersBase(Base):
     __tablename__ = "users"
@@ -149,6 +147,7 @@ class PublicKeysBase(Base):
     
     identity_key: Mapped[str] = mapped_column(Text, nullable=False)
     signed_prekey: Mapped[str] = mapped_column(Text, nullable=False)
+    signature: Mapped[str] = mapped_column(Text, nullable=False)
 
     user: Mapped["UsersBase"] = relationship("UsersBase", back_populates="public_keys")
 
@@ -160,6 +159,7 @@ class PreKeysBase(Base):
     id: Mapped[int] = mapped_column(BigInteger, ForeignKey('users.id'), nullable=False)
     
     key: Mapped[str] = mapped_column(Text, nullable=False)
+    index: Mapped[int] = mapped_column(Integer, nullable=False)
 
     user: Mapped["UsersBase"] = relationship("UsersBase", back_populates="pre_keys")
 

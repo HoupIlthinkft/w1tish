@@ -163,9 +163,6 @@ class DataRepository:
                 models.UsersBase.username,
                 models.UsersBase.nickname,
                 cast(models.ChatsBase.id, String).label("chat_id"),
-                cast(models.ChatsBase.last_message_author, String),
-                models.ChatsBase.last_message_text,
-                models.ChatsBase.last_message_time,
                 models.ChatsBase.permissions
             ).outerjoin(
                 models.ChatsBase,
@@ -180,13 +177,8 @@ class DataRepository:
             raise err.UserNotFoundError()
 
         chats = {
-            row.chat_id: {
-                "last_message": row.last_message_text,
-                "last_message_time": datetime.isoformat(row.last_message_time),
-                "last_message_author": row.last_message_author,
-                "permissions": row.permissions
-            }
-            for row in user_data if row.chat_id is not None
+            row.chat_id: row.permissions
+            for row in user_data if row.chat_id
         }
 
         response = models.UserResponse(
@@ -253,16 +245,17 @@ class KeysRepository:
     def __init__(self, session: AsyncSession):
         self.db = session
 
-    def add_prekeys(self, user_id: str, keys: list[str]) -> None:
+    def add_prekeys(self, user_id: str, keys: list[models.PreKeyModel]) -> None:
         objects = [
             models.PreKeysBase(
                 id=int(user_id),
-                key=key
+                key=key.pre_key,
+                index=key.index
             ) for key in keys
         ]
         self.db.add_all(objects)
 
-    async def get_prekey(self, user_id: str) -> str:
+    async def get_prekey(self, user_id: str) -> models.PreKeyModel:
         query = await self.db.execute(
             select(
                 models.PreKeysBase
@@ -273,19 +266,20 @@ class KeysRepository:
         key = query.scalar_one_or_none()
         if key:
             await self.db.delete(key)
-            return key.key
+            return models.PreKeyModel(pre_key=key.key, index=key.index)
         
         logger.warning(f"Noone prekeys was searched for user '{user_id}'")
         raise err.NoPreKeysError()
     
-    async def update_signed_key(self, user_id: str, signed_key: str) -> None:
+    async def update_signed_key(self, user_id: str, signed_key: str, signature: str) -> None:
         query = await self.db.execute(
             update(
                 models.PublicKeysBase
             ).where(
                 models.PublicKeysBase.id == int(user_id)
             ).values(
-                signed_prekey=signed_key
+                signed_prekey=signed_key,
+                signature=signature
             )
         )
         if not query.rowcount:
@@ -305,14 +299,16 @@ class KeysRepository:
         return models.UserKeysResponse(
             identity_key=public_keys.identity_key,
             signed_key=public_keys.signed_prekey,
+            signature=public_keys.signature,
             pre_key=None
         )
     
-    async def add_public_keys(self, user_id: str, identity_key: str, signed_key: str) -> None:
+    async def add_public_keys(self, user_id: str, identity_key: str, signed_key: str, signature: str) -> None:
         user_keys = models.PublicKeysBase(
             id=int(user_id),
             identity_key=identity_key,
-            signed_prekey=signed_key
+            signed_prekey=signed_key,
+            signature=signature
         )
         try:
             self.db.add(user_keys)

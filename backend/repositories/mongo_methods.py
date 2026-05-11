@@ -5,6 +5,7 @@ from pydantic import ValidationError
 from datetime import datetime, timedelta
 
 from backend.core.config import settings
+from pydantic import BaseModel
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -14,10 +15,15 @@ class MessagesRepository:
 
     async def add_message(
         self,
-        message: MessageModel
+        message: BaseModel
     ) -> None:
         try:
-            await self.mb.insert_one(message.model_dump())
+            await self.mb.insert_one(
+                {
+                    **message.model_dump(),
+                    "delivered": False
+                }
+            )
 
         except TypeError as e:
             logger.error("Error occured: ", exc_info=e)
@@ -26,6 +32,14 @@ class MessagesRepository:
         except ValidationError as e:
             raise InvalidMessagesError(e.title)
         
+    async def get_undelivered_messages(self, reciver: str) -> MessagesResponse:
+        messages = await self.mb.find(
+            {"delivered": False, "reciver": reciver}
+        ).to_list()
+        return MessagesResponse.model_validate({"messages": messages})
+    
+    async def delived(self, ids: list[str]) -> None:
+        await self.mb.delete_many({"_id": {"$in": ids}})
         
     async def get_messages_by_chat(
             self,
@@ -37,8 +51,9 @@ class MessagesRepository:
             {"chat_id": chat_id}
         ).sort("_id", -1).skip(offset).limit(limit).to_list(length=limit)
         messages.reverse()
-        logger.info(messages)
         return MessagesResponse.model_validate({"messages": messages})
+    
+
     
 class BlacklistRepository:
     def __init__(self, mb: AsyncDatabase): self.mb = mb["tokens"]
