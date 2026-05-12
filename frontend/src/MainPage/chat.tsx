@@ -72,7 +72,7 @@ export function ChatComponent() {
                     <div className="bg-plate-muted flex flex-row gap-[clamp(5px,1vw,20px)] items-center justify-between px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] rounded-[20px]">
                         <textarea ref={inputMessage} className="min-h-fit max-h-[20vh] outline-0 w-[100%]" placeholder="Введите сообщение..." />
                         <span className="material-symbols-outlined cursor-pointer mx-[clamp(5px,0.5vw,10px)] scale-[calc(4/3)] md:scale-[2] xl:scale-[calc(8/3)]" onClick={() => {
-                            send_new_message(useChatStore.getState().activityChat, encrypt(inputMessage.current?.value, profile.chats[activityChat].permissions.find((member) => member != profile.id)), useProfileStore.getState().profile.id);
+                            send_new_message("1", encrypt(inputMessage.current?.value, useProfileStore.getState().profile.id, profile.chats[activityChat].find((member) => member != profile.id)), useChatStore.getState().activityChat);
                             inputMessage.current.value = "";
                         }}>send</span>
                     </div>

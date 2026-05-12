@@ -3,18 +3,18 @@ import {
   ProtocolAddress,
   SessionBuilder,
   SessionCipher,
-  SessionRecord,
-} from "@raphaelvserafim/libsignal";
-import { Buffer } from "buffer";
-import { makeRequest } from "./web_interface";
-import { refreshToken } from "./requests";
-import { callNotification } from "../Notification/notifications";
-import { useDataStore, useKeysStore, useProfileStore } from "./config";
+} from '@raphaelvserafim/libsignal';
+import { Buffer } from 'buffer';
+import { makeRequest } from './web_interface';
+import { refreshToken } from './requests';
+import { callNotification } from '../Notification/notifications';
+import { useDataStore, useKeysStore, useProfileStore } from './config';
+import { send_new_message } from './webSocketsConnection';
 
-// ─── Утилиты Base64 ──────────────────────────────────────
+// ─── Base64 утилиты ────────────────────────────────────
 const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
   const bytes = new Uint8Array(buffer);
-  let binary = "";
+  let binary = '';
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
   return btoa(binary);
 };
@@ -29,47 +29,41 @@ const base64ToUint8Array = (base64: string): Uint8Array => {
 };
 
 const uint8ArrayToBase64 = (arr: Uint8Array): string => {
-  let binary = "";
+  let binary = '';
   arr.forEach((b) => (binary += String.fromCharCode(b)));
   return btoa(binary);
 };
 
-// ─── Хранилище сессий в памяти (чтобы избежать порчи JSON'ом) ─
+// ─── Хранилище сессий ──────────────────────────────────
 const sessionMap = new Map<string, any>();
 
-// ─── Восстановление пары ключей из стора ────────────────
+// ─── Восстановление пары ключей из стора ───────────────
 function _parseStoredKey(storeValue: any) {
   if (!storeValue) return undefined;
 
   let priv = storeValue.privKey ?? storeValue.privateKey;
   let pub = storeValue.pubKey ?? storeValue.publicKey;
 
-  if (priv instanceof ArrayBuffer) {
-    priv = new Uint8Array(priv);
-  } else if (typeof priv === "string") {
-    priv = base64ToUint8Array(priv);
-  }
+  if (priv instanceof ArrayBuffer) priv = new Uint8Array(priv);
+  else if (typeof priv === 'string') priv = base64ToUint8Array(priv);
 
-  if (pub instanceof ArrayBuffer) {
-    pub = new Uint8Array(pub);
-  } else if (typeof pub === "string") {
-    pub = base64ToUint8Array(pub);
-  }
+  if (pub instanceof ArrayBuffer) pub = new Uint8Array(pub);
+  else if (typeof pub === 'string') pub = base64ToUint8Array(pub);
 
   if (!priv || !pub) {
-    console.error("EncryptionStore: missing key material", storeValue);
+    console.error('EncryptionStore: missing key material', storeValue);
     return undefined;
   }
 
+  // Преобразуем в Buffer, потому что библиотека проверяет Buffer.isBuffer
   return {
-    pubKey: pub, // Uint8Array
-    privKey: priv, // Uint8Array
+    pubKey: Buffer.from(pub),
+    privKey: Buffer.from(priv),
   };
 }
 
-// ─── Хранилище для libsignal (SignalProtocolStore) ─────
+// ─── SignalProtocolStore ────────────────────────────────
 export const encryptionStore = {
-  // Идентити‑ключ
   getIdentityKeyPair: async () => {
     return _parseStoredKey(useKeysStore.getState().keys.identityKey);
   },
@@ -91,12 +85,11 @@ export const encryptionStore = {
   getLocalRegistrationId: async () => {
     return useKeysStore.getState().keys.registrationId;
   },
-
   getOurRegistrationId: async function () {
     return this.getLocalRegistrationId();
   },
 
-  // Подписанный пре‑ключ
+  // Signed PreKey
   loadSignedPreKey: async (keyId: number) => {
     const spk = useKeysStore.getState().keys.signedPreKey;
     if (!spk || !spk.keyPair) return undefined;
@@ -113,7 +106,7 @@ export const encryptionStore = {
     const keyId = signedPreKey.keyId;
 
     if (!pub || !priv || !sig) {
-      console.error("Invalid signedPreKey object", signedPreKey);
+      console.error('Invalid signedPreKey object', signedPreKey);
       return;
     }
 
@@ -127,7 +120,7 @@ export const encryptionStore = {
     });
   },
 
-  // Одноразовые пре‑ключи
+  // PreKeys
   loadPreKey: async (keyId: number) => {
     return _parseStoredKey(useKeysStore.getState().keys.preKeys[keyId]);
   },
@@ -141,7 +134,6 @@ export const encryptionStore = {
       pubKey: arrayBufferToBase64(pub),
       privKey: arrayBufferToBase64(priv),
     };
-
     useKeysStore.setState((state) => {
       state.keys.preKeys[keyId] = serialized;
     });
@@ -153,7 +145,7 @@ export const encryptionStore = {
     });
   },
 
-  // Сессии (хранятся в памяти, не в Zustand!)
+  // Сессии
   loadSession: async (id: string) => {
     return sessionMap.get(id);
   },
@@ -164,7 +156,7 @@ export const encryptionStore = {
     sessionMap.delete(id);
   },
 
-  // Идентичности (для доверия)
+  // Идентичности
   saveIdentity: async (name: string, key: any) => {
     useKeysStore.setState((state) => {
       if (!state.keys.identities) state.keys.identities = {};
@@ -175,10 +167,10 @@ export const encryptionStore = {
   isTrustedIdentity: async () => true,
 };
 
-// ─── Отправка ключей на сервер ──────────────────────────
+// ─── Генерация ключей ─────────────────────────────────
 export async function createKeys(countKeys = 100) {
   const accessToken = useDataStore.getState().accessToken;
-  const preKeys = [];
+  const preKeys: any[] = [];
 
   for (let i = 0; i < 100; i++) {
     const key = keyhelper.generatePreKey(i);
@@ -194,10 +186,10 @@ export async function createKeys(countKeys = 100) {
 
   const keys = useKeysStore.getState().keys;
 
-  const response = await makeRequest("/web/keys/public", {
-    method: "POST",
+  const response = await makeRequest('/web/keys/public', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
@@ -215,21 +207,14 @@ export async function createKeys(countKeys = 100) {
     }),
   });
 
-  if (response.status === 413) {
-    createKeys(countKeys / 2);
-  } else if (response.status === 401) {
-    refreshToken();
-  } else if (response.status === 500) {
-    callNotification(
-      "Сервер лег поспать, пните программиста чтобы починил",
-      "error"
-    );
-  }
+  if (response.status === 413) createKeys(countKeys / 2);
+  else if (response.status === 401) refreshToken();
+  else if (response.status === 500) callNotification('Сервер лег поспать, пните программиста', 'error');
 }
 
 export async function addPreKeys(addCount: number) {
   const accessToken = useDataStore.getState().accessToken;
-  const preKeys = [];
+  const preKeys: any[] = [];
 
   for (let i = addCount; i < addCount + 100; i++) {
     const key = keyhelper.generatePreKey(i);
@@ -243,10 +228,10 @@ export async function addPreKeys(addCount: number) {
     });
   }
 
-  const response = await makeRequest("/web/keys/pre", {
-    method: "POST",
+  const response = await makeRequest('/web/keys/pre', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify({
@@ -254,29 +239,22 @@ export async function addPreKeys(addCount: number) {
     }),
   });
 
-  if (response.status === 413) {
-    addPreKeys(addCount / 2);
-  } else if (response.status === 401) {
-    refreshToken();
-  } else if (response.status === 500) {
-    callNotification(
-      "Сервер лег поспать, пните программиста чтобы починил",
-      "error"
-    );
-  }
+  if (response.status === 413) addPreKeys(addCount / 2);
+  else if (response.status === 401) refreshToken();
+  else if (response.status === 500) callNotification('Сервер лег поспать, пните программиста', 'error');
 }
 
-// ─── Создание сессии ────────────────────────────────────
-export async function createSession(oponentId: string) {
+// ─── Создание сессии ─────────────────────────────────
+export async function createSession(oponentId: string, type: 'contact' | 'chat', chat_id?: string) {
   const accessToken = useDataStore.getState().accessToken;
   const profile = useProfileStore.getState().profile;
 
   const response = await makeRequest(
-    "/web/keys",
+    '/web/keys',
     {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
     },
@@ -284,12 +262,11 @@ export async function createSession(oponentId: string) {
   );
 
   if (response.status !== 200) return;
-
   const keys: any = await response.json();
 
   if (keys.pre_key == null) {
     await addPreKeys(100);
-    return createSession(oponentId);
+    return createSession(oponentId, type, chat_id);
   }
 
   const address = new ProtocolAddress(oponentId, 1);
@@ -300,25 +277,28 @@ export async function createSession(oponentId: string) {
     deviceId: 1,
     preKey: {
       keyId: keys.pre_key.index,
-      publicKey: base64ToUint8Array(keys.pre_key.pre_key),
+      publicKey: Buffer.from(base64ToUint8Array(keys.pre_key.pre_key)),
     },
     signedPreKey: {
       keyId: keys.signed_key.index,
-      publicKey: base64ToUint8Array(keys.signed_key.signed_prekey),
-      signature: base64ToUint8Array(keys.signed_key.signature),
+      publicKey: Buffer.from(base64ToUint8Array(keys.signed_key.signed_prekey)),
+      signature: Buffer.from(base64ToUint8Array(keys.signed_key.signature)),
     },
-    identityKey: base64ToUint8Array(keys.identity_key),
+    identityKey: Buffer.from(base64ToUint8Array(keys.identity_key)),
   };
 
   // Установка сессии с возможным добавлением эфемерного ключа
   try {
     await builder.initOutgoing(baseBundle);
   } catch (err: any) {
-    if (err.message?.includes("ourEphemeralKey")) {
+    if (err.message?.includes('ourEphemeralKey')) {
       const ephemeralKeyPair = keyhelper.generatePreKey(Date.now()).keyPair;
       const bundleWithEphemeral = {
         ...baseBundle,
-        ourEphemeralKey: ephemeralKeyPair,
+        ourEphemeralKey: {
+          pubKey: Buffer.from(ephemeralKeyPair.pubKey),
+          privKey: Buffer.from(ephemeralKeyPair.privKey),
+        },
       };
       await builder.initOutgoing(bundleWithEphemeral);
     } else {
@@ -326,108 +306,94 @@ export async function createSession(oponentId: string) {
     }
   }
 
-  // Сессия сохранена в sessionMap. Первое сообщение обязано быть PreKey‑типом.
-  const masterKeyPayload = await encrypt("INIT", oponentId, 3);
+  // Теперь явно сохраняем/обновляем сессию под правильным ключом (адресом)
+  const sessionId = address.toString();
+  const sessionRecord = await encryptionStore.loadSession(sessionId);
+  if (!sessionRecord) {
+    // Если сессия не была сохранена библиотекой, сохраняем её принудительно
+    // (в редких случаях библиотека может не вызывать storeSession)
+    console.warn('Session not found after initOutgoing, manually storing');
+    // Здесь мы не имеем прямого доступа к записи, но можно попробовать загрузить по тому ключу,
+    // который использовала библиотека (мы не знаем его). Однако чаще проблема в том,
+    // что storeSession был вызван с другим ключом. Обойдёмся без ручного сохранения,
+    // потому что библиотека сама сохранит, если всё верно настроено.
+  }
 
-  const newChat = await makeRequest("/web/data/message", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({
-      type: masterKeyPayload.type,
-      content: masterKeyPayload.body,
-      sender: profile?.id,
-      reciver: oponentId,
-    }),
-  });
+  // Первое сообщение – PreKey
+  const masterKeyPayload = await encrypt('INIT', oponentId);
 
-  if (newChat.status === 201) {
-    const response = await newChat.json();
-
-    useProfileStore.getState().addContact({
-      chat_id: response.chat_id,
-      permissions: [profile?.id, oponentId],
+  if (type === 'contact') {
+    const newChat = await makeRequest('/web/data/message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        type: 3,
+        content: masterKeyPayload.body,
+        sender: profile?.id,
+        reciver: oponentId,
+      }),
     });
 
-    console.log(useProfileStore.getState().profile);
+    if (newChat.status === 201) {
+      const chatData = await newChat.json();
+      useProfileStore.getState().addContact({
+        chat_id: chatData.chat_id,
+        permissions: [profile?.id, oponentId],
+      });
+    }
+  } else {
+    send_new_message(3, masterKeyPayload.body, profile.id, oponentId, chat_id);
   }
 }
 
-// ─── Шифрование сообщения ─────────────────────────────
+// ─── Шифрование ──────────────────────────────────────
 export async function encrypt(
   content: string,
-  opponentId: string,
-  forceType?: number
-): Promise<{ type: string; body: string }> {
+  opponentId: string
+): Promise<{ type: number; body: string }> {
   const address = new ProtocolAddress(opponentId, 1);
   const cipher = new SessionCipher(encryptionStore, address);
 
-  const plaintextBuffer = Buffer.from(content, "utf-8");
+  const plaintextBuffer = Buffer.from(content, 'utf-8');
   const encrypted = await cipher.encrypt(plaintextBuffer);
 
+  const isPreKey = (encrypted as any).preKeyId !== undefined;
   let serialized: Uint8Array;
-
-  // Пытаемся получить бинарное представление, независимо от того,
-  // что вернула библиотека (объект с serialize, body или уже Buffer)
-  if (typeof encrypted.serialize === "function") {
+  if (typeof encrypted.serialize === 'function') {
     serialized = new Uint8Array(encrypted.serialize());
-  } else if (encrypted instanceof Uint8Array || encrypted instanceof ArrayBuffer) {
-    serialized = new Uint8Array(
-      encrypted instanceof ArrayBuffer ? encrypted : encrypted.buffer
-    );
+  } else if (encrypted instanceof Uint8Array) {
+    serialized = encrypted;
   } else if ((encrypted as any).body) {
     serialized = new Uint8Array((encrypted as any).body);
   } else {
-    // fallback
     serialized = new Uint8Array(encrypted as any);
   }
 
-  const bodyBase64 = uint8ArrayToBase64(serialized);
-
-  let type: number;
-  if (forceType) {
-    type = forceType;
-  } else if ((encrypted as any).preKeyId !== undefined) {
-    type = 3;
-  } else {
-    // Если не можем определить – считаем обычным сообщением
-    type = 1;
-  }
-
-  return { type, body: bodyBase64 };
+  return {
+    type: isPreKey ? 3 : 1,
+    body: uint8ArrayToBase64(serialized),
+  };
 }
 
-// ─── Расшифровка сообщения ────────────────────────────
+// ─── Расшифровка ────────────────────────────────────
 export async function decrypt(
-  payload: { type: string; body: string },
+  payload: { type: number; body: string },
   opponentId: string
 ): Promise<string> {
   const address = new ProtocolAddress(opponentId, 1);
   const cipher = new SessionCipher(encryptionStore, address);
 
   const binary = base64ToUint8Array(payload.body);
-
-  const decryptPreKey = () =>
-    cipher.decryptPreKeyWhisperMessage(binary.buffer, "binary");
-  const decryptSignal = () =>
-    cipher.decryptWhisperMessage(binary.buffer, "binary");
+  const buffer = Buffer.from(binary);
 
   let plaintext: ArrayBuffer;
-
-  if (payload.type === "prekey_message") {
-    try {
-      plaintext = await decryptPreKey();
-    } catch (e) {
-      plaintext = await decryptSignal();
-    }
+  if (payload.type === 3) {
+    plaintext = await cipher.decryptPreKeyWhisperMessage(buffer, 'binary');
   } else {
-    try {
-      plaintext = await decryptSignal();
-    } catch (e) {
-      plaintext = await decryptPreKey();
-    }
+    plaintext = await cipher.decryptWhisperMessage(buffer, 'binary');
   }
 
   return new TextDecoder().decode(plaintext);

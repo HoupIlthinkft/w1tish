@@ -12,12 +12,15 @@ export function createConnection() {
     client.onMessage((data) => {
         data = JSON.parse(data);
 
+        console.log(data);
         if (data.type == "message") {
             useProfileStore.getState().addMessage(data.content);
                 
             if (useChatStore.getState().activityChat == data.content["chat_id"]) {               
                 useChatStore.getState().addChatStory(data.content);
             }
+        } else if (data.type == "error") {
+            console.log(data);
         } else {
             get_data_users_ids(Object.keys(data.content.permissions)).then(value => {
                 value.users.forEach((el) => useContactStore.getState().contacts.every(member => member.id != el.id) ? useContactStore.getState().addContact(el) : "");
@@ -27,14 +30,16 @@ export function createConnection() {
     });
 }
 
-export function send_new_message(chat_id, message, user_id) {
+export function send_new_message(type : string, content : string, sender : string, reciver : string, chat_id : string) {
+    
     console.log("сообщение отправлено");
         
     client.send(JSON.stringify({
-                        "chat_id": chat_id,
-                        "content": message,
-                        "sender": user_id,
-                        "created_at": `${new Date(Date.now()).toJSON().slice(0, -1)}`  
+                        "type": type,
+                        "content": content,
+                        "sender": sender,
+                        "reciver": reciver, 
+                        "chat_id": chat_id
     }));
 }
 

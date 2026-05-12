@@ -6,11 +6,13 @@ export function MessageComponent({message}) {
     const profile = useProfileStore((state) => state.profile);
     const activityChat = useChatStore((state) => state.activityChat);
     
-    const content = message.content;
+    const oponentId = profile.chats[activityChat].find((member) => member != profile.id);   
 
-    const oponentId = profile.chats[activityChat].permissions.find((member) => member != profile.id);   
+    console.log(message);
+    let decryptMessage;
+    decrypt({type: message.type, body: message.content}, oponentId).then(value => decryptMessage = value);
 
     return (
-            <div><ReactMarkdown>{decrypt(content, oponentId)}</ReactMarkdown></div>
+            <div><ReactMarkdown>{decryptMessage}</ReactMarkdown></div>
     )
 }

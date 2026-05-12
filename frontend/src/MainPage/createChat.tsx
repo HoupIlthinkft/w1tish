@@ -32,7 +32,7 @@ export function CreateChatComponent() {
                                                 if (inputMember.current.value != useProfileStore.getState().profile.username) {
                                                     if (Object.values(useProfileStore.getState().profile.chats).every((chat) => JSON.stringify(chat) != inputMember.current.value)) {
                                                             get_data_by_username(inputMember.current.value).then(value => {
-                                                                createSession(value.users[0].id);
+                                                                createSession(value.users[0].id, "contact");
                                                                 useContactStore.getState().addContact(value.users[0]);
                                                               //  useProfileStore.getState().addContact({})  
                                                                 setActivityCreateChat(!activityCreateChat);

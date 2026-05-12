@@ -12,7 +12,7 @@ export function ContactComponent({contact}) {
         <div onClick={async () => {
             const chatStory = await request_get_messages(contact[0]);
             
-            createSession(contact[1].find((member) => member != profile.id));
+            createSession(contact[1].find((member) => member != profile.id), "chat", contact[0]);
 
             useChatStore.getState().setChatStory(chatStory.messages);
             useChatStore.getState().setActivityChat(contact[0]);
