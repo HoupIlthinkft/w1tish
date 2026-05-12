@@ -46,33 +46,33 @@ export function AuthRegFormComponent() {
 
     return (
         <div className="flex flex-col self-center gap-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)]">
-            <p className="text-[clamp(2rem,8vw,8rem)] text-white self-center">W1tish</p>
-            <div className="flex flex-col w-[30vw] gap-[clamp(5px,2vh,20px)] rounded-[25px] bg-plate-accent px-[clamp(5px,2vw,40px)] py-[clamp(5px,4vh,40px)]">
-                <p className="text-[clamp(2rem,4vw,4rem)] self-center">{form == "auth" ? "Вход" : "Регистрация"}</p>
+            <p className="text-[clamp(2rem,8vw,8rem)] text-white self-center font-bold">W1TISH</p>
+            <div className="flex flex-col w-[40vw] gap-[clamp(5px,2vh,20px)] rounded-[25px] bg-plate-muted px-[clamp(5px,3vw,60px)] py-[clamp(5px,3vh,30px)]">
+                <p className="text-[clamp(2rem,4vw,4rem)] self-center font-light">{form == "auth" ? "Вход" : "Регистрация"}</p>
                 {
                     form == "auth" ? (
                         <div className="flex flex-col gap-[clamp(5px,3vh,30px)]">
-                            <div className="flex flex-col gap-[clamp(5px,2vh,20px)]">
-                                <input ref={username} type="text" placeholder="Username..." className="px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,2vh,20px)] rounded-[35px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
-                                <input ref={password} type="password" placeholder="Password..." className="px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,2vh,20px)] rounded-[35px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
+                            <div className="flex flex-col gap-[clamp(5px,2vh,20px)] w-[100%]">
+                                <input ref={username} type="text" placeholder="LOGIN" className="focus:bg-plate-hover transition-all duration-300 ease border-2 text-center font-light border-border px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,1.5vh,15px)] rounded-[20px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
+                                <input ref={password} type="password" placeholder="PASSWORD" className="focus:bg-plate-hover transition-all duration-300 ease border-2 text-center font-light border-border px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,1.5vh,15px)] rounded-[20px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
                             </div>
                             <div className='flex flex-col gap-[clamp(5px,1vh,10px)]'>
-                                <button onClick={() => validationAuthRegForm()} className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,4vw,80px)] rounded-[30px] bg-white w-fit self-center hover:scale-[1.2] duration-300 ease  text-[clamp(0.5rem,1.5vw,1.5rem)]">Войти в аккаунт</button>
-                                <button onClick={() => setForm("reg")} className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)] rounded-[30px] text-[clamp(0.5rem,1.25vw,1.25rem)]">Регистрация</button>
+                                <button onClick={() => validationAuthRegForm()} className="border-2 border-border py-[clamp(5px,1vh,10px)] px-[clamp(5px,4vw,80px)] w-[60%] rounded-[15px] bg-white self-center hover:scale-[1.2] duration-300 ease text-[clamp(0.5rem,1.5vw,1.5rem)]">Вход</button>
+                                <button onClick={() => setForm("reg")} className="font-extralight py-[clamp(5px,1vh,10px)] px-[clamp(5px,4vw,80px)] rounded-[30px] text-[clamp(0.5rem,1.25vw,1.25rem)]">Зарегистрировать аккаунт</button>
                             </div>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-[clamp(5px,4vh,40px)]">
                             <div className="flex flex-col gap-[clamp(5px,2vh,20px)]">
-                                <input ref={username} type="text" placeholder="Username..." className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)] outline-[0] rounded-[35px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
-                                <input ref={email} type="email" placeholder="E-mail..."  className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)] outline-[0] rounded-[35px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
-                                <input ref={password} type="password" placeholder="Password..." className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)] outline-[0] rounded-[35px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
-                                <input ref={confPassword} type="password" placeholder="Confirmation password..." className="py-[clamp(5px,2vh,20px)] outline-[0] px-[clamp(5px,1vw,20px)] rounded-[35px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
+                                <input ref={username} type="text" placeholder="LOGIN" className="focus:bg-plate-hover transition-all duration-300 ease border-2 text-center font-light border-border px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,1.5vh,15px)] rounded-[20px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
+                                <input ref={email} type="email" placeholder="EMAIL"  className="focus:bg-plate-hover transition-all duration-300 ease border-2 text-center font-light border-border px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,1.5vh,15px)] rounded-[20px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
+                                <input ref={password} type="password" placeholder="PASSWORD" className="focus:bg-plate-hover transition-all duration-300 ease border-2 text-center font-light border-border px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,1.5vh,15px)] rounded-[20px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
+                                <input ref={confPassword} type="password" placeholder="CONFIRM PASSWORD" className="focus:bg-plate-hover transition-all duration-300 ease border-2 text-center font-light border-border px-[clamp(5px,1vw,20px)] outline-[0] py-[clamp(5px,1.5vh,15px)] rounded-[20px] bg-white text-[clamp(0.5rem,1.25vw,1.25rem)]" />
                             </div>
 
                             <div className="flex flex-col gap-[clamp(5px,1vh,10px)]">
-                                <button onClick={() => validationAuthRegForm()} className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,4vw,80px)] w-fit hover:scale-[1.2] self-center duration-300 ease rounded-[30px] bg-white text-[clamp(0.5rem,1.5vw,1.5rem)]">Регистрация</button>
-                                <button onClick={() => setForm("auth")} className="py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px) rounded-[30px]] text-[clamp(0.5rem,1.25vw,1.25rem)]">Войти в аккаунт</button>
+                                <button onClick={() => validationAuthRegForm()} className="w-[60%] border-2 border-border py-[clamp(5px,1vh,10px)] px-[clamp(5px,4vw,80px)] rounded-[15px] bg-white self-center hover:scale-[1.2] duration-300 ease text-[clamp(0.5rem,1.5vw,1.5rem)]">Зарегистрироваться</button>
+                                <button onClick={() => setForm("auth")} className="font-extralight py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)] rounded-[30px] text-[clamp(0.5rem,1.25vw,1.25rem)]">Войти в аккаунт</button>
                             </div>
                         </div>
                     )

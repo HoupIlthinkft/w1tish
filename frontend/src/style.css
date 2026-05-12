@@ -6,19 +6,26 @@
 
 @font-face {
     font-family: "Inter";
-    src: url(./assets/font/Inter-V.ttf);
+    src: url(./assets/font/Inter/Inter-V.ttf);
+}
+
+@font-face {
+    font-family: "Jost";
+    src: url(./assets/font/Jost/Jost-VariableFont_wght.ttf);
 }
 
 @theme {
-    --color-plate-bg: #7E7E7E;
-    --color-text-bg: #777777;
+    --color-plate-bg: #ADADAD;
+    --color-text-bg: #A2A2A2;
 
-    --color-plate-accent: #D9D9D9;
+    --color-border: #E6E6E6;
+
+    --color-plate-accent: #F8F8F8;
     --color-plate-muted: #FFFFFF;
     
-    --color-plate-hover: #AAAAAA;
+    --color-plate-hover: #E5E5E5;
 
-    
+    --color-danger-zone: #FF9C9C;
 }
 
 :root {

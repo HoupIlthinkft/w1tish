@@ -24,7 +24,7 @@ export function ContactsListComponent() {
 
     return (
         JSON.stringify(usersData) != '[]' ? (
-        <div className="h-[100%] w-[100%] gap-[clamp(5px,1vh,10px)] flex flex-col bg-white rounded-[15px] overflow-y-auto px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)]">
+        <div className="h-[100%] w-[100%] gap-[clamp(5px,1vh,10px)] flex flex-col bg-plate-muted rounded-[15px] overflow-y-auto px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)]">
             {
                 Object.entries(userContact).map((contact) => (
                     <ContactComponent key={contact[0]} contact={contact}/>

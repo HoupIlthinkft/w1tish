@@ -4,7 +4,7 @@ import { AuthRegFormComponent } from "./AuthRegPage/authRegForm.tsx";
 import { AuthRegBackgroundComponent } from "./AuthRegPage/authRegBackground.tsx";
 
 import { NotificationComponent } from "./Notification/notifications.tsx";
-import { useDataStore, useProfileStore } from "./configurationFiles/config.ts";
+import { useChatStore, useDataStore, useProfileStore } from "./configurationFiles/config.ts";
 import { getProtectedData } from "./configurationFiles/requests.ts";
 
 import { CreateChatComponent } from "./MainPage/createChat.tsx";
@@ -30,13 +30,13 @@ function App() {
                     <NotificationComponent />
                 </>
             ) : (
-                <div className="flex flex-row gap-[clamp(5px,1vw,20px)] w-[100%] mx-[clamp(10px,1vw,20px)] my-[clamp(10px,2vh,20px)] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] rounded-[15px] bg-plate-accent">
-                    <div className="w-[25%] h-[100%] flex flex-col gap-[clamp(5px,1vh,10px)] justify-between">
+                <div className="flex flex-row w-[100%] bg-plate-accent">
+                    <div className="h-[100%] w-[100%] md:w-[25%] flex flex-col gap-[clamp(5px,1vh,10px)] border-1 border-border justify-between bg-plate-muted">
                         <CreateChatComponent />
                         <ContactsListComponent />
                         <UserProfileComponent />
                     </div>
-                    <div className="w-[75%] h-[100%]">
+                    <div className="md:w-[75%] h-[100%]">
                         <ChatComponent />
                     </div>
                     <NotificationComponent />
