@@ -11,29 +11,12 @@ from pydantic import ValidationError
 from json.decoder import JSONDecodeError
 import asyncio
 
-import uuid
-from datetime import datetime
-from pydantic import BaseModel, Field
-
 logger = getLogger(__name__)
 
 async def val_err_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"Invalid message format"})
 async def json_decode_err_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"Invalid JSON format"})
 async def no_perms_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"User hasnt permissions to write in this chat"})
 async def sock_disc_err_hand(socket: WebSocket): raise WebSocketDisconnect()
-
-class ServerResponse(BaseModel):
-    '''
-    1 - (CIPHERTEXT) \n\n3 - (PREKEY) \n\n1001 - (MESSAGE) \n\n1003 - (ERROR) \n\n1004 - (DELIVERED)
-    '''
-    type: int
-    content: str
-    sender: str
-    reciver: str
-    chat_id: str
-
-    messuid: str = Field(default_factory=lambda: uuid.uuid4().hex)
-    created_at: datetime = Field(default_factory=datetime.now)
 
 HANDLERS = {
     ValidationError: val_err_hand,
@@ -86,6 +69,9 @@ class SocketBase(ABC):
     @abstractmethod
     async def _sock_worker(self, socket: WebSocket, user_id: str): ...
 
+    @abstractmethod
+    async def _recive_history(self, user_id: str): ...
+
     @asynccontextmanager
     async def _then_socket_in_pool(self, socket: WebSocket, user_id: str):
         async with self._lock:
@@ -116,6 +102,7 @@ class SocketBase(ABC):
         self._logger.info("[WS] Client connected. ID: " + user_id)
         async with self._then_socket_in_pool(socket, user_id):
             try:
+                await self._recive_history(socket, user_id)
                 await self._sock_worker(socket, user_id)
             except WebSocketDisconnect:
                 self._logger.info("[WS] Client disconnected. ID: " + user_id)
@@ -132,6 +119,11 @@ class WebSocketManager(SocketBase):
         self.chat_repo_temlate = chat_rep_class
         self.mess_repo: protocols.IMessagesRepository = mess_rep_class(app.state.mg_session)
 
+    async def _recive_history(self, user_id):
+        undelivered_messages = await self.mess_repo.get_undelivered_messages(user_id)
+        for message in undelivered_messages:
+            await self._send_messages(message, False)
+
     async def _sock_worker(self, socket: WebSocket, user_id: str):
         _ = asyncio.create_task(self._broadcast())
         while self.background_check:
@@ -140,7 +132,7 @@ class WebSocketManager(SocketBase):
                 continue
             
             message.sender = user_id
-            response = ServerResponse(
+            response = models.ServerResponse(
                 type=message.type,
                 content=message.content,
                 sender=user_id,
@@ -149,20 +141,24 @@ class WebSocketManager(SocketBase):
             )
             await self._stack.put(response)
 
-    async def _send_messages(self, message: ServerResponse) -> None:
-        await self.mess_repo.add_message(message)
+    async def _send_messages(self, message: models.ServerResponse, add: bool = True) -> None:
+        await self.mess_repo.add_message(message) if add else None
         response = message.model_dump_json()
         await self._send_message(response, message.reciver)
 
     async def _broadcast(self):
         while self.background_check:
-            message: ServerResponse = await self._stack.get()
+            message: models.ServerResponse = await self._stack.get()
 
             async with self.app.state.pg_session_maker() as session:
                 chat_repo: IChatRepository = self.chat_repo_temlate(session, self.app.state.generator)
+
+                if message.type == 1004:
+                    await self.mess_repo.delived([message.content])
+                    continue
                 
-                if message.type < 1003:
-                    awarible_chats = await chat_repo.get_user_chats(message.content.sender)
-                    if message.content.chat_id not in awarible_chats: raise err.NoWritePermissionError()
+                if message.type < 1000:
+                    awarible_chats = await chat_repo.get_user_chats(message.sender)
+                    if message.chat_id not in awarible_chats: continue
                 
                 await self._send_messages(message)
