@@ -40,8 +40,16 @@ class MessagesRepository:
         adapter = TypeAdapter(list[ServerResponse])
         return adapter.validate_python(messages)
     
-    async def delived(self, str_ids: list[str]) -> None:
-        ids = [ObjectId(str_id) for str_id in str_ids]
+    async def delivered(self, message_ids: list[str], awarible_chats: list[str], reciver: str) -> None:
+        reciver_chats = set(awarible_chats)
+        raw_ids = [ObjectId(str_id) for str_id in message_ids]
+        messages = await self.mb.find({"_id": {"$in": raw_ids}}).to_list()
+        ids = []
+        
+        for message in messages:
+            if message.get("reciver") == reciver and message.get("chat_id") in reciver_chats:
+                ids.append(message.get("_id"))
+
         await self.mb.delete_many({"_id": {"$in": ids}})
         
     async def get_messages_by_chat(

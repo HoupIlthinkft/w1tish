@@ -43,7 +43,10 @@ async def error_handler(socket: WebSocket):
 async def recive_message(socket: WebSocket):
     async with error_handler(socket):
         raw_message = await socket.receive_json()
-        message = models.MessageModel.model_validate(raw_message)
+        if raw_message.get("type") == 1004:
+            message = models.MessagesDeliveredResponse.model_validate(raw_message)
+        else:
+            message = models.MessageModel.model_validate(raw_message)
         return message
     
 class SocketBase(ABC):
@@ -130,34 +133,38 @@ class WebSocketManager(SocketBase):
             message = await recive_message(socket)
             if not message:
                 continue
-            
-            message.sender = user_id
-            response = models.ServerResponse(
-                type=message.type,
-                content=message.content,
-                sender=user_id,
-                reciver=message.reciver,
-                chat_id=message.chat_id
-            )
-            await self._stack.put(response)
+
+            if message.type != 1004:
+                message.sender = user_id
+                response = models.ServerResponse(
+                    type=message.type,
+                    content=message.content,
+                    sender=user_id,
+                    reciver=message.reciver,
+                    chat_id=message.chat_id
+                )
+                await self._stack.put(response)
+            else:
+                await self._stack.put(message)
 
     async def _send_messages(self, message: models.ServerResponse, add: bool = True) -> None:
-        await self.mess_repo.add_message(message) if add else None
+        if add: await self.mess_repo.add_message(message)
         response = message.model_dump_json()
         await self._send_message(response, message.reciver)
 
     async def _broadcast(self):
         while self.background_check:
-            message: models.ServerResponse = await self._stack.get()
+            message: models.ServerResponse | models.MessagesDeliveredResponse = await self._stack.get()
 
             async with self.app.state.pg_session_maker() as session:
                 chat_repo: IChatRepository = self.chat_repo_temlate(session, self.app.state.generator)
 
                 if message.type == 1004:
-                    await self.mess_repo.delived([message.content])
+                    awarible_chats = await chat_repo.get_user_chats(message.reciver)
+                    await self.mess_repo.delivered(message.delivered_ids, awarible_chats, message.reciver)
                     continue
-                
-                if message.type < 1000:
+
+                elif message.type < 1000:
                     awarible_chats = await chat_repo.get_user_chats(message.sender)
                     if message.chat_id not in awarible_chats: continue
                 
