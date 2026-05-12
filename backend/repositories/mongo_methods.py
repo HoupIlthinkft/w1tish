@@ -1,11 +1,12 @@
 from pymongo.asynchronous.database import AsyncDatabase
-from backend.models import MessagesResponse, MessageModel
+from backend.models import MessagesResponse, MessageModel, ServerResponse
 from backend.errors import InvalidMessagesError
 from pydantic import ValidationError
 from datetime import datetime, timedelta
 
 from backend.core.config import settings
-from pydantic import BaseModel
+from pydantic import TypeAdapter
+from bson.objectid import ObjectId
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -15,7 +16,7 @@ class MessagesRepository:
 
     async def add_message(
         self,
-        message: BaseModel
+        message: ServerResponse
     ) -> None:
         try:
             await self.mb.insert_one(message.model_dump())
@@ -27,13 +28,20 @@ class MessagesRepository:
         except ValidationError as e:
             raise InvalidMessagesError(e.title)
         
-    async def get_undelivered_messages(self, reciver: str) -> MessagesResponse:
+    async def get_undelivered_messages(self, reciver: str) -> list[ServerResponse]:
         messages = await self.mb.find(
             {"reciver": reciver}
         ).to_list()
-        return MessagesResponse.model_validate({"messages": messages})
+
+        messages = [
+            {**message, "messuid": str(message["_id"])}
+            for message in messages
+        ]
+        adapter = TypeAdapter(list[ServerResponse])
+        return adapter.validate_python(messages)
     
-    async def delived(self, ids: list[str]) -> None:
+    async def delived(self, str_ids: list[str]) -> None:
+        ids = [ObjectId(str_id) for str_id in str_ids]
         await self.mb.delete_many({"_id": {"$in": ids}})
         
     async def get_messages_by_chat(
