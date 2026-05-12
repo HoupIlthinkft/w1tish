@@ -102,7 +102,7 @@ class SocketBase(ABC):
         self._logger.info("[WS] Client connected. ID: " + user_id)
         async with self._then_socket_in_pool(socket, user_id):
             try:
-                await self._recive_history(socket, user_id)
+                await self._recive_history(user_id)
                 await self._sock_worker(socket, user_id)
             except WebSocketDisconnect:
                 self._logger.info("[WS] Client disconnected. ID: " + user_id)
