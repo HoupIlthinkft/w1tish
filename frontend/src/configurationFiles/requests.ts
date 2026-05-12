@@ -1,4 +1,6 @@
-import { useDataStore, useProfileStore, useContactStore } from "./config.ts";
+import { keyhelper } from "@raphaelvserafim/libsignal";
+import { useDataStore, useProfileStore, useContactStore, useKeysStore } from "./config.ts";
+import { createKeys, encryptionStore } from "./encryption.ts";
 import { createConnection } from "./webSocketsConnection.ts";
 import { callNotification } from "../Notification/notifications.tsx";
 import { makeRequest } from '@api';
@@ -13,6 +15,17 @@ export async function register_user(username, email, password) {
     if (response.status === 201) {
         const data = await response.json();
         useDataStore.getState().setAccessToken(data.access_token);
+
+        const identityKey = await keyhelper.generateIdentityKeyPair();
+        const signedPreKey = await keyhelper.generateSignedPreKey(identityKey, 1);
+        const registrationId = await keyhelper.generateRegistrationId();
+
+        // Используем encryptionStore, чтобы ключи сохранялись в base64
+        await encryptionStore.storeIdentityKey(identityKey);
+        await encryptionStore.storeSignedPreKey(signedPreKey);
+        useKeysStore.getState().setRegistrationId(registrationId);
+
+        createKeys();
     } else if (response.status === 409)  callNotification("Вы ввели занятый логин/почту, введите другие значения", "error");                            
         else callNotification("Ошибка сервера: " + response.status, "error");
 }
@@ -32,7 +45,6 @@ export async function login(username, password) {
                     const data = await response.json();
                     useDataStore.getState().setAccessToken(data.access_token);
                 } else if (response.status === 401) { 
-                    document.getElementById("error").textContent = "";
                     callNotification("Введен неверный логин или пароль, попробуйте ввести правильный логин/пароль", "error");
                 } else callNotification("Ошибка сервера: " + response.status, "error");
 
@@ -70,7 +82,7 @@ export async function getProtectedData() {
             useProfileStore.getState().setProfile({
                 username: data.username,
                 nickname: data.nickname,
-                avatar: await get_avatar_url_by_id(data.id),
+                avatar: data.avatar,
                 chats: data.chats,
                 id: data.id,
             })
@@ -102,21 +114,23 @@ export async function refreshToken() {
 }
 
 export async function request_add_new_message(chat_id, message, user_id) {
-    var data = await makeRequest(('/web/data/messages'), {
+    const data = await makeRequest('/web/data/messages', {
         method: 'POST',
         headers: {  'accept': 'application/json',
                     'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                     'Content-Type': 'application/json' },
-        body: JSON.stringify(message)
+        body: JSON.stringify(message),
     });
     
-    if (data.status === 401 || data.status === 422) refreshToken(), request_add_new_message(chat_id, message, user_id);
-
+    if (data.status === 401 || data.status === 422) {
+        await refreshToken(); 
+        request_add_new_message(chat_id, message, user_id);
+    }
 }
 
 
 export async function request_get_messages(chat_id, offset=0) {
-    var data = await makeRequest((`/web/data/messages?chat_id=${String(chat_id)}&offset=${offset}&limit=50`), {
+    const data = await makeRequest(`/web/data/messages?chat_id=${String(chat_id)}&offset=${offset}&limit=50`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json',
             'Authorization': `Bearer ${useDataStore.getState().accessToken}`
@@ -125,6 +139,7 @@ export async function request_get_messages(chat_id, offset=0) {
 
     if (data.status === 200) return data.json();
         else if (data.status === 422) console.log("422 Validation Error");
+            else if (data.status === 401) refreshToken();
             else console.log(data.status, data.statusText);
 }
 
@@ -200,9 +215,9 @@ export async function get_data_by_user_id(user_id) {
 
 
 export async function get_data_users_ids(users_ids) {
-    let user_id = []
+    const user_id = []
 
-    for (let i in users_ids) {
+    for (const i in users_ids) {
         user_id.push(`user_id=${users_ids[i]}`)
     }
 

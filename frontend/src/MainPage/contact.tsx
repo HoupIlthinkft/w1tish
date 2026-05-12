@@ -1,7 +1,8 @@
 import ReactMarkdown from 'react-markdown'
 
 import { useContactStore, useChatStore, useProfileStore } from "../configurationFiles/config.ts";
-import { get_avatar_url_by_id, request_get_messages } from "../configurationFiles/requests.ts";
+import { createSession } from "../configurationFiles/encryption.ts";
+import { request_get_messages } from "../configurationFiles/requests.ts";
 
 export function ContactComponent({contact}) {
     const profile = useProfileStore((state) => state.profile);
@@ -10,23 +11,22 @@ export function ContactComponent({contact}) {
     return (
         <div onClick={async () => {
             const chatStory = await request_get_messages(contact[0]);
+            
+            createSession(contact[1].find((member) => member != profile.id));
 
             useChatStore.getState().setChatStory(chatStory.messages);
             useChatStore.getState().setActivityChat(contact[0]);
-        }} className="bg-plate-accent flex flex-col gap-[clamp(5px,1vh,10px)] rounded-[15px] py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)]">
-            <div className="flex flex-row gap-[clamp(5px,0.5vw,10px)] flex-wrap">
+        }} className="bg-plate-accent hover:bg-plate-accent/66 hover:scale-[1.05] duration-300 transition-all ease cursor-pointer flex flex-col gap-[clamp(5px,1vh,10px)] rounded-[15px] py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)]">
                 {
-                    Object.keys(contact[1].permissions).map((member, index) => (
+                    contact[1].map((member, index) => (
                         member != profile.id ? (
-                        <div key={index} className="flex flex-row">
-                            <img src={get_avatar_url_by_id(member)} />
-                            <p>{membersData.find(element => element.id == member).nickname}</p>
+                        <div key={index} className="flex flex-row items-center gap-[clamp(5px,1vw,20px)]">
+                            <img className="w-[clamp(32px,6vw,64px)] h-[clamp(32px,6vw,64px)] rounded-[360px]" src={membersData.find(element => element.id == member).avatar} />
+                            <p className="text-[clamp(1rem,2.5vw,2rem)] self-center">{membersData.find(element => element.id == member).nickname}</p>
                         </div>
                         ) : <></>
                     ))
                 }
-            </div>
-            <div><ReactMarkdown>{contact[1].last_message}</ReactMarkdown></div>
         </div>
     )
 }

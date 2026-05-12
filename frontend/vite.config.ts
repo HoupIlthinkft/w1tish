@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { nodePolyfills } from "vite-plugin-node-polyfills"
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
@@ -26,6 +27,13 @@ export default defineConfig({
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-    tailwindcss()
+    tailwindcss(),
+    nodePolyfills({
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
   ],
 })

@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { persist, createJSONStorage  } from "zustand/middleware";
 import { produce } from "immer";
+
+import { get, set, del } from 'idb-keyval';
 
 interface DataStoreIntf {
     accessToken: null | string;
@@ -36,11 +39,11 @@ interface ContactStoreIntf {
 }
 
 export const useDataStore = create<DataStoreIntf>()(
-    immer((set) => ({
+    persist(immer((set) => ({
         accessToken: null,
         setAccessToken: (token) => set((state) => {state.accessToken = token}),
-    }))
-);
+    })), { name: "DataStore" }
+));
 
 export const useNotificationStore = create<NotificationStoreIntf>()(
     immer((set) => ({
@@ -57,13 +60,8 @@ export const useNotificationStore = create<NotificationStoreIntf>()(
 export const useProfileStore = create<ProfileStoreIntf>()(
     immer((set) => ({
         profile: null,
-        setProfile: (data) => set((state) => {state.profile = data}),
-        addContact: (data) => set(produce((state) => {state.profile.chats[data.id] = {
-            permissions: data.permissions,
-            last_message: "_Чат создан_",
-            last_message_author: 0,
-            last_message_time: new Date().toJSON(),
-        }})),
+        setProfile: (data) => set(produce((state) => {state.profile = data})),
+        addContact: (data) => set(produce((state) => {state.profile.chats[data.chat_id] = data.permissions})),
         addMessage: (data) => set(produce((state) => {
             const chat = state.profile.chats[data["chat_id"]];
                                   
@@ -89,10 +87,56 @@ export const useChatStore = create(
     immer((set) => ({
         activityChat: null,
         chatStory: null,
-        setActivityChat: (data) => set((state) => {state.activityChat = data}),
-        setChatStory: (data) => set((state) => {state.chatStory = data}),
+        setActivityChat: (data) => set(produce((state) => {state.activityChat = data})),
+        setChatStory: (data) => set(produce((state) => {state.chatStory = data})),
         loadChatStory: (data) => set(produce((state) => {state.chatStory = [...data, ...state.chatStory]})),
         addChatStory: (data) => set(produce((state) => {state.chatStory = [...state.chatStory, data]})),
     }))
 )
 
+const storage = {
+  getItem: async (name) => (await get(name)) || null,
+  setItem: async (name, value) => await set(name, value),
+  removeItem: async (name) => await del(name),
+};
+
+export const useKeysStore = create()(
+    persist(immer((set) => ({
+        keys: {
+            sessions: {},
+            preKeys: {},
+            identityKey: null,
+            signedPreKey: {},
+            registrationId: null,
+        },
+
+
+        actions: {
+            setSession: (address, record) => 
+            set((state) => { state.keys.sessions[address] = record }),
+            
+            setPreKey: (keyId, keyPair) => 
+            set((state) => { state.keys.preKeys[keyId] = keyPair }),
+            
+            removePreKey: (keyId) => 
+            set((state) => { delete state.keys.preKeys[keyId] }),
+
+            setAllData: (data) => 
+            set((state) => { state.keys = { ...state.keys, ...data } }),
+        },
+
+        setIdentityKey: (key) => set(produce((state) => {state.keys.identityKey = key})),
+        setSignedPreKey: (key) => set(produce((state) => {state.keys.signedPreKey = key})),
+        setRegistrationId: (id) => set(produce((state) => {state.keys.registrationId = id})),
+        setNullKeys: () => set(produce((state) => state.keys = {
+            sessions: {},
+            preKeys: {},
+            identityKey: null,
+            signedPreKey: {},
+            registrationId: null,
+        }))
+    })), { 
+        name: "KeysStore",
+        storage: createJSONStorage (() => storage),
+     }
+))

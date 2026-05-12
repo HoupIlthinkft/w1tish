@@ -1,24 +1,16 @@
 import ReactMarkdown from 'react-markdown'
-import { useProfileStore, useContactStore } from "../configurationFiles/config.ts";
-import { get_avatar_url_by_id } from "../configurationFiles/requests.ts";
+import { useProfileStore,  useChatStore } from "../configurationFiles/config.ts";
+import { decrypt } from "../configurationFiles/encryption.ts";
 
 export function MessageComponent({message}) {
     const profile = useProfileStore((state) => state.profile);
+    const activityChat = useChatStore((state) => state.activityChat);
     
-    const sender = message.sender;
     const content = message.content;
 
+    const oponentId = profile.chats[activityChat].permissions.find((member) => member != profile.id);   
+
     return (
-        <div>
-            {
-                profile.id != sender ? (
-                    <div>
-                        <img href={get_avatar_url_by_id(sender)} />
-                        <p>{useContactStore.getState().contacts.find(contact => contact.id == sender).nickname}</p>
-                    </div>
-                ) : <></>
-            }
-            <div><ReactMarkdown>{content}</ReactMarkdown></div>
-        </div>
+            <div><ReactMarkdown>{decrypt(content, oponentId)}</ReactMarkdown></div>
     )
 }
