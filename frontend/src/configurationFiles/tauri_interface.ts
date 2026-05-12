@@ -31,7 +31,7 @@ export async function makeRequest(
   content: Record<string, any>,
   query?: Record<string, string>
 ) {
-  let renderURL = `${apiURL}/${apiMethod}`;
+  let renderURL = `${apiURL}${apiMethod}`;
 
   if (query) {
       renderURL += "?";
