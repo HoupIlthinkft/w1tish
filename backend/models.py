@@ -43,6 +43,11 @@ class ServerResponse(BaseModel):
     messuid: str = Field(default_factory=lambda: uuid.uuid4().hex)
     created_at: datetime = Field(default_factory=datetime.now)
 
+class MessagesDeliveredResponse(BaseModel):
+    type: int
+    delivered_ids: list[str]
+    reciver: str
+
 class FirstMessageModel(BaseModel):
     type: int = Field(..., examples=[1], description="Тип сообщения")
     content: str = Field(..., examples=["Васап бро"], description="Сообщение")
