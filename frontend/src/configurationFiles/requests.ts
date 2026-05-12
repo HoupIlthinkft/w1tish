@@ -26,6 +26,7 @@ export async function register_user(username, email, password) {
         useKeysStore.getState().setRegistrationId(registrationId);
 
         createKeys();
+        getProtectedData();
     } else if (response.status === 409)  callNotification("Вы ввели занятый логин/почту, введите другие значения", "error");                            
         else callNotification("Ошибка сервера: " + response.status, "error");
 }
@@ -44,6 +45,7 @@ export async function login(username, password) {
                 else if (response.status === 200) {                            
                     const data = await response.json();
                     useDataStore.getState().setAccessToken(data.access_token);
+                    getProtectedData();
                 } else if (response.status === 401) { 
                     callNotification("Введен неверный логин или пароль, попробуйте ввести правильный логин/пароль", "error");
                 } else callNotification("Ошибка сервера: " + response.status, "error");
