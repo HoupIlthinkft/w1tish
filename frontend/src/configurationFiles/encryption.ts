@@ -249,80 +249,80 @@ export async function createSession(oponentId: string, type: 'contact' | 'chat',
   const accessToken = useDataStore.getState().accessToken;
   const profile = useProfileStore.getState().profile;
 
-  const response = await makeRequest(
-    '/web/keys',
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-    { user_id: oponentId }
-  );
+  // const response = await makeRequest(
+  //   '/web/keys',
+  //   {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${accessToken}`,
+  //     },
+  //   },
+  //   { user_id: oponentId }
+  // );
 
-  if (response.status !== 200) return;
-  const keys: any = await response.json();
+  // if (response.status !== 200) return;
+  // const keys: any = await response.json();
 
-  if (keys.pre_key == null) {
-    await addPreKeys(100);
-    return createSession(oponentId, type, chat_id);
-  }
+  // if (keys.pre_key == null) {
+  //   await addPreKeys(100);
+  //   return createSession(oponentId, type, chat_id);
+  // }
 
-  const address = new ProtocolAddress(oponentId, 1);
-  const builder = new SessionBuilder(encryptionStore, address);
+  // const address = new ProtocolAddress(oponentId, 1);
+  // const builder = new SessionBuilder(encryptionStore, address);
 
-  const baseBundle = {
-    registrationId: parseInt(keys.registration_id, 10),
-    deviceId: 1,
-    preKey: {
-      keyId: keys.pre_key.index,
-      publicKey: Buffer.from(base64ToUint8Array(keys.pre_key.pre_key)),
-    },
-    signedPreKey: {
-      keyId: keys.signed_key.index,
-      publicKey: Buffer.from(base64ToUint8Array(keys.signed_key.signed_prekey)),
-      signature: Buffer.from(base64ToUint8Array(keys.signed_key.signature)),
-    },
-    identityKey: Buffer.from(base64ToUint8Array(keys.identity_key)),
-  };
+  // const baseBundle = {
+  //   registrationId: parseInt(keys.registration_id, 10),
+  //   deviceId: 1,
+  //   preKey: {
+  //     keyId: keys.pre_key.index,
+  //     publicKey: Buffer.from(base64ToUint8Array(keys.pre_key.pre_key)),
+  //   },
+  //   signedPreKey: {
+  //     keyId: keys.signed_key.index,
+  //     publicKey: Buffer.from(base64ToUint8Array(keys.signed_key.signed_prekey)),
+  //     signature: Buffer.from(base64ToUint8Array(keys.signed_key.signature)),
+  //   },
+  //   identityKey: Buffer.from(base64ToUint8Array(keys.identity_key)),
+  // };
 
-  // Установка сессии с возможным добавлением эфемерного ключа
-  try {
-    await builder.initOutgoing(baseBundle);
-  } catch (err: any) {
-    if (err.message?.includes('ourEphemeralKey')) {
-      const ephemeralKeyPair = keyhelper.generatePreKey(Date.now()).keyPair;
-      const bundleWithEphemeral = {
-        ...baseBundle,
-        ourEphemeralKey: {
-          pubKey: Buffer.from(ephemeralKeyPair.pubKey),
-          privKey: Buffer.from(ephemeralKeyPair.privKey),
-        },
-      };
-      await builder.initOutgoing(bundleWithEphemeral);
-    } else {
-      throw err;
-    }
-  }
+  // // Установка сессии с возможным добавлением эфемерного ключа
+  // try {
+  //   await builder.initOutgoing(baseBundle);
+  // } catch (err: any) {
+  //   if (err.message?.includes('ourEphemeralKey')) {
+  //     const ephemeralKeyPair = keyhelper.generatePreKey(Date.now()).keyPair;
+  //     const bundleWithEphemeral = {
+  //       ...baseBundle,
+  //       ourEphemeralKey: {
+  //         pubKey: Buffer.from(ephemeralKeyPair.pubKey),
+  //         privKey: Buffer.from(ephemeralKeyPair.privKey),
+  //       },
+  //     };
+  //     await builder.initOutgoing(bundleWithEphemeral);
+  //   } else {
+  //     throw err;
+  //   }
+  // }
 
-  // Теперь явно сохраняем/обновляем сессию под правильным ключом (адресом)
-  const sessionId = address.toString();
-  const sessionRecord = await encryptionStore.loadSession(sessionId);
-  if (!sessionRecord) {
-    // Если сессия не была сохранена библиотекой, сохраняем её принудительно
-    // (в редких случаях библиотека может не вызывать storeSession)
-    console.warn('Session not found after initOutgoing, manually storing');
-    // Здесь мы не имеем прямого доступа к записи, но можно попробовать загрузить по тому ключу,
-    // который использовала библиотека (мы не знаем его). Однако чаще проблема в том,
-    // что storeSession был вызван с другим ключом. Обойдёмся без ручного сохранения,
-    // потому что библиотека сама сохранит, если всё верно настроено.
-  }
+  // // Теперь явно сохраняем/обновляем сессию под правильным ключом (адресом)
+  // const sessionId = address.toString();
+  // const sessionRecord = await encryptionStore.loadSession(sessionId);
+  // if (!sessionRecord) {
+  //   // Если сессия не была сохранена библиотекой, сохраняем её принудительно
+  //   // (в редких случаях библиотека может не вызывать storeSession)
+  //   console.warn('Session not found after initOutgoing, manually storing');
+  //   // Здесь мы не имеем прямого доступа к записи, но можно попробовать загрузить по тому ключу,
+  //   // который использовала библиотека (мы не знаем его). Однако чаще проблема в том,
+  //   // что storeSession был вызван с другим ключом. Обойдёмся без ручного сохранения,
+  //   // потому что библиотека сама сохранит, если всё верно настроено.
+  // }
 
-  // Первое сообщение – PreKey
-  const masterKeyPayload = await encrypt('INIT', oponentId);
+  // // Первое сообщение – PreKey
+  // const masterKeyPayload = await encrypt('INIT', oponentId);
 
-  if (type === 'contact') {
+    if (type == "contact") {
     const newChat = await makeRequest('/web/data/message', {
       method: 'POST',
       headers: {
@@ -331,7 +331,7 @@ export async function createSession(oponentId: string, type: 'contact' | 'chat',
       },
       body: JSON.stringify({
         type: 3,
-        content: masterKeyPayload.body,
+        content: ".",//,
         sender: profile?.id,
         reciver: oponentId,
       }),
@@ -344,10 +344,8 @@ export async function createSession(oponentId: string, type: 'contact' | 'chat',
         permissions: [profile?.id, oponentId],
       });
     }
-  } else {
-    send_new_message(3, masterKeyPayload.body, profile.id, oponentId, chat_id);
   }
-}
+  }
 
 // ─── Шифрование ──────────────────────────────────────
 export async function encrypt(
@@ -383,18 +381,19 @@ export async function decrypt(
   payload: { type: number; body: string },
   opponentId: string
 ): Promise<string> {
-  const address = new ProtocolAddress(opponentId, 1);
-  const cipher = new SessionCipher(encryptionStore, address);
+  // const address = new ProtocolAddress(opponentId, 1);
+  // const cipher = new SessionCipher(encryptionStore, address);
 
-  const binary = base64ToUint8Array(payload.body);
-  const buffer = Buffer.from(binary);
+  // const binary = base64ToUint8Array(payload.body);
+  // const buffer = Buffer.from(binary);
 
-  let plaintext: ArrayBuffer;
-  if (payload.type === 3) {
-    plaintext = await cipher.decryptPreKeyWhisperMessage(buffer, 'binary');
-  } else {
-    plaintext = await cipher.decryptWhisperMessage(buffer, 'binary');
-  }
+  // let plaintext: ArrayBuffer;
+  // if (payload.type === 3) {
+  //   plaintext = await cipher.decryptPreKeyWhisperMessage(buffer, 'binary');
+  // } else {
+  //   plaintext = await cipher.decryptWhisperMessage(buffer, 'binary');
+  // }
 
-  return new TextDecoder().decode(plaintext);
+  // return new TextDecoder().decode(plaintext);
+  return payload.body;
 }
