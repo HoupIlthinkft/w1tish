@@ -15,7 +15,7 @@ export function createConnection() {
         console.log(data);
         if (data.type == 1) {
             if (useChatStore.getState().activityChat == data.chat_id) {               
-                useChatStore.getState().addChatStory(data.content);
+                useChatStore.getState().addChatStory(data);
             }
         } else if (data.type == "error") {
             console.log(data);
