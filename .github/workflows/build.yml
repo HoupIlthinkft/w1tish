@@ -75,6 +75,10 @@ jobs:
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
+      - name: Create .env file
+        run: |
+          echo "API_URL=${{ secrets.API_URL }}" >> .env
+
       - name: Build Windows app
         if: matrix.target == 'windows'
         working-directory: ./frontend
