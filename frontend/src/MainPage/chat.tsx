@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 
 import { useChatStore, useProfileStore, useContactStore } from "../configurationFiles/config.ts";
-import { encrypt } from "../configurationFiles/encryption.ts"
 import { send_new_message } from "../configurationFiles/webSocketsConnection.ts";
 
 import { MessageComponent } from "./message.tsx";
@@ -15,10 +14,24 @@ export function ChatComponent() {
     const activityChat = useChatStore((state) => state.activityChat);
     const membersData = useContactStore((state) => state.contacts);
 
+    const sendMessage = () => {
+        if (inputMessage.current.value.trim() != "") {
+            send_new_message("1", inputMessage.current?.value, useProfileStore.getState().profile.id, profile.chats[activityChat].find((member) => member != profile.id), useChatStore.getState().activityChat);
+            inputMessage.current.value = "";
+        }
+    }
+
     return (
         <div className="bg-plate-muted flex flex-col h-[100%] justify-between hidden md:flex">
             {
-                activityChat != null ? (
+                activityChat == null ? (
+                    <div className="flex flex-col h-[100%] items-center justify-center gap-[clamp(5px,2vh,20px)]">
+                        <p className="text-[clamp(4rem,8vw,8rem)] font-[Jost] font-semibold text-plate-hover">W1tish</p>
+                        <h1 className="text-[clamp(1rem,4vw,4rem)] font-bold">Здесь пока ничего нету</h1>
+                        <h1 className="text-[clamp(2rem,6vw,6rem)] font-bold">{"(._. )"}</h1>
+                        <h4 className="text-[clamp(0.5rem,2vw,2rem)] font-medium">Выберите чат из списка слева</h4>
+                    </div>
+                ) : (
                 <>
                     <div className="bg-plate-muted rounded-[10px]">
                         {
@@ -26,8 +39,6 @@ export function ChatComponent() {
                                 if (memberId == profile.id) return null;
                                 else {
                                     const member = membersData.find(memberData => memberData.id == memberId);
-                                    console.log(member, membersData.find(memberData => memberData.id == memberId), memberId, membersData);
-                                    console.log(profile?.chats, activityChat);
                                     
                                     return (
                                         <>  
@@ -79,28 +90,24 @@ export function ChatComponent() {
                         {
                             chatStory.map((message, index) => (
                                 <>
-                                    {index != 0  ? <MessageComponent key={index} message={message} /> : <></>}
+                                    {index == 0  ? <></> : <MessageComponent key={index} message={message} />}
                                 </>
                             ))
                         }
                     </div>
                     <div className=" flex flex-row gap-[clamp(5px,1vw,20px)] items-center justify-between my-[clamp(5px,1vh,10px)] mx-[clamp(5px,0.5vw,10px)] mr-[clamp(5px,3vw,60px)] rounded-[20px]">
                         <textarea ref={inputMessage} placeholder="Введите сообщение..." className="border-border border-1 min-h-min max-h-[20vh] text-[clamp(0.75rem,1.5vw,1.5rem)] outline-0 w-[93%] bg-plate-accent px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] rounded-[40px]" />
-                        <span className="bg-plate-accent material-symbols-outlined cursor-pointer scale-[calc(4/3)] md:scale-[2] xl:scale-[calc(8/3)] px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)] rounded-[360px]" onClick={() => {
-                            if (inputMessage.current.value.trim() != "") {
-                            send_new_message(1, inputMessage.current?.value, useProfileStore.getState().profile.id, profile.chats[activityChat].find((member) => member != profile.id), useChatStore.getState().activityChat);
-                            inputMessage.current.value = "";
+                        <span className="bg-plate-accent material-symbols-outlined cursor-pointer scale-[calc(4/3)] md:scale-[2] xl:scale-[calc(8/3)] px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)] rounded-[360px]" 
+                        onClick={() => sendMessage} 
+                        role="button" 
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                sendMessage();
                             }
                         }}>send</span>
                     </div>
                 </>
-                ) : (
-                    <div className="flex flex-col h-[100%] items-center justify-center gap-[clamp(5px,2vh,20px)]">
-                        <p className="text-[clamp(4rem,8vw,8rem)] font-[Jost] font-semibold text-plate-hover">W1tish</p>
-                        <h1 className="text-[clamp(1rem,4vw,4rem)] font-bold">Здесь пока ничего нету</h1>
-                        <h1 className="text-[clamp(2rem,6vw,6rem)] font-bold">{"(._. )"}</h1>
-                        <h4 className="text-[clamp(0.5rem,2vw,2rem)] font-medium">Выберите чат из списка слева</h4>
-                    </div>
                 )
             }
         </div>

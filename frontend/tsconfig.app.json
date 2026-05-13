@@ -22,8 +22,4 @@
     "noFallthroughCasesInSwitch": true,
   },
   "include": ["src"],
-  "exclude": [
-      "src/MainPage/*.tsx",
-      "src/configurationFiles/*.ts"
-  ]
 }

@@ -1,6 +1,4 @@
-import { keyhelper } from "@raphaelvserafim/libsignal";
-import { useDataStore, useProfileStore, useContactStore, useKeysStore } from "./config.ts";
-import { createKeys, encryptionStore } from "./encryption.ts";
+import { useDataStore, useProfileStore } from "./config.ts";
 import { createConnection } from "./webSocketsConnection.ts";
 import { callNotification } from "../Notification/notifications.tsx";
 import { makeRequest } from '@api';
@@ -15,17 +13,6 @@ export async function register_user(username, email, password) {
     if (response.status === 201) {
         const data = await response.json();
         useDataStore.getState().setAccessToken(data.access_token);
-
-        const identityKey = await keyhelper.generateIdentityKeyPair();
-        const signedPreKey = await keyhelper.generateSignedPreKey(identityKey, 1);
-        const registrationId = await keyhelper.generateRegistrationId();
-
-        // Используем encryptionStore, чтобы ключи сохранялись в base64
-        await encryptionStore.storeIdentityKey(identityKey);
-        await encryptionStore.storeSignedPreKey(signedPreKey);
-        useKeysStore.getState().setRegistrationId(registrationId);
-
-        createKeys();
         getProtectedData();
     } else if (response.status === 409)  callNotification("Вы ввели занятый логин/почту, введите другие значения", "error");                            
         else callNotification("Ошибка сервера: " + response.status, "error");
@@ -44,6 +31,7 @@ export async function login(username, password) {
             else if (response.status === 500)  callNotification("Сервер лег поспать, попробуйте позже", "error");
                 else if (response.status === 200) {                            
                     const data = await response.json();
+
                     useDataStore.getState().setAccessToken(data.access_token);
                     getProtectedData();
                 } else if (response.status === 401) { 
@@ -55,7 +43,8 @@ export async function login(username, password) {
 
 export async function getProtectedData() {
     const accessToken = useDataStore.getState().accessToken;
-    if (accessToken != null) {
+    if (accessToken == null) await refreshToken();
+    else {
         useProfileStore.getState().setProfile(null);
         useDataStore.getState().setAccessToken(accessToken);
 
@@ -91,7 +80,7 @@ export async function getProtectedData() {
 
             createConnection();
         }
-    } else await refreshToken();
+    }
 }
 
 
@@ -169,7 +158,7 @@ export async function request_create_new_chat(oponents_id) {
         callNotification("Чат с таким набором пользователей уже существует, добавьте иного пользователя/удалите ненужного", "error");
     } else if (response.status === 201) {
         callNotification("Чат создан, желаем плодотворного общения :)", "success");
-        window.location.reload();
+        globalThis.location.reload();
     }
 }
 
@@ -205,7 +194,8 @@ export async function requset_editing_avatar(new_avatar) {
     });
 
     if ((response.status === 422) || (response.status === 401)) getProtectedData();
-        else return response.status; 
+    if (response.status == 200) callNotification("Ваша новая, новаторская, современная, наикрутейшая аватарка успешно поставлена", "success");
+    else return response.status; 
 }
 
 

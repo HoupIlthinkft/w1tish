@@ -13,7 +13,7 @@ export function ContactsListComponent() {
     useEffect(() => {
         if (JSON.stringify(userContact) == "{}" || userContact == undefined) return;
 
-        const usersInContact = Object.entries(userContact).map((chat) => chat[1].find(member => member != profile.id));
+        const usersInContact = Object.entries(userContact).map((chatMembers) => Object.values(chatMembers).find((member :  string) => member != profile.id));
         
         get_data_users_ids(Array.from(usersInContact)).then((value) => {
             useContactStore.getState().setContacts(value.users);
@@ -23,7 +23,7 @@ export function ContactsListComponent() {
     
 
     return (
-        JSON.stringify(usersData) != '[]' ? (
+        JSON.stringify(usersData) == '[]' ? <></> : (
         <div className="h-[100%] w-[100%] gap-[clamp(5px,1vh,10px)] flex flex-col bg-plate-muted rounded-[15px] overflow-y-auto px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)]">
             {
                 Object.entries(userContact).map((contact) => (
@@ -31,7 +31,7 @@ export function ContactsListComponent() {
                 ))
             }
         </div>
-        ) : <></>
+        )
     )
 }
 

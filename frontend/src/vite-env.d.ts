@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
 
 declare module '@api' {
@@ -8,49 +9,7 @@ declare module '@api' {
     close(): void;
   }
 
-  /**
-   * # GET запрос
-   * 
-   * Принимает путь к ручке и автоматически подставляет адрес сервера,
-   * автоматически подставляет `content-type: aplication/json` если заголовки **не указаны**.
-   * 
-   * ## Params:
-   * **apiMethod**: ручка без адреса сервера `"api/message"`
-   * 
-   * **headers**: заголовки **вместе с** `content-type: aplication/json` или ничего
-   * 
-   * **query**: query параметры или ничего
-   * 
-  */
-  export const getData: (
-    apiMethod: string,
-    headers?: Record<string, string>,
-    query?: Record<string, string>
-  ) => Promise<Response>;
-
-  /**
-   * # POST запрос
-   * 
-   * Принимает путь к ручке и автоматически подставляет адрес сервера,
-   * автоматически подставляет `content-type: aplication/json` если заголовки **не указаны**.
-   * 
-   * ## Params:
-   * **apiMethod**: ручка без адреса сервера `"api/message"`
-   * 
-   * **body**: JSON сериализуемое наполнение
-   * 
-   * **headers**: заголовки **вместе с** `content-type: aplication/json` или ничего
-   * 
-   * **query**: query параметры или ничего
-   * 
-  */
-  export const postData: (
-    apiMethod: string,
-    body: object,
-    headers?: object,
-    query?: object
-  ) => Promise<Response>;
-
+  
   /**
    * # Надстройка js:fetch
    * 

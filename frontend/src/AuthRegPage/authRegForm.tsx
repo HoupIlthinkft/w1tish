@@ -17,29 +17,23 @@ export function AuthRegFormComponent() {
     const validationAuthRegForm = () => {
         if (username.current != null && password.current != null) {
             if (form == "reg" && email.current != null && confPassword != null) {
-                if (username.current.value.trim() != "") { 
-                    if (password.current.value.length >= 8) {
-                        if (password.current.value.toLowerCase() != password.current.value) {
-                            if (password.current.value.toUpperCase() != password.current.value) {
-                                if (password.current.value == confPassword.current.value) {
-                                    if (email.current.checkValidity()) {
-                                        register_user(username.current.value, email.current.value, password.current.value);
-                                    } else callNotification("Электронная почта не валидна", "error");       
-                                } else callNotification("Пароли не совпадают", "error");
-                            } else callNotification("Нету символа(ов) нижнего регистра в пароле", "error");
-                        } else callNotification("Нету символа(ов) верхнего регистра в пароле", "error");
+                if (username.current.value.trim() == "") callNotification("Введите username", "error");
+                    else if (password.current.value.length >= 8) {
+                        if (password.current.value.toLowerCase() == password.current.value) {callNotification("Нету символа(ов) верхнего регистра в пароле", "error");} else if (password.current.value.toUpperCase() == password.current.value) {callNotification("Нету символа(ов) нижнего регистра в пароле", "error");} else if (password.current.value == confPassword.current.value) {
+                            if (email.current.checkValidity()) {
+                                register_user(username.current.value, email.current.value, password.current.value);
+                            } else callNotification("Электронная почта не валидна", "error");       
+                        } else callNotification("Пароли не совпадают", "error");
                     } else callNotification("Длина пароля меньше 8", "error");
-                } else callNotification("Введите username", "error");
             } else if (form == "auth") {
-                if (username.current.value.trim() != "") {
-                    if (password.current.value.length >= 8) {
-                        if (password.current.value.toLowerCase() != password.current.value) {
-                            if (password.current.value.toUpperCase() != password.current.value) {
-                                login(username.current.value, password.current.value);
-                            } else callNotification("Нету символа(ов) нижнего регистра в пароле", "error");
-                        } else callNotification("Нету символа(ов) верхнего регистра в пароле", "error");
+                if (username.current.value.trim() == "") callNotification("Введите username", "error") 
+                    else if (password.current.value.length >= 8) {
+                        if (password.current.value.toLowerCase() == password.current.value) callNotification("Нету символа(ов) верхнего регистра в пароле", "error") 
+                            else if (password.current.value.toUpperCase() == password.current.value) callNotification("Нету символа(ов) нижнего регистра в пароле", "error")
+                        else {
+                            login(username.current.value, password.current.value);
+                        }
                     } else callNotification("Длина пароля меньше 8", "error");
-                } else callNotification("Введите username", "error")
             }
         }
     };  

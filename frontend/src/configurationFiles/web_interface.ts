@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 
+
 const apiURL: string = import.meta.env.API_URL;
 
 export class WSClient {
@@ -17,6 +18,7 @@ export class WSClient {
     this.socket?.send(data);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onMessage(callback: (data: any) => void) {
     if (this.socket) {
       this.socket.onmessage = (event) => callback(event.data);
@@ -28,6 +30,7 @@ export class WSClient {
 
 export async function makeRequest(
   apiMethod: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   content: Record<string, any>,
   query?: Record<string, string>
 ) {
@@ -35,7 +38,7 @@ export async function makeRequest(
 
   if (query) {
       renderURL += "?";
-      for (let key of Object.keys(query)) {
+      for (const key of Object.keys(query)) {
           renderURL += `${key}=${query[key]}&`;
       }
       renderURL = renderURL.slice(0, -1);

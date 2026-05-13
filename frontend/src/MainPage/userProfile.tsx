@@ -1,13 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useProfileStore, useDataStore } from "../configurationFiles/config.ts";
-import { requset_editing_nickname, requset_editing_avatar, getProtectedData, request_reset_token } from "../configurationFiles/requests.ts";
+import { requset_editing_nickname, requset_editing_avatar, request_reset_token } from "../configurationFiles/requests.ts";
 
 
 export function UserProfileComponent() {
     const [activityProfile, setActivityProfile] = useState<boolean>(false);
-    const [editingNickname, setEditingNickname] = useState<boolean>(false);
     
-    const editNicknameRef = useRef<HTMLElement | null>(null);
+    const editNicknameRef = useRef<HTMLInputElement | null>(null);
 
     const profile = useProfileStore((state) => state.profile);
 
@@ -62,8 +61,10 @@ export function UserProfileComponent() {
                                 </div>
                                 <div className="flex flex-row gap-[clamp(5px,2vw,40px)] self-end">
                                     <button className="bg-plate-accent rounded-[20px] text-[clamp(0.75rem,1.5vw,1.5rem)] hover:bg-plate-hover font-medium border-border border-1 px-[clamp(5px,4vw,80px)] py-[clamp(5px,3vh,30px)] w-fit self-end hover:scale-[1.1] duration-300 ease" type="button" onClick={() => {
+                                        if (editNicknameRef.current.value != profile.nickname) {
                                         requset_editing_nickname(editNicknameRef.current.value);
                                         useProfileStore.getState().setNickname(editNicknameRef.current.value);
+                                        }
                                         setActivityProfile(!activityProfile);
                                     }}>Сохранить</button>
                                     <button className="bg-danger-zone border-border border-1 text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium rounded-[20px] px-[clamp(5px,2vw,40px)] py-[clamp(5px,3vh,30px)] w-fit self-end hover:scale-[1.1] duration-300 ease" type="button" onClick={() => {

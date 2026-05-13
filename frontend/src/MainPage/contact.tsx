@@ -1,24 +1,23 @@
 import ReactMarkdown from 'react-markdown'
-
 import { useContactStore, useChatStore, useProfileStore } from "../configurationFiles/config.ts";
-import { createSession } from "../configurationFiles/encryption.ts";
 import { request_get_messages } from "../configurationFiles/requests.ts";
+
 
 export function ContactComponent({contact}) {
     const profile = useProfileStore((state) => state.profile);
     const membersData = useContactStore((state) => state.contacts);
     const activeChat = useChatStore((state) => state.activityChat);
 
-    return (
-        <div onClick={async () => {
+    const clickOnContact = async () => {
             const chatStory = await request_get_messages(contact[0]);
             
-            createSession(contact[1].find((member) => member != profile.id), "chat", contact[0]);
-
             useChatStore.getState().setChatStory(chatStory.messages);
             useChatStore.getState().setActivityChat(contact[0]);
-        }} className="bg-plate-accent hover:bg-plate-hover duration-300 transition-all ease cursor-pointer flex flex-col gap-[clamp(5px,1vh,10px)] rounded-[15px] py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)]"
-            style={ activeChat == contact[0] ? {'background-color': "#E5E5E5"} : {}}
+        }
+
+    return (
+        <div onClick={clickOnContact} className="bg-plate-accent hover:bg-plate-hover duration-300 transition-all ease cursor-pointer flex flex-col gap-[clamp(5px,1vh,10px)] rounded-[15px] py-[clamp(5px,2vh,20px)] px-[clamp(5px,1vw,20px)]"
+            style={ activeChat == contact[0] ? {'backgroundColor': "#E5E5E5"} : {}}
         >
                 {
                     contact[1].map((member, index) => (
@@ -30,6 +29,7 @@ export function ContactComponent({contact}) {
                         ) : <></>
                     ))
                 }
+                <div><ReactMarkdown></ReactMarkdown></div>
         </div>
     )
 }

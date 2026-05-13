@@ -1,9 +1,8 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { persist, createJSONStorage  } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
-import { get, set, del } from 'idb-keyval';
 
 interface DataStoreIntf {
     accessToken: null | string;
@@ -24,18 +23,47 @@ interface ProfileIntf {
     username: string;
     nickname: string;
     avatar: string;
-    chats: string;
+    chats: [{[chatId: string]: Array<string>}];
     id: string;
 }
 
 interface ProfileStoreIntf {
     profile: ProfileIntf | null; 
     setProfile: (data : ProfileIntf) => void;
+    addContact: (data : {chat_id: string, permissions: string[]}) => void;
+    addMessage: (data : MessageIntf) => void;
+    setNickname: (newNickname : string) => void;
+}
+
+interface ContactIntf {
+    nickname: string,
+    username: string,
+    avatar: string,
+    id: string,
+}
+
+
+interface MessageIntf {
+    type: string,
+    content: string,
+    sender: string,
+    reciver: string, 
+    chat_id: string
 }
 
 interface ContactStoreIntf {
-    contacts: string[] | null;
-    setContacts: (data : string[]) => void;
+    contacts: ContactIntf[] | null;
+    setContacts: (data : ContactIntf[]) => void;
+    addContact: (data : ContactIntf) => void;
+}
+
+interface ChatStoreIntf {
+    activityChat: null | string;
+    chatStory: null | MessageIntf[];
+    setActivityChat: (data : string) => void ;
+    setChatStory: (data : MessageIntf[]) => void;
+    loadChatStory: (data : MessageIntf[]) => void;
+    addChatStory: (data : MessageIntf) => void;
 }
 
 export const useDataStore = create<DataStoreIntf>()(
@@ -49,9 +77,10 @@ export const useNotificationStore = create<NotificationStoreIntf>()(
     immer((set) => ({
         notificationActivity: false,
         setNotificationActivity: (activity) => set((state) => {state.notificationActivity = activity}),
+
         notificationContent: {
-            typeNotification: "",
-            content: "",
+            typeNotification: "success",
+            content: "Страница успешно загружена",
         },
         setNotificationContent: (content) => set((state) => {state.notificationContent = {typeNotification: content[0], content: content[1]}}),
     }))
@@ -83,7 +112,7 @@ export const useContactStore = create<ContactStoreIntf>()(
     }))
 )
 
-export const useChatStore = create(
+export const useChatStore = create<ChatStoreIntf>()(
     immer((set) => ({
         activityChat: null,
         chatStory: null,
@@ -93,50 +122,3 @@ export const useChatStore = create(
         addChatStory: (data) => set(produce((state) => {state.chatStory = [...state.chatStory, data]})),
     }))
 )
-
-const storage = {
-  getItem: async (name) => (await get(name)) || null,
-  setItem: async (name, value) => await set(name, value),
-  removeItem: async (name) => await del(name),
-};
-
-export const useKeysStore = create()(
-    persist(immer((set) => ({
-        keys: {
-            sessions: {},
-            preKeys: {},
-            identityKey: null,
-            signedPreKey: {},
-            registrationId: null,
-        },
-
-
-        actions: {
-            setSession: (address, record) => 
-            set((state) => { state.keys.sessions[address] = record }),
-            
-            setPreKey: (keyId, keyPair) => 
-            set((state) => { state.keys.preKeys[keyId] = keyPair }),
-            
-            removePreKey: (keyId) => 
-            set((state) => { delete state.keys.preKeys[keyId] }),
-
-            setAllData: (data) => 
-            set((state) => { state.keys = { ...state.keys, ...data } }),
-        },
-
-        setIdentityKey: (key) => set(produce((state) => {state.keys.identityKey = key})),
-        setSignedPreKey: (key) => set(produce((state) => {state.keys.signedPreKey = key})),
-        setRegistrationId: (id) => set(produce((state) => {state.keys.registrationId = id})),
-        setNullKeys: () => set(produce((state) => state.keys = {
-            sessions: {},
-            preKeys: {},
-            identityKey: null,
-            signedPreKey: {},
-            registrationId: null,
-        }))
-    })), { 
-        name: "KeysStore",
-        storage: createJSONStorage (() => storage),
-     }
-))
