@@ -111,4 +111,3 @@ class ChatsBase(Base):
     last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
     last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
-
