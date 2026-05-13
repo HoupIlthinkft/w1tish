@@ -1,5 +1,5 @@
 import { useContactStore, useProfileStore } from "../configurationFiles/config.ts";
-import { get_data_by_username } from "../configurationFiles/requests.ts";
+import { get_data_by_username, request_create_new_chat } from "../configurationFiles/requests.ts";
 import { createSession } from "../configurationFiles/encryption.ts";
 import { callNotification } from "../Notification/notifications.tsx";
 import { useState, useRef } from "react";
@@ -19,10 +19,12 @@ export function CreateChatComponent() {
                                 if (inputMember.current.value != useProfileStore.getState().profile.username) {
                                     if (Object.values(useProfileStore.getState().profile.chats).every((chat) => JSON.stringify(chat) != inputMember.current.value)) {
                                             get_data_by_username(inputMember.current.value).then(value => {
-                                                createSession(value.users[0].id, );
+                                              //  createSession(value.users[0].id, );
+                                                request_create_new_chat(value.users[0].id);
                                                 useContactStore.getState().addContact(value.users[0]);
                                                 //  useProfileStore.getState().addContact({})  
                                                 setActivityCreateChat(!activityCreateChat);
+
                                             })
                                     } else callNotification("К сожалению нельзя сделать два одиннаковых чата, многопоточность запрещена на территории w1tish", "error");
                                 } else callNotification("К сожалению нельзя общаться со своей шизой :(", "error");  

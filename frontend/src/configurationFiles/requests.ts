@@ -147,12 +147,17 @@ export async function request_get_messages(chat_id, offset=0) {
 
 
 export async function request_create_new_chat(oponents_id) {
-    const response = await makeRequest(('/web/data/chats'), {
+    const profile = useProfileStore.getState().profile;
+
+    const response = await makeRequest(('/web/data/message'), {
         method: 'POST',
         headers: {  'Authorization': `Bearer ${useDataStore.getState().accessToken}`,
                     'Content-Type': 'application/json' },
         body: JSON.stringify({
-            "members_ids": oponents_id
+            "type": 3,
+            "content": "Duuuude",
+            "sender": profile.id,
+            "reciver": oponents_id
         })
     });
 
@@ -164,6 +169,7 @@ export async function request_create_new_chat(oponents_id) {
         callNotification("Чат с таким набором пользователей уже существует, добавьте иного пользователя/удалите ненужного", "error");
     } else if (response.status === 201) {
         callNotification("Чат создан, желаем плодотворного общения :)", "success");
+        window.location.reload();
     }
 }
 

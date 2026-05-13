@@ -13,10 +13,10 @@ export function createConnection() {
         data = JSON.parse(data);
 
         console.log(data);
-        if (data.type == "message") {
+        if (data.type == 1) {
             useProfileStore.getState().addMessage(data.content);
-                
-            if (useChatStore.getState().activityChat == data.content["chat_id"]) {               
+            
+            if (useChatStore.getState().activityChat == data.chat_id) {               
                 useChatStore.getState().addChatStory(data.content);
             }
         } else if (data.type == "error") {
@@ -41,6 +41,16 @@ export function send_new_message(type : string, content : string, sender : strin
                         "reciver": reciver, 
                         "chat_id": chat_id
     }));
+
+    if (useChatStore.getState().activityChat == chat_id) {               
+        useChatStore.getState().addChatStory({
+                        "type": type,
+                        "content": content,
+                        "sender": sender,
+                        "reciver": reciver, 
+                        "chat_id": chat_id
+    });
+    }
 }
 
 

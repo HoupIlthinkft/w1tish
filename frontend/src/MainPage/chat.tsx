@@ -75,11 +75,11 @@ export function ChatComponent() {
                             })
                         }
                     </div>
-                    <div>
+                    <div className="flex flex-col px-[clamp(1px,0.5vw,10px)] h-[100%] justify-end gap-[clamp(1px,1vh,10px)] overflow-auto">
                         {
                             chatStory.map((message, index) => (
                                 <>
-                                    <MessageComponent key={index} message={message} />
+                                    {index != 0  ? <MessageComponent key={index} message={message} /> : <></>}
                                 </>
                             ))
                         }
@@ -87,8 +87,10 @@ export function ChatComponent() {
                     <div className=" flex flex-row gap-[clamp(5px,1vw,20px)] items-center justify-between my-[clamp(5px,1vh,10px)] mx-[clamp(5px,0.5vw,10px)] mr-[clamp(5px,3vw,60px)] rounded-[20px]">
                         <textarea ref={inputMessage} placeholder="Введите сообщение..." className="border-border border-1 min-h-min max-h-[20vh] text-[clamp(0.75rem,1.5vw,1.5rem)] outline-0 w-[93%] bg-plate-accent px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] rounded-[40px]" />
                         <span className="bg-plate-accent material-symbols-outlined cursor-pointer scale-[calc(4/3)] md:scale-[2] xl:scale-[calc(8/3)] px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)] rounded-[360px]" onClick={() => {
-                            send_new_message("1", encrypt(inputMessage.current?.value, useProfileStore.getState().profile.id, profile.chats[activityChat].find((member) => member != profile.id)), useChatStore.getState().activityChat);
+                            if (inputMessage.current.value.trim() != "") {
+                            send_new_message(1, inputMessage.current?.value, useProfileStore.getState().profile.id, profile.chats[activityChat].find((member) => member != profile.id), useChatStore.getState().activityChat);
                             inputMessage.current.value = "";
+                            }
                         }}>send</span>
                     </div>
                 </>

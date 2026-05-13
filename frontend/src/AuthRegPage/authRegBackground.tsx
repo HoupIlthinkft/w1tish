@@ -24,26 +24,8 @@ export function AuthRegBackgroundComponent() {
     }
 
     return (
-        <div className="flex flex-row text-text-bg font-[Jost] font-semibold bg-plate-accent absolute z-[-1] text-[clamp(2rem,8vw,8rem)] -translate-y-[30vh] gap-[clamp(5px,1vw,20px)]"> 
+        <div className="flex flex-row text-text-bg font-[Jost] font-semibold bg-plate-accent absolute z-[-1] text-[clamp(2rem,8vw,8rem)] -translate-y-[100vh] gap-[clamp(5px,1vw,20px)]"> 
             <Splide extensions={{AutoScroll}} options={splideOptions}>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
@@ -82,6 +64,8 @@ export function AuthRegBackgroundComponent() {
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
+            </Splide>
+            <Splide extensions={{AutoScroll}} options={splideOptions}>
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
@@ -120,6 +104,8 @@ export function AuthRegBackgroundComponent() {
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
+            </Splide>
+            <Splide extensions={{AutoScroll}} options={splideOptions}>
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
@@ -158,24 +144,6 @@ export function AuthRegBackgroundComponent() {
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
             </Splide>
             <Splide extensions={{AutoScroll}} options={splideOptions}>
                 <SplideSlide>
@@ -196,120 +164,8 @@ export function AuthRegBackgroundComponent() {
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
             </Splide>
             <Splide extensions={{AutoScroll}} options={splideOptions}>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-            </Splide>
-            <Splide extensions={{AutoScroll}} options={splideOptions}>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-            </Splide>
-            <Splide extensions={{AutoScroll}} options={splideOptions}>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
-                <SplideSlide>
-                    <p>W1tish</p>
-                </SplideSlide>
                 <SplideSlide>
                     <p>W1tish</p>
                 </SplideSlide>
