@@ -81,13 +81,6 @@ class ChatRepository:
     ):
         self.db = db
         self.generator = generator
-
-    def generate_id(self, user_id1: str, user_id2: str) -> str:
-        return str(
-            self.generator.generate_chatid(
-                [int(user_id1), int(user_id2)]
-            )
-        )
     
     async def get_user_chats(self, user_id: str) -> set[str]:
         query = await self.db.execute(
@@ -115,7 +108,7 @@ class ChatRepository:
             return str(chat_id)
     
         except IntegrityError:
-            raise err.ChatExistError()
+                raise err.ChatExistError()
     
     @asynccontextmanager
     async def set_chat(self, message: models.MessageModel) -> AsyncGenerator[None, None]:
@@ -163,6 +156,9 @@ class DataRepository:
                 models.UsersBase.username,
                 models.UsersBase.nickname,
                 cast(models.ChatsBase.id, String).label("chat_id"),
+                cast(models.ChatsBase.last_message_author, String),
+                models.ChatsBase.last_message_text,
+                models.ChatsBase.last_message_time,
                 models.ChatsBase.permissions
             ).outerjoin(
                 models.ChatsBase,
@@ -177,8 +173,13 @@ class DataRepository:
             raise err.UserNotFoundError()
 
         chats = {
-            row.chat_id: list(row.permissions)
-            for row in user_data if row.chat_id
+            row.chat_id: {
+                "last_message": row.last_message_text,
+                "last_message_time": datetime.isoformat(row.last_message_time),
+                "last_message_author": row.last_message_author,
+                "permissions": row.permissions
+            }
+            for row in user_data if row.chat_id is not None
         }
 
         response = models.UserResponse(
@@ -239,88 +240,3 @@ class DataRepository:
         )
         if not query.rowcount:
             raise err.UserNotFoundError()
-        
-
-class KeysRepository:
-    def __init__(self, session: AsyncSession):
-        self.db = session
-
-    def add_prekeys(self, user_id: str, keys: list[models.PreKeyModel]) -> None:
-        objects = [
-            models.PreKeysBase(
-                id=int(user_id),
-                key=key.pre_key,
-                index=key.index
-            ) for key in keys
-        ]
-        self.db.add_all(objects)
-
-    async def get_prekey(self, user_id: str) -> models.PreKeyModel:
-        query = await self.db.execute(
-            select(
-                models.PreKeysBase
-            ).where(
-                models.PreKeysBase.id == int(user_id)
-            ).limit(1)
-        )
-        key = query.scalar_one_or_none()
-        if key:
-            await self.db.delete(key)
-            return models.PreKeyModel(pre_key=key.key, index=key.index)
-        
-        logger.warning(f"Noone prekeys was searched for user '{user_id}'")
-        raise err.NoPreKeysError()
-    
-    async def update_signed_key(self, user_id: str, signed_index: int, signed_prekey: str, signature: str) -> None:
-        query = await self.db.execute(
-            update(
-                models.PublicKeysBase
-            ).where(
-                models.PublicKeysBase.id == int(user_id)
-            ).values(
-                index=signed_index,
-                signed_prekey=signed_prekey,
-                signature=signature
-            )
-        )
-        if not query.rowcount:
-            raise err.UserNotFoundError()
-    
-    async def get_user_keys(self, user_id: str) -> models.UserKeysResponse:
-        query = await self.db.execute(
-            select(
-                models.PublicKeysBase
-            ).where(
-                models.PublicKeysBase.id == int(user_id)
-            )
-        )
-        public_keys = query.scalar_one_or_none()
-        if not public_keys: raise err.UserNotFoundError()
-
-        signed_key = models.SignedPreKeyModel(
-            index=public_keys.index,
-            signed_prekey=public_keys.signed_prekey,
-            signature=public_keys.signature
-        )
-        return models.UserKeysResponse(
-            registration_id=public_keys.registration_id,
-            identity_key=public_keys.identity_key,
-            signed_key=signed_key,
-            pre_key=None
-        )
-    
-    async def add_public_keys(self, user_id: str, register_id: int, identity_key: str, signed_index: int, signed_key: str, signature: str) -> None:
-        user_keys = models.PublicKeysBase(
-            id=int(user_id),
-            registration_id=register_id,
-            identity_key=identity_key,
-            index=signed_index,
-            signed_prekey=signed_key,
-            signature=signature
-        )
-        try:
-            self.db.add(user_keys)
-            await self.db.flush()
-        except IntegrityError:
-            logger.info("Keys already exist!")
-            raise err.KeysExistError()

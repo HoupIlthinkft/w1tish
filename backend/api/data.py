@@ -33,7 +33,6 @@ async def get_user_data_by_id(
     return await service.get_users_data(user_id, username)
 
 
-
 @data_router.get(
     "",
     response_model=models.UserResponse,
@@ -46,34 +45,29 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     return await service.get_user_data(user_id)
 
 
-
 @data_router.post(
-    "/message",
+    "/messages",
     status_code=status.HTTP_201_CREATED,
-    # response_model=models.OKResponse,
+    response_model=models.OKResponse,
     summary=config.docs.add_messages.summary,
     description=config.docs.add_messages.description,
     responses=config.docs.add_messages.responses
 )
-async def add_new_chat(
-    request: models.FirstMessageModel,
+async def add_new_message(
+    request: models.MessageModel,
     service: DataServiceDep,
     user_id: CurrentUser
 ):
     logger.info("[POST] Trying to add new message...")
-    chat_id = await service.first_message(user_id, request)
-    return {"chat_id": chat_id}
-
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    await service.add_message(user_id, request)
+    return models.OKResponse()
 
 @data_router.get(
     "/messages",
     response_model=models.MessagesResponse,
     summary=config.docs.get_messages.summary,
     description=config.docs.get_messages.description,
-    responses=config.docs.get_messages.responses,
-    deprecated=True
+    responses=config.docs.get_messages.responses
 )
 async def get_messages(
     service: DataServiceDep,
@@ -92,8 +86,7 @@ async def get_messages(
     response_model=models.CreateChatResponse,
     summary=config.docs.chats.summary,
     description=config.docs.chats.description,
-    responses=config.docs.chats.responses,
-    deprecated=True
+    responses=config.docs.chats.responses
 )
 async def create_new_chat(
     request: models.CreateChatRequestModel,
@@ -103,9 +96,6 @@ async def create_new_chat(
     logger.info("[POST] Trying to create chat...")
     chat_id = await service.add_chat(user_id, request)
     return models.CreateChatResponse(chat_id=chat_id)
-
-
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 @data_router.patch(
     "/avatar",
