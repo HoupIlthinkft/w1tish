@@ -14,8 +14,6 @@ export function createConnection() {
 
         console.log(data);
         if (data.type == 1) {
-            useProfileStore.getState().addMessage(data.content);
-            
             if (useChatStore.getState().activityChat == data.chat_id) {               
                 useChatStore.getState().addChatStory(data.content);
             }
