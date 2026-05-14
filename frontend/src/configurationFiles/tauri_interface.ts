@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import { fetch } from "@tauri-apps/plugin-http";
+import { fetch } from '@tauri-apps/plugin-http';
 
 const apiURL: string = import.meta.env.API_URL;
 
@@ -8,7 +8,7 @@ export class WSClient {
   private socket: WebSocket | null = null;
 
   async connect(token: string) {
-    const renderURL = "ws" + `${apiURL}/ws?token=${token}`.slice(4);
+    const renderURL = 'ws' + `${apiURL}/ws?token=${token}`.slice(4);
     this.socket = new WebSocket(renderURL);
     return new Promise<void>((res) => {
       this.socket!.onopen = () => res();
@@ -26,23 +26,25 @@ export class WSClient {
     }
   }
 
-  close() { this.socket?.close(); }
+  close() {
+    this.socket?.close();
+  }
 }
 
 export async function makeRequest(
   apiMethod: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   content: Record<string, any>,
-  query?: Record<string, string>
+  query?: Record<string, string>,
 ) {
   let renderURL = `${apiURL}${apiMethod}`;
 
   if (query) {
-      renderURL += "?";
-      for (const key of Object.keys(query)) {
-          renderURL += `${key}=${query[key]}&`;
-      }
-      renderURL = renderURL.slice(0, -1);
+    renderURL += '?';
+    for (const key of Object.keys(query)) {
+      renderURL += `${key}=${query[key]}&`;
+    }
+    renderURL = renderURL.slice(0, -1);
   }
 
   return await fetch(renderURL, content);
