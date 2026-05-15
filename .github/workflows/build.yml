@@ -100,7 +100,7 @@ jobs:
       - name: Build Android app
         if: matrix.target == 'android'
         working-directory: ./frontend
-        run: npm run tauri android build
+        run: npm run tauri android build -- --debug
         env:
           ANDROID_KEYSTORE_PATH: "release.jks"
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
