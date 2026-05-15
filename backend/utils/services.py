@@ -101,7 +101,7 @@ class DataService:
 
     async def get_user_data(self, user_id: int) -> models.UserResponse:
         data = await self.user_data.get_user_data(user_id)
-        data.avatar_url = f"{settings.S3_AVATARS}/avatars/{data.id}.jpg"
+        data.avatar_url = f"{settings.S3_AVATARS}/avatars/{data.id}.jpeg"
         return data
     
     async def get_users_data(
@@ -119,7 +119,7 @@ class DataService:
             data = await self.user_data.get_users_by_usernames(users_usernames)
         
         for user in data:
-            user.avatar_url = f"{settings.S3_AVATARS}/avatars/{user.id}.jpg"
+            user.avatar_url = f"{settings.S3_AVATARS}/avatars/{user.id}.jpeg"
         return data
         
     async def set_avatar(self, file: BinaryIO, user_id: int) -> None:
