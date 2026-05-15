@@ -1,4 +1,4 @@
-from fastapi import status, FastAPI
+from fastapi import FastAPI
 from starlette.websockets import WebSocketState, WebSocket, WebSocketDisconnect
 from backend.interfaces.protocols import IChatRepository, IMessagesRepository
 from backend import models
@@ -9,8 +9,10 @@ from contextlib import asynccontextmanager
 from logging import getLogger
 from pydantic import ValidationError
 from json.decoder import JSONDecodeError
-import asyncio, json
-from pydantic import BaseModel
+import asyncio
+from pydantic import BaseModel, Field
+
+from datetime import datetime
 
 logger = getLogger(__name__)
 
@@ -19,9 +21,16 @@ async def json_decode_err_hand(socket: WebSocket): await socket.send_json({"type
 async def no_perms_hand(socket: WebSocket): await socket.send_json({"type":"error", "detail":"User hasnt permissions to write in this chat"})
 async def sock_disc_err_hand(socket: WebSocket): raise WebSocketDisconnect()
 
+class SocketMessage(BaseModel):
+    content: str
+    chat_id: str
+
+    sender: str = Field("...")
+    created_at: datetime = Field(default_factory=datetime.now)
+
 class WebSockResponse(BaseModel):
     type: str
-    content: models.MessageModel | models.ChatModel
+    content: SocketMessage | models.ChatModel
 
 HANDLERS = {
     ValidationError: val_err_hand,
@@ -48,7 +57,7 @@ async def error_handler(socket: WebSocket):
 async def recive_message(socket: WebSocket):
     async with error_handler(socket):
         raw_message = await socket.receive_json()
-        message = models.MessageModel.model_validate(raw_message)
+        message = SocketMessage.model_validate(raw_message)
         return message
     
 class SocketBase(ABC):

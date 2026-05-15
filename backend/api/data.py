@@ -51,7 +51,8 @@ async def get_self_data(service: DataServiceDep, user_id: CurrentUser):
     response_model=models.OKResponse,
     summary=config.docs.add_messages.summary,
     description=config.docs.add_messages.description,
-    responses=config.docs.add_messages.responses
+    responses=config.docs.add_messages.responses,
+    deprecated=True
 )
 async def add_new_message(
     request: models.MessageModel,

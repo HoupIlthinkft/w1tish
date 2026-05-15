@@ -18,7 +18,7 @@ def setup_logging():
     logging.basicConfig(
         level=logger_levels.get(config.logger.level, logging.INFO),
         format=FORMAT,
-        handlers=[logging.FileHandler(f"backend/logs/{settings.LOGS_FILE}")]
+        # handlers=[logging.FileHandler(f"backend/logs/{settings.LOGS_FILE}")]
     )
 
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
