@@ -79,13 +79,13 @@ class UserResponse(UserModel):
     chats: dict[str, dict] = Field(
         ...,
         description="Чаты пользователя",
-        examples=[{
+        examples=[[{
             "id": "123456789012345678",
             "last_message_text": "лох",
             "last_message_time": "2026-01-31T21:35:10.161344",
             "last_message_author": "123456789012345678",
-            "permissions": {"123456789012345678": "owner", '123456789012345677': "user"}
-        }]
+            "permissions": ["123456789012345678", '123456789012345677']
+        }]]
     )
 
 class UsersResponse(BaseModel):
