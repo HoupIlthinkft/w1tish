@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text, BigInteger
+from sqlalchemy import text, BigInteger, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
@@ -110,6 +110,6 @@ class ChatsBase(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
     last_message_text: Mapped[str] = mapped_column(server_default=text("'_Чат создан_'"))
-    last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
+    last_message_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
     last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
