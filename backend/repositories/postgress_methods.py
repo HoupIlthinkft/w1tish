@@ -10,6 +10,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import AsyncGenerator
 
+from pydantic import TypeAdapter
+
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -192,7 +194,7 @@ class DataRepository:
 
         return response
     
-    async def get_users_by_ids(self, ids: list[str]) -> models.UsersResponse:
+    async def get_users_by_ids(self, ids: list[str]) -> list[models.UserModel]:
         query = await self.db.execute(
             select(
                 models.UsersBase.nickname,
@@ -208,10 +210,11 @@ class DataRepository:
             logger.warning(f"Failed to get users data! Getted {len(users_data)}/{len(ids)}")
             raise err.UserNotFoundError()
         
-        return models.UsersResponse.model_validate({"users":users_data})
+        adapter = TypeAdapter(list[models.UserModel])
+        return adapter.validate_python(users_data)
     
 
-    async def get_users_by_usernames(self, usernames: list[str]) -> models.UsersResponse:
+    async def get_users_by_usernames(self, usernames: list[str]) -> list[models.UserModel]:
         query = await self.db.execute(
             select(
                 models.UsersBase.nickname,
@@ -227,7 +230,8 @@ class DataRepository:
             logger.warning("Failed to get users data! Getted %s/%s", len(users_data), len(usernames))
             raise err.UserNotFoundError()
         
-        return models.UsersResponse.model_validate({"users":users_data})
+        adapter = TypeAdapter(list[models.UserModel])
+        return adapter.validate_python(users_data)
     
     async def set_user_nickname(self, nickname: str, user_id: str) -> None:
         query = await self.db.execute(

@@ -16,6 +16,7 @@ class UserModel(BaseModel):
     id: str = Field(..., examples=["123456789012345678"], description="Айди пользователя")
     username: str = Field(..., examples=["Tralalelo_tralala"], description="Логин пользователя")
     nickname: str = Field(..., examples=["Гигачат 228 котлета 336"], description="Ник пользователя")
+    avatar_url: str = Field("", examples=["https://avatar.url/user-id.jpg"], description="Ссылка на аватар пользователя")
 
 class ChatModel(BaseModel):
     id: str = Field(..., examples=["123456789012345678"], description="Айди чата")
@@ -76,6 +77,7 @@ class CreateChatResponse(BaseModel):
     chat_id: str = Field(..., description="Айди чата", examples=["123456789012345678"])
 
 class UserResponse(UserModel):
+    avatar_url: str = Field("", examples=["https://avatar.url/user-id.jpg"], description="Ссылка на аватар пользователя")
     chats: list[dict] = Field(
         ...,
         description="Чаты пользователя",

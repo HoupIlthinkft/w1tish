@@ -19,7 +19,7 @@ data_router = APIRouter(prefix="/web/data", tags=["Data методы"])
 
 @data_router.get(
     "/user",
-    response_model=models.UsersResponse,
+    response_model=list[models.UserModel],
     summary=config.docs.user.summary,
     description=config.docs.user.description,
     responses=config.docs.user.responses
