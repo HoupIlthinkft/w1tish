@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build:windows": "tauri build",
+    "dev:windows": "tauri dev",
     "tauri": "TAURI_BUILD=true tauri",
     "vite": "vite",
     "build": "tsc -b && vite build",

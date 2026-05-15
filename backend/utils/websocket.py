@@ -12,7 +12,7 @@ from json.decoder import JSONDecodeError
 import asyncio
 from pydantic import BaseModel, Field
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = getLogger(__name__)
 
@@ -26,7 +26,7 @@ class SocketMessage(BaseModel):
     chat_id: str
 
     sender: str = Field("...")
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class WebSockResponse(BaseModel):
     type: str
