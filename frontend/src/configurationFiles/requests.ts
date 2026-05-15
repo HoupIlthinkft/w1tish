@@ -75,7 +75,7 @@ export async function getProtectedData() {
       useProfileStore.getState().setProfile({
         username: data.username,
         nickname: data.nickname,
-        avatar: data.avatar,
+        avatar_url: data.avatar_url,
         chats: data.chats,
         id: data.id,
       });

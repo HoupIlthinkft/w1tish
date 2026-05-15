@@ -5,6 +5,7 @@ import {
   requset_editing_avatar,
   request_reset_token,
 } from '../configurationFiles/requests.ts';
+import { closeConnection } from '../configurationFiles/webSocketsConnection.ts';
 
 export function UserProfileComponent() {
   const [activityProfile, setActivityProfile] = useState<boolean>(false);
@@ -17,9 +18,9 @@ export function UserProfileComponent() {
     <>
       <div className="border-border flex flex-row gap-[clamp(5px,0.5vw,10px)] rounded-[15px] border-t bg-white px-[clamp(5px,1.5vw,30px)] py-[clamp(5px,2vh,20px)]">
         <img
-          src={profile.avatar}
+          src={profile.avatar_url}
           alt="avatar"
-          className="h-[clamp(16px,3vw,64px)] w-[clamp(16px,3vw,64px)] rounded-[360px]"
+          className="h-4 w-4 rounded-[360px] md:h-8 md:w-8 xl:h-16 xl:w-16"
         />
         <div className="flex w-full flex-row justify-between">
           <div className="group ease flex flex-col justify-center transition-all duration-300">
@@ -49,7 +50,7 @@ export function UserProfileComponent() {
               <div className="group flex flex-col justify-center">
                 <img
                   className="h-[clamp(64px,22vw,440px)] w-[clamp(64px,22vw,440px)] rounded-[10px]"
-                  src={profile.avatar}
+                  src={profile.avatar_url}
                   alt="setting_avatar_user"
                 />
                 <input
@@ -83,6 +84,7 @@ export function UserProfileComponent() {
                     <input
                       className="bg-plate-muted border-border w-full rounded-[15px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0"
                       ref={editNicknameRef}
+                      value={profile.nickname}
                     />
                   </div>
                   <div className="flex w-full flex-row items-center gap-[clamp(1px,0.5vw,10px)]">
@@ -114,6 +116,7 @@ export function UserProfileComponent() {
                   onClick={() => {
                     useDataStore.getState().setAccessToken(null);
                     useProfileStore.getState().setProfile(null);
+                    closeConnection();
                     request_reset_token();
                   }}
                 >

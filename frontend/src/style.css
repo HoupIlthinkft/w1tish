@@ -5,39 +5,56 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: "Inter";
-    src: url(./assets/font/Inter/Inter-V.ttf);
+  font-family: 'Inter';
+  src: url(./assets/font/Inter/Inter-V.ttf);
 }
 
 @font-face {
-    font-family: "Jost";
-    src: url(./assets/font/Jost/Jost-VariableFont_wght.ttf);
+  font-family: 'Jost';
+  src: url(./assets/font/Jost/Jost-VariableFont_wght.ttf);
 }
 
 @theme {
-    --color-plate-bg: #f3f3f3;
-    --color-text-bg: #e5e5e5;
-    --color-title: #4d4d4d;
+  --animate-running-left: running-left 480s linear infinite;
+  --animate-running-right: running-right 480s linear infinite;
 
-    --color-border: #E6E6E6;
+  @keyframes running-left {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @keyframes running-right {
+    0% {
+      transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  --color-plate-bg: #f3f3f3;
+  --color-text-bg: #efefef;
+  --color-title: #4d4d4d;
 
-    --color-plate-accent: #F8F8F8;
-    --color-plate-muted: #FFFFFF;
-    
-    --color-plate-hover: #E5E5E5;
+  --color-border: #e6e6e6;
 
-    --color-danger-zone: #FF9C9C;
+  --color-plate-accent: #f8f8f8;
+  --color-plate-muted: #ffffff;
+
+  --color-plate-hover: #e5e5e5;
+
+  --color-danger-zone: #ff9c9c;
 }
 
 :root {
-    --color-notification-error-plate: #d4abab;
-    --color-notification-error-text: #b52222;
-    --color-notification-success-plate: #bad4ab; 
-    --color-notification-success-text: #31b522;
+  --color-notification-error-plate: #d4abab;
+  --color-notification-error-text: #b52222;
+  --color-notification-success-plate: #bad4ab;
+  --color-notification-success-text: #31b522;
 }
 
 #root {
-    font-family: "Inter";
+  font-family: 'Inter';
 }
-
-

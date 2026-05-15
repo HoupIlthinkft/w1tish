@@ -34,6 +34,7 @@ export class WSClient {
 
   async send(data: string) {
     this.socket?.send(data);
+    console.log(data);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

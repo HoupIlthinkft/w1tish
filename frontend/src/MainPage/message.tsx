@@ -9,14 +9,20 @@ export function MessageComponent({ message }) {
 
   return (
     <div
-      className="bg-plate-bg w-fit rounded-[15px] px-[clamp(5px,0.5vw,10px)] py-[clamp(5px,1vh,10px)]"
+      className="bg-plate-bg flex w-fit flex-col justify-end rounded-[44px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)]"
       style={
         message.sender == profile.id
           ? { borderBottomRightRadius: 0, alignSelf: 'end' }
-          : { borderBottomRightRadius: 0, alignSelf: 'start' }
+          : { borderBottomLeftRadius: 0, alignSelf: 'start' }
       }
     >
       <ReactMarkdown>{message.content}</ReactMarkdown>
+      <p className="text-[clamp(0.25rem,0.5vw,0.5rem)] font-light">
+        {new Intl.DateTimeFormat('ru', {
+          dateStyle: 'full',
+          timeStyle: 'short',
+        }).format(new Date(message.created_at))}
+      </p>
     </div>
   );
 }

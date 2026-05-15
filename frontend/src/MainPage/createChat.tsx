@@ -35,8 +35,8 @@ export function CreateChatComponent() {
                 )
               ) {
                 get_data_by_username(inputMember.current.value).then((value) => {
-                  request_create_new_chat(value.users[0].id);
-                  useContactStore.getState().addContact(value.users[0]);
+                  request_create_new_chat(value[0].id);
+                  useContactStore.getState().addContact(value[0]);
                   //  useProfileStore.getState().addContact({})
                   setActivityCreateChat(!activityCreateChat);
                 });

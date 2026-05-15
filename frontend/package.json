@@ -13,18 +13,16 @@
     "tw": "tailwindcss -i ./src/style.css -o ./dist/output.css --watch"
   },
   "dependencies": {
-    "@splidejs/react-splide": "^0.7.12",
-    "@splidejs/splide-extension-auto-scroll": "^0.5.3",
     "@tailwindcss/vite": "^4.2.4",
     "@tauri-apps/api": "^2.11.0",
     "@tauri-apps/plugin-http": "^2.5.9",
-    "autosize": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "buffer": "^6.0.3",
     "immer": "^11.1.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
+    "react-textarea-autosize": "^8.5.9",
     "zustand": "^5.0.12"
   },
   "devDependencies": {

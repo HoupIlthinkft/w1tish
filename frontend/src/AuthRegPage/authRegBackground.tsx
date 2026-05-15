@@ -1,189 +1,36 @@
-import { Splide, SplideSlide } from '@splidejs/react-splide';
-import { AutoScroll } from '@splidejs/splide-extension-auto-scroll';
-
 export function AuthRegBackgroundComponent() {
-  const splideOptions = {
-    type: 'loop' as const,
-    focus: 'center' as const,
-    drag: false,
-
-    direction: 'ttb',
-
-    height: '10vh',
-    arrows: false,
-    pagination: false,
-    perPage: 3,
-
-    autoScroll: {
-      speed: -1,
-      pauseOnHover: false,
-      pauseOnFocus: false,
-      rewind: false,
-    },
-  };
+  const lineText = new Array(25).fill('W1TISH');
+  const lineTexts = new Array(25).fill(lineText);
 
   return (
-    <div className="text-text-bg bg-plate-accent absolute z-[-1] hidden translate-y-[-100vh] flex-row gap-[clamp(5px,1vw,20px)] font-[Jost] text-[clamp(2rem,8vw,8rem)] font-semibold md:flex">
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
-      <Splide extensions={{ AutoScroll }} options={splideOptions}>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-        <SplideSlide>
-          <p>W1tish</p>
-        </SplideSlide>
-      </Splide>
+    <div className="absolute -top-full left-[-20%] z-[-1] hidden w-[150vw] rotate-30 overflow-hidden md:inline">
+      {lineTexts.map((lineText, index) => (
+        <div
+          className={`flex h-[11vh] w-max flex-nowrap ${index % 2 === 0 ? 'animate-running-left' : 'animate-running-right'}`}
+          key={index}
+        >
+          <div className="flex shrink-0 gap-8 px-4">
+            {lineText.map((item, idx) => (
+              <span
+                key={`1-${idx}`}
+                className="text-text-bg text-[clamp(4rem,10vw,10rem)] font-medium whitespace-nowrap"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="flex shrink-0 gap-8 px-4" aria-hidden="true">
+            {lineText.map((item, idx) => (
+              <span
+                key={`2-${idx}`}
+                className="text-text-bg text-[clamp(4rem,10vw,10rem)] font-medium whitespace-nowrap"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

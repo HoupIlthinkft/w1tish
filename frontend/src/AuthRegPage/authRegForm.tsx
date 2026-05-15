@@ -56,7 +56,7 @@ export function AuthRegFormComponent() {
       <p className="text-title self-center text-[clamp(2rem,22vw,12rem)] font-bold md:text-[clamp(2rem,10vw,12rem)]">
         W1TISH
       </p>
-      <div className="bg-plate-muted border-border flex flex-col gap-[clamp(5px,2vh,20px)] rounded-[25px] border-2 px-[clamp(5px,3vw,60px)] py-[clamp(5px,3vh,30px)] md:h-auto">
+      <div className="bg-plate-muted border-border flex flex-col gap-[clamp(5px,2vh,20px)] rounded-[25px] px-[clamp(5px,3vw,60px)] py-[clamp(5px,3vh,30px)] md:h-auto md:border-2">
         <p className="self-center text-[clamp(2rem,4vw,4rem)] font-light">
           {form == 'auth' ? 'Вход' : 'Регистрация'}
         </p>
@@ -85,7 +85,7 @@ export function AuthRegFormComponent() {
               </button>
               <button
                 onClick={() => setForm('reg')}
-                className="rounded-[30px] px-[clamp(5px,4vw,80px)] py-[clamp(5px,2vh,20px)] text-[clamp(0.5rem,3vw,3rem)] font-extralight md:py-[clamp(5px,1.5vh,15px)] md:text-[clamp(0.5rem,1.25vw,1.25rem)]"
+                className="absolute bottom-0 self-center rounded-[30px] px-[clamp(5px,4vw,80px)] py-[clamp(5px,2vh,20px)] text-[clamp(0.5rem,5vw,2rem)] font-extralight md:relative md:py-[clamp(5px,1.5vh,15px)] md:text-[clamp(0.5rem,1.25vw,1.25rem)]"
               >
                 Зарегистрировать аккаунт
               </button>
@@ -129,7 +129,7 @@ export function AuthRegFormComponent() {
               </button>
               <button
                 onClick={() => setForm('auth')}
-                className="rounded-[30px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] text-[clamp(0.5rem,3vw,3rem)] font-extralight md:py-[clamp(5px,1.5vh,15px)] md:text-[clamp(0.5rem,1.25vw,1.25rem)]"
+                className="absolute bottom-0 self-center rounded-[30px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] text-[clamp(0.5rem,5vw,2rem)] font-extralight md:relative md:py-[clamp(5px,1.5vh,15px)] md:text-[clamp(0.5rem,1.25vw,1.25rem)]"
               >
                 Войти в аккаунт
               </button>

@@ -21,9 +21,17 @@ interface NotificationStoreIntf {
 interface ProfileIntf {
   username: string;
   nickname: string;
-  avatar: string;
-  chats: [{ [chatId: string]: Array<string> }];
+  avatar_url: string;
+  chats: ContactIntf[];
   id: string;
+}
+
+interface ContactIntf {
+  chat_id: string;
+  last_message: string;
+  last_message_author: string;
+  last_message_time: string;
+  permissions: string[];
 }
 
 interface ProfileStoreIntf {
@@ -37,16 +45,15 @@ interface ProfileStoreIntf {
 interface ContactIntf {
   nickname: string;
   username: string;
-  avatar: string;
+  avatar_url: string;
   id: string;
 }
 
 interface MessageIntf {
-  type: string;
+  chat_id: string;
   content: string;
   sender: string;
-  reciver: string;
-  chat_id: string;
+  created_at: string;
 }
 
 interface ContactStoreIntf {
