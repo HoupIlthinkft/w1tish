@@ -27,7 +27,7 @@ async def bases_lifespan(app: FastAPI):
     logger.info("Creating db sessions & index...")
 
     engine = create_async_engine(P_URL, pool_size=20, max_overflow=10)
-    mongo_session = AsyncMongoClient(M_URL)
+    mongo_session = AsyncMongoClient(M_URL, tz_aware=True)
 
     app.state.pg_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     app.state.mg_session = mongo_session[M_NAME]
