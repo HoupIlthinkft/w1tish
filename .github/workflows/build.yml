@@ -29,8 +29,8 @@ jobs:
           - os: ubuntu-latest
             target: android
             artifact_patterns: |
-              frontend/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
-              frontend/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/*.aab
+              frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+              frontend/src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
 
     steps:
       - name: Checkout repository
