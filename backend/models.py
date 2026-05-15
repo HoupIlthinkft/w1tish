@@ -76,7 +76,7 @@ class CreateChatResponse(BaseModel):
     chat_id: str = Field(..., description="Айди чата", examples=["123456789012345678"])
 
 class UserResponse(UserModel):
-    chats: dict[str, dict] = Field(
+    chats: list[dict] = Field(
         ...,
         description="Чаты пользователя",
         examples=[[{

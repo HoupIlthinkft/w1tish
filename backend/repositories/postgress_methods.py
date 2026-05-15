@@ -172,15 +172,16 @@ class DataRepository:
         if not user_data:
             raise err.UserNotFoundError()
 
-        chats = {
-            row.chat_id: {
+        chats = [
+            {
+                "chat_id": row.chat_id,
                 "last_message": row.last_message_text,
                 "last_message_time": datetime.isoformat(row.last_message_time),
                 "last_message_author": row.last_message_author,
-                "permissions": row.permissions
+                "permissions": list(row.permissions)
             }
             for row in user_data if row.chat_id is not None
-        }
+        ]
 
         response = models.UserResponse(
             id=user_data[0].user_id,
