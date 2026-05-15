@@ -15,6 +15,7 @@ export function createConnection() {
     if (data.type == 'message') {
       if (useChatStore.getState().activityChat == data.content.chat_id) {
         useChatStore.getState().addChatStory(data.content);
+        useProfileStore.getState().setLastMessage(data.content.content, data.content.chat_id);
       }
     } else if (data.type == 'error') {
       console.log(data);

@@ -40,6 +40,7 @@ interface ProfileStoreIntf {
   addContact: (data: { chat_id: string; permissions: string[] }) => void;
   addMessage: (data: MessageIntf) => void;
   setNickname: (newNickname: string) => void;
+  setLastMessage: (newLastMessage: string, chatId: string) => void;
 }
 
 interface ContactIntf {
@@ -134,6 +135,12 @@ export const useProfileStore = create<ProfileStoreIntf>()(
           state.profile.nickname = newNickname;
         }),
       ),
+    setLastMessage: (newLastMessage, chatId) =>
+      set(
+        produce((state) => {
+          state.profile.chats.find((chat) => chat.chat_id == chatId).last_message = newLastMessage;
+        }),
+      ),
   })),
 );
 
@@ -172,7 +179,7 @@ export const useChatStore = create<ChatStoreIntf>()(
     loadChatStory: (data) =>
       set(
         produce((state) => {
-          state.chatStory = [...data, ...state.chatStory];
+          state.chatStory = [...(data || []), ...(state.chatStory || [])];
         }),
       ),
     addChatStory: (data) =>

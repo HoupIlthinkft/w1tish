@@ -31,7 +31,7 @@ export function ContactComponent({ contact }) {
           {membersData.find((element) => element.id == member).nickname}
         </p>
       </div>
-      <div className="flex flex-col">
+      <div className="flex max-w-full flex-col overflow-hidden whitespace-nowrap">
         <ReactMarkdown>{contact.last_message}</ReactMarkdown>
         <p className="text-[clamp(0.25rem,0.75vw,0.75rem)] font-light">
           {new Intl.DateTimeFormat('ru', {

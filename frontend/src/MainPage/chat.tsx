@@ -29,7 +29,7 @@ export function ChatComponent() {
     if (target.scrollTop === 0) {
       const chatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
       setOffset(offset + 50);
-      useChatStore.getState().loadChatStory(chatStory);
+      useChatStore.getState().loadChatStory(chatStory.messages);
     }
   };
 
@@ -140,7 +140,7 @@ export function ChatComponent() {
               })}
           </div>
           <div
-            className="flex h-full flex-col justify-end gap-[clamp(1px,1vh,10px)] overflow-auto px-[clamp(1px,0.5vw,10px)]"
+            className="flex h-full flex-col gap-[clamp(1px,1vh,10px)] overflow-y-auto px-[clamp(1px,0.5vw,10px)]"
             onScroll={handleScroll}
           >
             {chatStory.map((message, index) => (
