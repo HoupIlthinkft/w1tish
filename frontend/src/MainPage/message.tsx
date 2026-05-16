@@ -9,7 +9,7 @@ export function MessageComponent({ message }) {
   console.log(message);
   return (
     <div
-      className="bg-plate-bg mt-auto flex w-fit max-w-[75%] flex-col justify-end rounded-[30px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] wrap-break-word"
+      className="bg-plate-bg flex w-fit max-w-[75%] flex-col justify-end rounded-[30px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] wrap-break-word"
       style={
         message.sender == profile.id
           ? { borderBottomRightRadius: 0, alignSelf: 'end' }
