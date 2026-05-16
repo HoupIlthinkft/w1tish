@@ -29,7 +29,7 @@ export function ChatComponent() {
     if (target.scrollTop === 0) {
       const chatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
       setOffset(offset + 50);
-      useChatStore.getState().loadChatStory(chatStory.messages);
+      useChatStore.getState().loadChatStory(chatStory.messages.reverse());
     }
   };
 

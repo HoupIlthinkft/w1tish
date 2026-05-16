@@ -179,13 +179,13 @@ export const useChatStore = create<ChatStoreIntf>()(
     loadChatStory: (data) =>
       set(
         produce((state) => {
-          state.chatStory = [...(data || []), ...(state.chatStory || [])];
+          state.chatStory = [...(state.chatStory || []), ...(data || [])];
         }),
       ),
     addChatStory: (data) =>
       set(
         produce((state) => {
-          state.chatStory = [...state.chatStory, data];
+          state.chatStory = [data, ...state.chatStory];
         }),
       ),
   })),

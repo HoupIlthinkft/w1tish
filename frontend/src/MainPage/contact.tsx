@@ -11,7 +11,7 @@ export function ContactComponent({ contact }) {
   const clickOnContact = async () => {
     const chatStory = await request_get_messages(contact.chat_id);
 
-    useChatStore.getState().setChatStory(chatStory.messages);
+    useChatStore.getState().setChatStory(chatStory.messages.reverse());
     useChatStore.getState().setActivityChat(contact.chat_id);
   };
   const member = contact.permissions.find((member) => member != profile.id);
