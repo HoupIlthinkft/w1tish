@@ -60,7 +60,7 @@ export function ChatComponent() {
                     <>
                       <div className="border-border flex flex-row justify-between border-b px-[clamp(5px,0.5vw,10px)] py-[clamp(5px,1vh,10px)]">
                         <div
-                          className="flex flex-row items-center gap-[clamp(1px,0.5vw,10px)]"
+                          className="flex-row items-center gap-[clamp(1px,0.5vw,10px)] hidden md:fle"
                           key={profile.id}
                         >
                           <img
@@ -70,7 +70,7 @@ export function ChatComponent() {
                           />
                           <p className="text-[clamp(1rem,1.5vw,1.5rem)]">You</p>
                         </div>
-
+                        <span className="material-symbols-outlined md:hidden" onClick={() => useChatStore.getState().setActivityChat(null)}>back</span>
                         <div
                           className="flex cursor-pointer flex-row items-center gap-[clamp(1px,0.5vw,10px)]"
                           key={memberId}

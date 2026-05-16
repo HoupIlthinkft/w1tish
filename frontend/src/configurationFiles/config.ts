@@ -66,7 +66,7 @@ interface ContactStoreIntf {
 interface ChatStoreIntf {
   activityChat: null | string;
   chatStory: null | MessageIntf[];
-  setActivityChat: (data: string) => void;
+  setActivityChat: (data: string | null) => void;
   setChatStory: (data: MessageIntf[]) => void;
   loadChatStory: (data: MessageIntf[]) => void;
   addChatStory: (data: MessageIntf) => void;
