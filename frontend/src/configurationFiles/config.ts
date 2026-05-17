@@ -37,13 +37,13 @@ interface ContactIntf {
 interface ProfileStoreIntf {
   profile: ProfileIntf | null;
   setProfile: (data: ProfileIntf) => void;
-  addContact: (data: { chat_id: string; permissions: string[] }) => void;
+  addContact: (data: ContactIntf) => void;
   addMessage: (data: MessageIntf) => void;
   setNickname: (newNickname: string) => void;
   setLastMessage: (newLastMessage: string, chatId: string) => void;
 }
 
-interface ContactIntf {
+interface OponentIntf {
   nickname: string;
   username: string;
   avatar_url: string;
@@ -58,18 +58,20 @@ interface MessageIntf {
 }
 
 interface ContactStoreIntf {
-  contacts: ContactIntf[] | null;
-  setContacts: (data: ContactIntf[]) => void;
-  addContact: (data: ContactIntf) => void;
+  contacts: OponentIntf[] | null;
+  setContacts: (data: OponentIntf[]) => void;
+  addContact: (data: OponentIntf) => void;
 }
 
 interface ChatStoreIntf {
   activityChat: null | string;
   chatStory: null | MessageIntf[];
+  offset: number;
   setActivityChat: (data: string | null) => void;
   setChatStory: (data: MessageIntf[]) => void;
   loadChatStory: (data: MessageIntf[]) => void;
   addChatStory: (data: MessageIntf) => void;
+  setOffset: (data: number) => void;
 }
 
 export const useDataStore = create<DataStoreIntf>()(
@@ -116,7 +118,7 @@ export const useProfileStore = create<ProfileStoreIntf>()(
     addContact: (data) =>
       set(
         produce((state) => {
-          state.profile.chats[data.chat_id] = data.permissions;
+          state.profile.chats.push(data);
         }),
       ),
     addMessage: (data) =>
@@ -164,6 +166,7 @@ export const useChatStore = create<ChatStoreIntf>()(
   immer((set) => ({
     activityChat: null,
     chatStory: null,
+    offset: 0,
     setActivityChat: (data) =>
       set(
         produce((state) => {
@@ -186,6 +189,12 @@ export const useChatStore = create<ChatStoreIntf>()(
       set(
         produce((state) => {
           state.chatStory = [data, ...state.chatStory];
+        }),
+      ),
+    setOffset: (data) =>
+      set(
+        produce((state) => {
+          state.offset = data;
         }),
       ),
   })),

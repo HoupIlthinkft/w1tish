@@ -19,14 +19,21 @@ export function createConnection() {
       }
     } else if (data.type == 'error') {
       console.log(data);
-    } else {
-      get_data_users_ids(
+    } else if (data.type == 'chat') {
+      get_data_users_ids([
         Object.keys(data.content.permissions).find(
           (el) => el != useProfileStore.getState().profile.id,
         ),
-      ).then((value) => {
+      ]).then((value) => {
         useContactStore.getState().addContact(value[0]);
-        useProfileStore.getState().addContact(data.content);
+        useProfileStore.getState().addContact({
+          chat_id: data.content.id,
+          last_message: '_Чат создан_',
+          last_message_time: new Date().toJSON(),
+          last_message_author: '0',
+          permissions: Object.keys(data.content.permissions),
+        });
+        console.log(useProfileStore.getState().profile.chats);
       });
     }
   });

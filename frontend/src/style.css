@@ -15,8 +15,8 @@
 }
 
 @theme {
-  --animate-running-left: running-left 480s linear infinite;
-  --animate-running-right: running-right 480s linear infinite;
+  --animate-running-left: running-left 840s linear infinite;
+  --animate-running-right: running-right 840s linear infinite;
 
   @keyframes running-left {
     0% {

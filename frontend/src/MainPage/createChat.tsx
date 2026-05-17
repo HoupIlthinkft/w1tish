@@ -58,7 +58,7 @@ export function CreateChatComponent() {
         <p className="w-full self-center text-center text-[clamp(0.5rem,1.5vw,1.5rem)]">
           Новый чат
         </p>
-        <span className="material-symbols-outlined w-fit scale-[1.33] cursor-pointer self-center md:scale-[2] xl:scale-[2.67]">
+        <span className="material-symbols-outlined w-fit cursor-pointer self-center md:scale-[1.25] xl:scale-[1.5]">
           add
         </span>
       </div>

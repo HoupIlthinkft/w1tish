@@ -6,11 +6,12 @@ export function ContactComponent({ contact }) {
   const profile = useProfileStore((state) => state.profile);
   const membersData = useContactStore((state) => state.contacts);
   const activeChat = useChatStore((state) => state.activityChat);
+  const setOffset = useChatStore((state) => state.setOffset);
 
-  console.log(contact.last_message_time);
+  console.log(contact);
   const clickOnContact = async () => {
     const chatStory = await request_get_messages(contact.chat_id);
-
+    setOffset(0);
     useChatStore.getState().setChatStory(chatStory.messages.reverse());
     useChatStore.getState().setActivityChat(contact.chat_id);
   };
@@ -27,11 +28,11 @@ export function ContactComponent({ contact }) {
           src={membersData.find((element) => element.id == member).avatar_url}
           alt="avatar"
         />
-        <p className="self-center text-[clamp(1rem,1.5vw,1.5rem)]">
+        <p className="w-[calc(100%-16px)] self-center overflow-hidden text-[clamp(1rem,1.5vw,1.5rem)] text-ellipsis whitespace-nowrap md:w-[calc(100%-32px)] xl:w-[calc(100%-64px)]">
           {membersData.find((element) => element.id == member).nickname}
         </p>
       </div>
-      <div className="flex max-w-full flex-col overflow-hidden whitespace-nowrap">
+      <div className="flex max-w-full flex-col overflow-hidden text-ellipsis whitespace-nowrap">
         <ReactMarkdown>{contact.last_message}</ReactMarkdown>
         <p className="text-[clamp(0.25rem,0.75vw,0.75rem)] font-light">
           {new Intl.DateTimeFormat('ru', {

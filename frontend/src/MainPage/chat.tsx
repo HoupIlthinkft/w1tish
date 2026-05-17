@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { AuthRegBackgroundComponent } from '../AuthRegPage/authRegBackground.tsx';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useChatStore, useProfileStore, useContactStore } from '../configurationFiles/config.ts';
 import { request_get_messages } from '../configurationFiles/requests.ts';
@@ -8,33 +9,41 @@ import { MessageComponent } from './message.tsx';
 
 export function ChatComponent() {
   const [activityMemberProfile, setActivityMemberProfile] = useState(false);
-  const [offset, setOffset] = useState(50);
+  const [activityGetMessages, setActivityGetMessages] = useState(true);
   const inputMessage = useRef(null);
 
   const profile = useProfileStore((state) => state.profile);
   const chatStory = useChatStore((state) => state.chatStory);
   const activityChat = useChatStore((state) => state.activityChat);
   const membersData = useContactStore((state) => state.contacts);
+  const offset = useChatStore((state) => state.offset);
+  const setOffset = useChatStore((state) => state.setOffset);
 
   const sendMessage = () => {
     if (inputMessage.current.value.trim() != '') {
       send_new_message(useChatStore.getState().activityChat, inputMessage.current?.value);
       inputMessage.current.value = '';
+      setOffset(offset + 1);
     }
   };
 
   const handleScroll = async (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
 
-    if (target.scrollTop === 0) {
+    if (target.scrollHeight - target.clientHeight + target.scrollTop <= 1 && activityGetMessages) {
       const chatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
-      setOffset(offset + 50);
       useChatStore.getState().loadChatStory(chatStory.messages.reverse());
+
+      if (chatStory.messages.length < 50) setActivityGetMessages(false);
+
+      target.scrollTop -=
+        target.scrollHeight - target.scrollHeight * 0.5 * (offset / (offset + 50));
+      setOffset(offset + 50);
     }
   };
 
   return (
-    <div className="bg-plate-muted h-full w-full flex-col justify-between flex">
+    <div className="flex h-full w-full flex-col justify-between">
       {activityChat == null ? (
         <div className="flex h-full flex-col items-center justify-center gap-[clamp(5px,2vh,20px)]">
           <p className="text-plate-hover font-[Jost] text-[clamp(4rem,8vw,8rem)] font-semibold">
@@ -60,7 +69,7 @@ export function ChatComponent() {
                     <>
                       <div className="border-border flex flex-row justify-between border-b px-[clamp(5px,0.5vw,10px)] py-[clamp(5px,1vh,10px)]">
                         <div
-                          className="flex-row items-center gap-[clamp(1px,0.5vw,10px)] hidden md:flex"
+                          className="hidden flex-row items-center gap-[clamp(1px,0.5vw,10px)] md:flex"
                           key={profile.id}
                         >
                           <img
@@ -70,7 +79,14 @@ export function ChatComponent() {
                           />
                           <p className="text-[clamp(1rem,1.5vw,1.5rem)]">You</p>
                         </div>
-                        <span className="material-symbols-outlined md:!hidden cursor-pointer" onClick={() => {useChatStore.getState().setActivityChat(null)}}>arrow_back</span>
+                        <span
+                          className="material-symbols-outlined cursor-pointer self-center md:hidden!"
+                          onClick={() => {
+                            useChatStore.getState().setActivityChat(null);
+                          }}
+                        >
+                          arrow_back
+                        </span>
                         <div
                           className="flex cursor-pointer flex-row items-center gap-[clamp(1px,0.5vw,10px)]"
                           key={memberId}
@@ -86,20 +102,20 @@ export function ChatComponent() {
                       </div>
                       {activityMemberProfile ? (
                         <div className="absolute top-0 left-0 z-2 flex h-screen w-screen items-center justify-center bg-black/66">
-                          <div className="bg-plate-accent grid h-fit w-[70vw] grid-cols-[0] rounded-[10px] px-[clamp(10px,2vw,40px)] py-[clamp(10px,2vh,20px)] md:grid-cols-[0_2fr_auto] md:justify-between md:gap-x-[clamp(5px,2vw,40px)] md:rounded-[20px] md:py-[clamp(10px,4vh,40px)]">
+                          <div className="bg-plate-accent grid h-full w-full grid-cols-[0] rounded-[10px] px-[clamp(10px,2vw,40px)] py-[clamp(10px,2vh,20px)] sm:h-fit sm:w-[70vw] md:grid-cols-[0_2fr_auto] md:justify-between md:gap-x-[clamp(5px,2vw,40px)] md:rounded-[20px] md:py-[clamp(10px,4vh,40px)]">
                             <span
-                              className="material-symbols-outlined hover:text-danger-zone ease w-fit scale-[2] cursor-pointer self-start transition-all duration-200 hover:scale-[3] xl:scale-[2.67]"
+                              className="material-symbols-outlined text-title hover:text-danger-zone ease w-fit cursor-pointer self-start transition-all duration-200 hover:scale-[3] md:scale-[2] xl:scale-[2.67]"
                               onClick={() => setActivityMemberProfile(!activityMemberProfile)}
                             >
                               close
                             </span>
-                            <p className="text-plate-hover text-center text-[clamp(1rem,8vw,8rem)] font-medium">
+                            <p className="text-plate-hover self-center text-center text-[clamp(3rem,8vw,8rem)] font-medium">
                               W1tish
                             </p>
                             <div className="col-2 flex flex-col gap-[clamp(5px,1vw,20px)] self-center md:col-3 md:row-span-2">
                               <div className="group flex flex-col items-center justify-center">
                                 <img
-                                  className="h-[clamp(64px,44vw,440px)] w-[clamp(64px,44vw,440px)] rounded-[10px] md:h-[clamp(64px,22vw,440px)] md:w-[clamp(64px,22vw,440px)]"
+                                  className="h-[clamp(64px,88vw,440px)] w-[clamp(64px,88vw,440px)] rounded-[10px] sm:h-[clamp(64px,44vw,440px)] sm:w-[clamp(64px,44vw,440px)] md:h-[clamp(64px,22vw,440px)] md:w-[clamp(64px,22vw,440px)]"
                                   src={member.avatar_url}
                                   alt="setting_avatar_user"
                                 />
@@ -111,11 +127,11 @@ export function ChatComponent() {
                             <div className="col-2 flex w-full flex-col justify-between gap-[clamp(5px,3vh,50px)] md:row-2 md:gap-[clamp(5px,5vh,50px)]">
                               <div className="flex flex-col items-center">
                                 <div className="flex w-full flex-col gap-[clamp(5px,1vh,10px)]">
-                                  <div className="flex w-full flex-row items-center justify-between gap-[clamp(1px,0.5vw,10px)]">
+                                  <div className="flex w-full flex-col items-start justify-between gap-[clamp(1px,0.5vw,10px)]">
                                     <p className="text-[clamp(0.75rem,2vw,2rem)] font-medium">
                                       NickName:
                                     </p>
-                                    <div className="bg-plate-muted border-border flex w-full flex-row justify-between rounded-[10px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0 md:rounded-[15px]">
+                                    <div className="bg-plate-muted border-border flex w-full flex-row justify-between rounded-[10px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1.5vh,20px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0 md:rounded-[15px]">
                                       <p className="text-nothing-yet w-full">
                                         <i>{member.nickname}</i>
                                       </p>
@@ -124,11 +140,11 @@ export function ChatComponent() {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex w-full flex-row items-center justify-between gap-[clamp(1px,0.5vw,10px)]">
+                                  <div className="flex w-full flex-col items-start justify-between gap-[clamp(1px,0.5vw,10px)]">
                                     <p className="text-[clamp(0.75rem,2vw,2rem)] font-medium">
                                       UserName:
                                     </p>
-                                    <div className="bg-plate-muted border-border flex w-full flex-row justify-between rounded-[10px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0 md:rounded-[15px]">
+                                    <div className="bg-plate-muted border-border flex w-full flex-row justify-between rounded-[10px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1.5vh,20px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0 md:rounded-[15px]">
                                       <p className="text-nothing-yet w-full">
                                         <i>{member.username}</i>
                                       </p>
@@ -137,10 +153,12 @@ export function ChatComponent() {
                                       </span>
                                     </div>
                                   </div>
-                                  <p className="text-plate-hover text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium">
-                                    Build identificator: 0.0.1-pre-alpha
-                                  </p>
                                 </div>
+                              </div>
+                              <div className="flex flex-col-reverse gap-[clamp(5px,1vh,10px)]">
+                                <p className="text-plate-hover text-center text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium">
+                                  Build identificator: 0.0.1-pre-alpha
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -185,6 +203,7 @@ export function ChatComponent() {
               send
             </span>
           </div>
+          <AuthRegBackgroundComponent />
         </>
       )}
     </div>

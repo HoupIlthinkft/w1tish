@@ -31,7 +31,7 @@ export function AuthRegFormComponent() {
       else if (password.current.value.toUpperCase() == password.current.value)
         callNotification('Нету символа(ов) нижнего регистра в пароле', 'error');
       else {
-        login(username.current.value, password.current.value);
+        login(username.current.value.trim(), password.current.value.trim());
       }
     } else callNotification('Длина пароля меньше 8', 'error');
   };
@@ -45,7 +45,11 @@ export function AuthRegFormComponent() {
         callNotification('Нету символа(ов) нижнего регистра в пароле', 'error');
       } else if (password.current.value == confPassword.current.value) {
         if (email.current.checkValidity()) {
-          register_user(username.current.value, email.current.value, password.current.value);
+          register_user(
+            username.current.value.trim(),
+            email.current.value.trim(),
+            password.current.value.trim(),
+          );
         } else callNotification('Электронная почта не валидна', 'error');
       } else callNotification('Пароли не совпадают', 'error');
     } else callNotification('Длина пароля меньше 8', 'error');

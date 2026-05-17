@@ -161,7 +161,6 @@ export async function request_create_new_chat(oponents_id) {
     );
   } else if (response.status === 201) {
     callNotification('Чат создан, желаем плодотворного общения :)', 'success');
-    globalThis.location.reload();
   }
 }
 

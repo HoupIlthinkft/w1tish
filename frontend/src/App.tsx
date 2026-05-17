@@ -15,7 +15,7 @@ import { ChatComponent } from './MainPage/chat.tsx';
 function App() {
   const accessToken = useDataStore((state) => state.accessToken);
   const profile = useProfileStore((state) => state.profile);
-const activeChat = useChatStore((state) => state.activityChat);
+  const activeChat = useChatStore((state) => state.activityChat);
   useEffect(() => {
     if (accessToken == null || profile == null) {
       getProtectedData();
@@ -29,14 +29,17 @@ const activeChat = useChatStore((state) => state.activityChat);
       <NotificationComponent />
     </>
   ) : (
-    <div className="bg-plate-accent flex w-full flex-row">
-      <div className={`border-border bg-plate-muted md:flex h-full w-full flex-col justify-between gap-[clamp(5px,1vh,10px)] border md:w-[25%] ${activeChat == null ? "flex" : "hidden"}`}
+    <div className="bg-plate-accent z-1 flex w-full flex-row">
+      <div
+        className={`border-border bg-plate-muted h-full w-full flex-col justify-between gap-[clamp(5px,1vh,10px)] border md:flex md:w-[25%] ${activeChat == null ? 'flex' : 'hidden'}`}
       >
         <CreateChatComponent />
         <ContactsListComponent />
         <UserProfileComponent />
       </div>
-      <div className={`h-full w-full md:w-[75%] ${activeChat == null ? "hidden" : "flex"}`}>
+      <div
+        className={`h-full w-full md:inline md:w-[75%] ${activeChat == null ? 'hidden' : 'flex'}`}
+      >
         <ChatComponent />
       </div>
       <NotificationComponent />
