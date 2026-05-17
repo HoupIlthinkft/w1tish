@@ -39,22 +39,25 @@ export function UserProfileComponent() {
       </div>
       {activityProfile ? (
         <div className="absolute top-0 left-0 z-2 flex h-screen w-screen items-center justify-center bg-black/66">
-          <div className="bg-plate-accent flex h-fit w-[70vw] flex-col justify-between gap-[clamp(5px,2vw,40px)] rounded-[20px] px-[clamp(10px,2vw,40px)] py-[clamp(10px,4vh,40px)] md:flex-row">
+          <div className="bg-plate-accent grid h-fit w-[70vw] grid-cols-[0] rounded-[10px] px-[clamp(10px,2vw,40px)] py-[clamp(10px,2vh,20px)] md:grid-cols-[0_2fr_auto] md:justify-between md:gap-x-[clamp(5px,2vw,40px)] md:rounded-[20px] md:py-[clamp(10px,4vh,40px)]">
             <span
-              className="material-symbols-outlined hover:text-danger-zone ease w-fit scale-[2.67] cursor-pointer self-start transition-all duration-200 hover:scale-[3]"
+              className="material-symbols-outlined hover:text-danger-zone ease w-fit scale-[2] cursor-pointer self-start transition-all duration-200 hover:scale-[3] xl:scale-[2.67]"
               onClick={() => setActivityProfile(!activityProfile)}
             >
               close
             </span>
-            <div className="flex flex-col gap-[clamp(5px,1vw,20px)] self-center">
-              <div className="group flex flex-col justify-center">
+            <p className="text-plate-hover text-center text-[clamp(1rem,8vw,8rem)] font-medium">
+              W1tish
+            </p>
+            <div className="col-2 flex flex-col gap-[clamp(5px,1vw,20px)] self-center md:col-3 md:row-span-2">
+              <div className="group flex flex-col items-center justify-center">
                 <img
-                  className="h-[clamp(64px,22vw,440px)] w-[clamp(64px,22vw,440px)] rounded-[10px]"
+                  className="h-[clamp(64px,44vw,440px)] w-[clamp(64px,44vw,440px)] rounded-[10px] md:h-[clamp(64px,22vw,440px)] md:w-[clamp(64px,22vw,440px)]"
                   src={profile.avatar_url}
                   alt="setting_avatar_user"
                 />
                 <input
-                  className="ease absolute z-2 h-[clamp(64px,22vw,440px)] w-[clamp(64px,22vw,440px)] cursor-pointer bg-white/33 text-transparent opacity-[0] transition-all duration-500 group-hover:opacity-[1]"
+                  className="ease absolute z-2 h-[clamp(64px,44vw,440px)] w-[clamp(64px,44vw,440px)] cursor-pointer bg-white/33 text-transparent opacity-[0] transition-all duration-500 group-hover:opacity-[1] md:h-[clamp(64px,22vw,440px)] md:w-[clamp(64px,22vw,440px)]"
                   onChange={(e) => {
                     const file = e.target.files[0];
                     if (!file) return;
@@ -75,30 +78,41 @@ export function UserProfileComponent() {
                 {profile.id}
               </p>
             </div>
-            <div className="flex w-[60%] flex-col justify-between gap-[clamp(5px,10vh,100px)]">
+            <div className="col-2 flex w-full flex-col justify-between gap-[clamp(5px,3vh,50px)] md:row-2 md:gap-[clamp(5px,5vh,50px)]">
               <div className="flex flex-col items-center">
-                <p className="text-plate-hover text-[clamp(1rem,8vw,8rem)] font-medium">W1tish</p>
-                <div className="flex w-full flex-col">
-                  <div className="flex w-full flex-row items-center gap-[clamp(1px,0.5vw,10px)]">
-                    <p className="text-[clamp(1rem,2vw,2rem)] font-medium">NickName: </p>
+                <div className="flex w-full flex-col gap-[clamp(5px,1vh,10px)]">
+                  <div className="flex w-full flex-row items-center justify-between gap-[clamp(1px,0.5vw,10px)]">
+                    <p className="text-[clamp(0.75rem,2vw,2rem)] font-medium">NickName: </p>
                     <input
-                      className="bg-plate-muted border-border w-full rounded-[15px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0"
+                      className="bg-plate-muted border-border w-full rounded-[10px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0 md:rounded-[15px]"
                       ref={editNicknameRef}
                       value={profile.nickname}
                     />
                   </div>
-                  <div className="flex w-full flex-row items-center gap-[clamp(1px,0.5vw,10px)]">
-                    <p className="text-[clamp(1rem,2vw,2rem)] font-medium">UserName:</p>
-                    <p className="w-full text-[clamp(0.5rem,1.5vw,1.5rem)]">{profile.username}</p>
+                  <div className="flex w-full flex-row items-center justify-between gap-[clamp(1px,0.5vw,10px)]">
+                    <p className="text-[clamp(0.75rem,2vw,2rem)] font-medium">UserName:</p>
+                    <div className="bg-plate-muted border-border flex w-full flex-row justify-between rounded-[10px] border px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] text-[clamp(0.5rem,1.25vw,1.25rem)] outline-0 md:rounded-[15px]">
+                      <p className="text-nothing-yet w-full">
+                        <i>{profile.username}</i>
+                      </p>
+                      <span className="material-symbols-outlined text-nothing-yet h-1 scale-[0.5] self-start md:scale-[0.83] xl:scale-[1.33]">
+                        block
+                      </span>
+                    </div>
                   </div>
+                  <p className="text-nothing-yet cursor-pointer self-end text-[clamp(0.75rem,1.25vw,1.25rem)] font-medium">
+                    <u>
+                      <i>Изменить пароль</i>
+                    </u>
+                  </p>
                   <p className="text-plate-hover text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium">
                     Build identificator: 0.0.1-pre-alpha
                   </p>
                 </div>
               </div>
-              <div className="flex flex-row gap-[clamp(5px,2vw,40px)] self-end">
+              <div className="flex w-full flex-row gap-[clamp(5px,2vw,40px)] self-end">
                 <button
-                  className="bg-plate-accent hover:bg-plate-hover border-border ease w-fit self-end rounded-[20px] border px-[clamp(5px,4vw,80px)] py-[clamp(5px,3vh,30px)] text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium duration-300 hover:scale-[1.1]"
+                  className="bg-plate-accent hover:bg-plate-hover border-border ease w-fit self-end rounded-[15px] border px-[clamp(5px,4vw,80px)] py-[clamp(5px,1.5vh,30px)] text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium duration-300 hover:scale-[1.1] md:rounded-[20px] md:py-[clamp(5px,2vh,20px)]"
                   type="button"
                   onClick={() => {
                     if (editNicknameRef.current.value != profile.nickname) {
@@ -111,7 +125,7 @@ export function UserProfileComponent() {
                   Сохранить
                 </button>
                 <button
-                  className="bg-danger-zone border-border ease w-fit self-end rounded-[20px] border px-[clamp(5px,2vw,40px)] py-[clamp(5px,3vh,30px)] text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium duration-300 hover:scale-[1.1]"
+                  className="bg-danger-zone border-border ease w-full self-end rounded-[15px] border px-[clamp(5px,2vw,40px)] py-[clamp(5px,1.5vh,30px)] text-[clamp(0.75rem,1.5vw,1.5rem)] font-medium duration-300 hover:scale-[1.05] md:rounded-[20px] md:py-[clamp(5px,2vh,20px)]"
                   type="button"
                   onClick={() => {
                     useDataStore.getState().setAccessToken(null);
