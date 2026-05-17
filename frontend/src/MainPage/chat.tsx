@@ -29,12 +29,12 @@ export function ChatComponent() {
     if (target.scrollTop === 0) {
       const chatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
       setOffset(offset + 50);
-      useChatStore.getState().loadChatStory(chatStory.messages);
+      useChatStore.getState().loadChatStory(chatStory.messages.reverse());
     }
   };
 
   return (
-    <div className="bg-plate-muted hidden h-full flex-col justify-between md:flex">
+    <div className="bg-plate-muted h-full w-full flex-col justify-between flex">
       {activityChat == null ? (
         <div className="flex h-full flex-col items-center justify-center gap-[clamp(5px,2vh,20px)]">
           <p className="text-plate-hover font-[Jost] text-[clamp(4rem,8vw,8rem)] font-semibold">
@@ -60,7 +60,7 @@ export function ChatComponent() {
                     <>
                       <div className="border-border flex flex-row justify-between border-b px-[clamp(5px,0.5vw,10px)] py-[clamp(5px,1vh,10px)]">
                         <div
-                          className="flex flex-row items-center gap-[clamp(1px,0.5vw,10px)]"
+                          className="flex-row items-center gap-[clamp(1px,0.5vw,10px)] hidden md:flex"
                           key={profile.id}
                         >
                           <img
@@ -70,7 +70,7 @@ export function ChatComponent() {
                           />
                           <p className="text-[clamp(1rem,1.5vw,1.5rem)]">You</p>
                         </div>
-
+                        <span className="material-symbols-outlined md:!hidden cursor-pointer" onClick={() => {useChatStore.getState().setActivityChat(null)}}>arrow_back</span>
                         <div
                           className="flex cursor-pointer flex-row items-center gap-[clamp(1px,0.5vw,10px)]"
                           key={memberId}
@@ -154,7 +154,7 @@ export function ChatComponent() {
               })}
           </div>
           <div
-            className="flex h-full flex-col gap-[clamp(1px,1vh,10px)] overflow-y-auto px-[clamp(1px,0.5vw,10px)]"
+            className="flex h-full flex-col-reverse gap-[clamp(1px,1vh,10px)] overflow-y-auto px-[clamp(1px,0.5vw,10px)]"
             onScroll={handleScroll}
           >
             {chatStory.map((message, index) => (

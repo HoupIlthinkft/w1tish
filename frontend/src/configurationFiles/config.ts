@@ -66,7 +66,7 @@ interface ContactStoreIntf {
 interface ChatStoreIntf {
   activityChat: null | string;
   chatStory: null | MessageIntf[];
-  setActivityChat: (data: string) => void;
+  setActivityChat: (data: string | null) => void;
   setChatStory: (data: MessageIntf[]) => void;
   loadChatStory: (data: MessageIntf[]) => void;
   addChatStory: (data: MessageIntf) => void;
@@ -179,13 +179,13 @@ export const useChatStore = create<ChatStoreIntf>()(
     loadChatStory: (data) =>
       set(
         produce((state) => {
-          state.chatStory = [...(data || []), ...(state.chatStory || [])];
+          state.chatStory = [...(state.chatStory || []), ...(data || [])];
         }),
       ),
     addChatStory: (data) =>
       set(
         produce((state) => {
-          state.chatStory = [...state.chatStory, data];
+          state.chatStory = [data, ...state.chatStory];
         }),
       ),
   })),

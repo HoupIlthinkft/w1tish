@@ -7,7 +7,6 @@ import { ContactComponent } from '../MainPage/contact.tsx';
 export function ContactsListComponent() {
   const profile = useProfileStore((state) => state.profile);
   const userContact = useProfileStore((state) => state.profile.chats);
-
   const usersData = useContactStore((state) => state.contacts);
   useEffect(() => {
     if (JSON.stringify(userContact) == '[]' || userContact == undefined) return;
