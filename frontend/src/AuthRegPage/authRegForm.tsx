@@ -24,16 +24,16 @@ export function AuthRegFormComponent() {
   };
 
   const auth = () => {
-    if (username.current.value.trim() == '') callNotification('Введите username', 'error');
-    else if (password.current.value.length >= 8) {
-      if (password.current.value.toLowerCase() == password.current.value)
-        callNotification('Нету символа(ов) верхнего регистра в пароле', 'error');
-      else if (password.current.value.toUpperCase() == password.current.value)
-        callNotification('Нету символа(ов) нижнего регистра в пароле', 'error');
-      else {
-        login(username.current.value.trim(), password.current.value.trim());
-      }
-    } else callNotification('Длина пароля меньше 8', 'error');
+    if (
+      password.current.value.length >= 8 &&
+      username.current.value.trim() != '' &&
+      password.current.value.toLowerCase() != password.current.value &&
+      password.current.value.toUpperCase() != password.current.value
+    ) {
+      login(username.current.value.trim(), password.current.value.trim());
+    } else if (password.current?.value.trim() == '')
+      callNotification('Enter a password, duuude', 'error');
+    else callNotification('This password is Invalid', 'error');
   };
 
   const reg = () => {
