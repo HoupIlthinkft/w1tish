@@ -17,6 +17,8 @@
 @theme {
   --animate-running-left: running-left 840s linear infinite;
   --animate-running-right: running-right 840s linear infinite;
+  --animate-running-chatBG-left: running-left 2520s linear infinite;
+  --animate-running-chatBG-right: running-right 2520s linear infinite;
 
   @keyframes running-left {
     0% {

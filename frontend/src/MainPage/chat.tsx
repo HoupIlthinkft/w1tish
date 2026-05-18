@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { AuthRegBackgroundComponent } from '../AuthRegPage/authRegBackground.tsx';
+import { useEffect, useRef, useState } from 'react';
+import { BackgroundComponent } from '../AuthRegPage/authRegBackground.tsx';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useChatStore, useProfileStore, useContactStore } from '../configurationFiles/config.ts';
 import { request_get_messages } from '../configurationFiles/requests.ts';
@@ -11,6 +11,7 @@ export function ChatComponent() {
   const [activityMemberProfile, setActivityMemberProfile] = useState(false);
   const [activityGetMessages, setActivityGetMessages] = useState(true);
   const inputMessage = useRef(null);
+  const chatScroll = useRef(null);
 
   const profile = useProfileStore((state) => state.profile);
   const chatStory = useChatStore((state) => state.chatStory);
@@ -29,18 +30,28 @@ export function ChatComponent() {
 
   const handleScroll = async (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
+    if (
+      target.scrollHeight - target.clientHeight + target.scrollTop <= 1 &&
+      activityGetMessages &&
+      chatStory.length == offset
+    ) {
+      const newChatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
+      useChatStore.getState().loadChatStory(newChatStory.messages.reverse());
 
-    if (target.scrollHeight - target.clientHeight + target.scrollTop <= 1 && activityGetMessages) {
-      const chatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
-      useChatStore.getState().loadChatStory(chatStory.messages.reverse());
-
-      if (chatStory.messages.length < 50) setActivityGetMessages(false);
+      if (newChatStory.messages.length < 50) setActivityGetMessages(false);
 
       target.scrollTop -=
         target.scrollHeight - target.scrollHeight * 0.5 * (offset / (offset + 50));
       setOffset(offset + 50);
     }
   };
+
+  useEffect(() => {
+    if (activityChat != null) {
+      chatScroll.current.scrollTop = 0;
+      setOffset(50);
+    }
+  }, [activityChat]);
 
   return (
     <div className="flex h-full w-full flex-col justify-between">
@@ -69,17 +80,29 @@ export function ChatComponent() {
 
                   return (
                     <>
-                      <div className="border-border flex flex-row justify-between border-b px-[clamp(5px,0.5vw,10px)] py-[clamp(5px,1vh,10px)]">
+                      <div className="border-border flex flex-row-reverse justify-between border-b px-[clamp(5px,0.5vw,10px)] py-[clamp(5px,1vh,10px)] md:flex-row">
+                        <div
+                          className="flex cursor-pointer flex-row-reverse items-center gap-[clamp(1px,0.5vw,10px)] md:flex-row"
+                          key={memberId}
+                          onClick={() => setActivityMemberProfile(!activityMemberProfile)}
+                        >
+                          <img
+                            className="h-[clamp(32px,3vw,64px)] w-[clamp(32px,3vw,64px)] rounded-[360px]"
+                            src={member.avatar_url}
+                            alt="avatar"
+                          />
+                          <p className="text-[clamp(1rem,1.5vw,1.5rem)]">{member.nickname}</p>
+                        </div>
                         <div
                           className="hidden flex-row items-center gap-[clamp(1px,0.5vw,10px)] md:flex"
                           key={profile.id}
                         >
+                          <p className="text-[clamp(1rem,1.5vw,1.5rem)]">You</p>
                           <img
                             className="h-[clamp(32px,3vw,64px)] w-[clamp(32px,3vw,64px)] rounded-[360px]"
                             src={profile.avatar_url}
                             alt="avatar"
                           />
-                          <p className="text-[clamp(1rem,1.5vw,1.5rem)]">You</p>
                         </div>
                         <span
                           className="material-symbols-outlined cursor-pointer self-center md:hidden!"
@@ -89,18 +112,6 @@ export function ChatComponent() {
                         >
                           arrow_back
                         </span>
-                        <div
-                          className="flex cursor-pointer flex-row items-center gap-[clamp(1px,0.5vw,10px)]"
-                          key={memberId}
-                          onClick={() => setActivityMemberProfile(!activityMemberProfile)}
-                        >
-                          <p className="text-[clamp(1rem,1.5vw,1.5rem)]">{member.nickname}</p>
-                          <img
-                            className="h-[clamp(32px,3vw,64px)] w-[clamp(32px,3vw,64px)] rounded-[360px]"
-                            src={member.avatar_url}
-                            alt="avatar"
-                          />
-                        </div>
                       </div>
                       {activityMemberProfile ? (
                         <div className="absolute top-0 left-0 z-2 flex h-screen w-screen items-center justify-center bg-black/66">
@@ -174,8 +185,9 @@ export function ChatComponent() {
               })}
           </div>
           <div
-            className="flex h-full flex-col-reverse gap-[clamp(1px,1vh,10px)] overflow-y-auto px-[clamp(1px,0.5vw,10px)]"
+            className="mt-0.5 flex h-full flex-col-reverse gap-[clamp(1px,1vh,10px)] overflow-y-auto px-[clamp(1px,0.5vw,10px)]"
             onScroll={handleScroll}
+            ref={chatScroll}
           >
             {chatStory.map((message, index) => (
               <MessageComponent key={index} message={message} />
@@ -205,7 +217,7 @@ export function ChatComponent() {
               send
             </span>
           </div>
-          <AuthRegBackgroundComponent />
+          <BackgroundComponent typeBG="Chat" />
         </>
       )}
     </div>

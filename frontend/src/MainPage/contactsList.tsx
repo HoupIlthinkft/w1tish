@@ -22,7 +22,7 @@ export function ContactsListComponent() {
   return JSON.stringify(usersData) == '[]' ? (
     <></>
   ) : (
-    <div className="bg-plate-muted flex h-full w-full flex-col gap-[clamp(5px,1vh,10px)] overflow-y-auto rounded-[15px] px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)]">
+    <div className="bg-plate-muted flex h-full w-full flex-col gap-[clamp(5px,1vh,10px)] overflow-hidden overflow-y-auto rounded-[15px] px-[clamp(1px,0.25vw,5px)] py-[clamp(1px,0.5vh,5px)]">
       {userContact.map((contact) => (
         <ContactComponent key={contact.chat_id} contact={contact} />
       ))}

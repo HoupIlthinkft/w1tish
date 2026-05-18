@@ -166,7 +166,7 @@ export const useChatStore = create<ChatStoreIntf>()(
   immer((set) => ({
     activityChat: null,
     chatStory: null,
-    offset: 0,
+    offset: 50,
     setActivityChat: (data) =>
       set(
         produce((state) => {

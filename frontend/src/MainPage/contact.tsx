@@ -22,7 +22,7 @@ export function ContactComponent({ contact }) {
       className="bg-plate-accent hover:bg-plate-hover ease flex cursor-pointer flex-col items-start gap-[clamp(5px,1vh,10px)] rounded-[15px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] transition-all duration-300"
       style={activeChat == contact.chat_id ? { backgroundColor: '#E5E5E5' } : {}}
     >
-      <div key={member} className="flex flex-row items-center gap-[clamp(5px,1vw,20px)]">
+      <div key={member} className="flex w-full flex-row items-center gap-[clamp(5px,1vw,20px)]">
         <img
           className="h-4 w-4 rounded-[360px] md:h-8 md:w-8 xl:h-16 xl:w-16"
           src={membersData.find((element) => element.id == member).avatar_url}

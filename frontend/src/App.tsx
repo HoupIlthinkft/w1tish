@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { AuthRegFormComponent } from './AuthRegPage/authRegForm.tsx';
-import { AuthRegBackgroundComponent } from './AuthRegPage/authRegBackground.tsx';
+import { BackgroundComponent } from './AuthRegPage/authRegBackground.tsx';
 
 import { NotificationComponent } from './Notification/notifications.tsx';
 import { useChatStore, useDataStore, useProfileStore } from './configurationFiles/config.ts';
@@ -25,7 +25,7 @@ function App() {
   return accessToken == null || profile == null ? (
     <>
       <AuthRegFormComponent />
-      <AuthRegBackgroundComponent />
+      <BackgroundComponent typeBG="AuthRegForm" />
       <NotificationComponent />
     </>
   ) : (
