@@ -49,9 +49,11 @@ export function ChatComponent() {
           <p className="text-plate-hover font-[Jost] text-[clamp(4rem,8vw,8rem)] font-semibold">
             W1tish
           </p>
-          <h1 className="text-[clamp(1rem,4vw,4rem)] font-bold">Здесь пока ничего нету</h1>
-          <h1 className="text-[clamp(2rem,6vw,6rem)] font-bold">{'(._. )'}</h1>
-          <h4 className="text-[clamp(0.5rem,2vw,2rem)] font-medium">
+          <h1 className="text-nothing-yet text-[clamp(1rem,4vw,4rem)] font-bold">
+            Здесь пока ничего нету
+          </h1>
+          <h1 className="text-nothing-yet text-[clamp(2rem,6vw,6rem)] font-bold">{'(._. )'}</h1>
+          <h4 className="text-nothing-yet text-[clamp(0.5rem,2vw,2rem)] font-medium">
             Выберите чат из списка слева
           </h4>
         </div>
