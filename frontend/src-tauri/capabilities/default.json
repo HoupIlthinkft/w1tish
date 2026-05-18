@@ -9,7 +9,11 @@
     "core:default", "http:default", "http:allow-fetch",
     {
       "identifier": "http:allow-fetch",
-      "allow": [{ "url": "http://localhost*" }, { "url": "http://pubertat.fun" }]
+      "allow": [
+        { "url": "http://localhost*" }, { "url": "http://pubertat.fun*" }, { "url": "http://w1tish.chat*" },
+        { "url": "https://localhost*" }, { "url": "https://pubertat.fun*" }, { "url": "https://w1tish.chat*" },
+        { "url": "http://media.w1tish.chat*" }, { "url": "https://media.w1tish.chat*" }
+      ]
     }
   ]
 }
