@@ -1,5 +1,5 @@
 import { useDataStore, useProfileStore } from './config.ts';
-import { createConnection } from './webSocketsConnection.ts';
+import { closeConnection, createConnection } from './webSocketsConnection.ts';
 import { callNotification } from '../Notification/notifications.tsx';
 import { makeRequest } from '@api';
 
@@ -90,6 +90,7 @@ export async function refreshToken() {
   });
   console.log(response.status);
   if (response.status === 200) {
+    closeConnection();
     const data = await response.json();
     useDataStore.getState().setAccessToken(data.access_token);
     getProtectedData();
