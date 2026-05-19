@@ -31,7 +31,7 @@ function App() {
   ) : (
     <div className="bg-plate-accent z-1 flex w-full flex-row">
       <div
-        className={`border-border bg-plate-muted relative h-full w-full flex-col justify-between gap-[clamp(5px,1vh,10px)] border md:flex md:w-[25%] ${activeChat == null ? 'flex' : 'hidden'}`}
+        className={`border-border bg-plate-muted h-full w-full flex-col justify-between gap-[clamp(5px,1vh,10px)] border md:flex md:w-[25%] ${activeChat == null ? 'flex' : 'hidden'}`}
       >
         <CreateChatComponent />
         <ContactsListComponent />
