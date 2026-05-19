@@ -1,4 +1,4 @@
-name: Build
+name: Build Draft Release
 
 on:
   push:
@@ -31,7 +31,6 @@ jobs:
             artifact_patterns: |
               frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
               frontend/src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
