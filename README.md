@@ -15,7 +15,7 @@
 - **Database (History)**: MongoDB + PyMongo (Message storage)
 - **Storage**: S3-compatible (via aioboto3) for avatars
 - **Infrastructure**: Docker, Docker Compose
-- **Frontend**: React + TypeScript
+- **Frontend**: Vite + React + TypeScript + Zustand + TailwindCSS
 
 ## Requirements
 - **Rust** (Cargo)
