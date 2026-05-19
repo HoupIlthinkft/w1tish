@@ -6,10 +6,12 @@ import { request_get_messages } from '../configurationFiles/requests.ts';
 import { send_new_message } from '../configurationFiles/webSocketsConnection.ts';
 
 import { MessageComponent } from './message.tsx';
+import { LoadingComponent } from './loading.tsx';
 
 export function ChatComponent() {
   const [activityMemberProfile, setActivityMemberProfile] = useState(false);
   const [activityGetMessages, setActivityGetMessages] = useState(true);
+  const [loading, setLoading] = useState(false);
   const inputMessage = useRef(null);
   const chatScroll = useRef(null);
 
@@ -35,7 +37,9 @@ export function ChatComponent() {
       activityGetMessages &&
       chatStory.length == offset
     ) {
+      setLoading(true);
       const newChatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
+      setLoading(false);
       useChatStore.getState().loadChatStory(newChatStory.messages.reverse());
 
       if (newChatStory.messages.length < 50) setActivityGetMessages(false);
@@ -54,7 +58,7 @@ export function ChatComponent() {
   }, [activityChat]);
 
   return (
-    <div className="flex h-full w-full flex-col justify-between">
+    <div className="relative flex h-full w-full flex-col justify-between">
       {activityChat == null ? (
         <div className="flex h-full flex-col items-center justify-center gap-[clamp(5px,2vh,20px)]">
           <p className="text-plate-hover font-[Jost] text-[clamp(4rem,8vw,8rem)] font-semibold">
@@ -192,6 +196,7 @@ export function ChatComponent() {
             {chatStory.map((message, index) => (
               <MessageComponent key={index} message={message} />
             ))}
+            {loading ? <LoadingComponent type="chat"></LoadingComponent> : <></>}
           </div>
           <div className="mx-[clamp(5px,0.5vw,10px)] my-[clamp(5px,1vh,10px)] mr-[clamp(5px,3vw,60px)] flex flex-row items-center justify-between gap-[clamp(5px,1vw,20px)] rounded-[20px]">
             <TextareaAutosize
