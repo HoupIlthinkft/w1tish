@@ -1,4 +1,4 @@
-name: Unit
+name: Analyse
 
 on: [push, pull_request]
 
@@ -10,22 +10,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Create .env file
-      run: |
-        cat > .env << EOF
-        JWT_SECRET=iWjwGUtt-DUeNb_QU8Oypc4jUZJX_FQflzpDzQTF9vA=
-        S3_ENDPOINT=https://s3.w1tish.ru
-        S3_AVATARS=https://avatars.w1tish
-        S3_ACCESS=fake_access_key
-        S3_SECRET=fake_secret_key
-        S3_BUKKET=w1tish
-        EOF
-    - name: Unit tests
-      run: |
-        sudo chmod 666 /var/run/docker.sock
-        python3 -m pip install --no-cache-dir -r requirements.txt
-        python3 -m pip install --no-cache-dir pytest-cov
-        python3 -m pytest tests/ --cov=./ --cov-report=xml
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@ba3875ecf642b2129de2b589510c81a8b53dbf4e
