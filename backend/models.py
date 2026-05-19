@@ -103,7 +103,7 @@ class UsersBase(Base):
     username: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     nickname: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(nullable=False, unique=True)
 
 class ChatsBase(Base):
     __tablename__ = "chats"
