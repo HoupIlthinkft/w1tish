@@ -61,7 +61,7 @@ export function ChatComponent() {
   }, [activityChat]);
 
   return (
-    <div className="relative flex h-full w-full flex-col justify-between">
+    <div className="flex h-full w-full flex-col justify-between">
       {activityChat == null ? (
         <div className="flex h-full flex-col items-center justify-center gap-[clamp(5px,2vh,20px)]">
           <p className="text-plate-hover font-[Jost] text-[clamp(4rem,8vw,8rem)] font-semibold">
