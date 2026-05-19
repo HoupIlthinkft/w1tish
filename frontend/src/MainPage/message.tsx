@@ -3,10 +3,7 @@ import { useProfileStore } from '../configurationFiles/config.ts';
 
 export function MessageComponent({ message }) {
   const profile = useProfileStore((state) => state.profile);
-  //   const activityChat = useChatStore((state) => state.activityChat);
 
-  //    const oponentId = profile.chats[activityChat].find((member) => member != profile.id);
-  console.log(message);
   return (
     <div
       className="flex w-fit max-w-[75%] shrink-0 flex-col justify-end overflow-hidden rounded-[30px] px-[clamp(5px,1vw,20px)] py-[clamp(5px,1vh,10px)] wrap-break-word whitespace-normal *:first:max-w-full"

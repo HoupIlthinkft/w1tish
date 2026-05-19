@@ -11,7 +11,6 @@ export function CreateChatComponent() {
 
   useLayoutEffect(() => {
     if (createChatButton.current) {
-      console.log(createChatButton.current.offsetWidth);
       setWidth(createChatButton.current.offsetWidth);
     }
   }, []);

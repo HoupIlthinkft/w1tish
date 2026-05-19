@@ -32,10 +32,12 @@ export function ChatComponent() {
 
   const handleScroll = async (event: React.UIEvent<HTMLDivElement>) => {
     const target = event.currentTarget;
+
     if (
       target.scrollHeight - target.clientHeight + target.scrollTop <= 1 &&
       activityGetMessages &&
-      chatStory.length == offset
+      chatStory.length == offset &&
+      !loading
     ) {
       setLoading(true);
       const newChatStory = await request_get_messages(useChatStore.getState().activityChat, offset);
@@ -54,6 +56,7 @@ export function ChatComponent() {
     if (activityChat != null) {
       chatScroll.current.scrollTop = 0;
       setOffset(50);
+      setActivityGetMessages(true);
     }
   }, [activityChat]);
 

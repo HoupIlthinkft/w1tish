@@ -8,7 +8,6 @@ export function ContactComponent({ contact }) {
   const activeChat = useChatStore((state) => state.activityChat);
   const setOffset = useChatStore((state) => state.setOffset);
 
-  console.log(contact);
   const clickOnContact = async () => {
     const chatStory = await request_get_messages(contact.chat_id);
     setOffset(0);
