@@ -24,10 +24,10 @@ export function UserProfileComponent() {
         />
         <div className="flex w-full max-w-[calc(100%-32px-0.5vw)] flex-row justify-between xl:max-w-[calc(100%-64px-0.5vw)]">
           <div className="group ease flex w-[calc(100%-2.5vw)] flex-col justify-center transition-all duration-300">
-            <p className="overflow-hidden text-[clamp(0.75rem,1.5vw,1.5rem)] text-ellipsis whitespace-nowrap">
+            <p className="ease overflow-hidden text-[clamp(0.75rem,1.5vw,1.5rem)] text-ellipsis whitespace-nowrap transition-all duration-200 group-hover:first:-translate-y-[clamp(0.5rem,1vw,1rem)]">
               {profile?.nickname}
             </p>
-            <p className="hidden text-[clamp(0.5rem,1vw,1rem)] opacity-[0] group-hover:last:inline group-hover:last:opacity-[1]">
+            <p className="ease absolute bottom-[2.5%] overflow-hidden text-[clamp(0.5rem,1vw,1rem)] text-ellipsis whitespace-nowrap opacity-0 transition-all duration-200 group-hover:last:opacity-100">
               {profile?.username}
             </p>
           </div>

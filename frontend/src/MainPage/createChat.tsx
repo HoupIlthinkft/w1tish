@@ -1,17 +1,30 @@
 import { useContactStore, useProfileStore } from '../configurationFiles/config.ts';
 import { get_data_by_username, request_create_new_chat } from '../configurationFiles/requests.ts';
 import { callNotification } from '../Notification/notifications.tsx';
-import { useState, useRef } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 
 export function CreateChatComponent() {
   const [activityCreateChat, setActivityCreateChat] = useState(false);
+  const createChatButton = useRef(null);
+  const [width, setWidth] = useState(0);
   const inputMember = useRef<HTMLInputElement | null>(null);
 
+  useLayoutEffect(() => {
+    if (createChatButton.current) {
+      console.log(createChatButton.current.offsetWidth);
+      setWidth(createChatButton.current.offsetWidth);
+    }
+  }, []);
+
   return (
-    <div>
+    <div ref={createChatButton}>
       <div
-        className="flex flex-col justify-between gap-[clamp(5px,1.5vh,15px)] rounded-[15px] bg-white px-[clamp(5px,2vw,40px)] py-[clamp(5px,1vh,10px)]"
-        style={activityCreateChat ? {} : { display: 'none' }}
+        className="ease flex flex-col justify-between gap-[clamp(5px,1.5vh,15px)] rounded-[15px] bg-white px-[clamp(5px,2vw,40px)] py-[clamp(5px,1vh,10px)] transition-transform duration-300"
+        style={
+          activityCreateChat
+            ? { transform: 'translateY(0)', position: 'relative', width: `${width}px` }
+            : { transform: 'translateY(-20vh)', position: 'absolute', width: `${width}px` }
+        }
       >
         <p className="self-center text-[clamp(0.5rem,1.5vw,1.5rem)] font-medium">Пользователь:</p>
         <input
@@ -52,7 +65,10 @@ export function CreateChatComponent() {
         </button>
       </div>
       <div
-        onClick={() => setActivityCreateChat(!activityCreateChat)}
+        onClick={() => {
+          setActivityCreateChat(!activityCreateChat);
+          setWidth(createChatButton.current.offsetWidth);
+        }}
         className="border-border hover:bg-plate-hover hover:text-plate-accent ease flex h-fit w-full cursor-pointer flex-row rounded-[15px] border-b bg-white px-[clamp(5px,1vw,20px)] py-[clamp(5px,2vh,20px)] transition-all duration-200"
       >
         <p className="w-full self-center text-center text-[clamp(0.5rem,1.5vw,1.5rem)]">
