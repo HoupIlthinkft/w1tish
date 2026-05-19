@@ -10,60 +10,108 @@ jobs:
   build:
     name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: windows-latest
             target: windows
-            artifact_name: '*.exe *.msi'
+            artifact_patterns: |
+              frontend/src-tauri/target/release/bundle/msi/*.msi
+              frontend/src-tauri/target/release/bundle/setup/*.exe
           - os: macos-latest
             target: macos
-            artifact_name: '*.app *.dmg'
-
+            artifact_patterns: |
+              frontend/src-tauri/target/release/bundle/dmg/*.dmg
+              frontend/src-tauri/target/release/bundle/macos/*.app
+          - os: ubuntu-latest
+            target: android
+            artifact_patterns: |
+              frontend/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+              frontend/src-tauri/gen/android/app/build/outputs/bundle/**/*.aab
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ---- Общие шаги для всех платформ ----
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'   # измените на 'pnpm' или 'yarn' при необходимости
+
+      - name: Setup Java (for Android)
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        if: matrix.target == 'android'
+        uses: android-actions/setup-android@v3
 
       - name: Install Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          target: wasm32-unknown-unknown  # требуется для Tauri
+          target: wasm32-unknown-unknown
+
+      - name: Install Rust Android targets
+        if: matrix.target == 'android'
+        run: |
+          rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "src-tauri -> target"
 
       - name: Install dependencies (Ubuntu skipped for now, but we use macOS/Windows)
+        working-directory: ./frontend
         run: |
-          npm ci   # или pnpm install, yarn install
+          npm install
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli
 
-      # ---- Windows ----
+      - name: Create .env file
+        run: |
+          echo "API_URL=${{ secrets.API_URL }}" >> .env
+
       - name: Build Windows app
         if: matrix.target == 'windows'
-        run: npm run tauri build
+        working-directory: ./frontend
+        run: npm run build:windows
         env:
           TAURI_BUILD: true
 
-      # ---- macOS ----
       - name: Build macOS app
         if: matrix.target == 'macos'
+        working-directory: ./frontend
         run: npm run tauri build
 
-      # ---- Сборка артефактов для релиза ----
+      - name: Prepare Android Signing
+        if: matrix.target == 'android'
+        run: |
+          mkdir -p frontend/src-tauri/gen/android/app
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > frontend/src-tauri/gen/android/app/release.jks
+
+      - name: Build Android app
+        if: matrix.target == 'android'
+        working-directory: ./frontend
+        run: npm run tauri android build
+        env:
+          ANDROID_KEYSTORE_PATH: "release.jks"
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
       - name: Upload artifacts to draft release
         uses: softprops/action-gh-release@v1
         with:
+          files: ${{ matrix.artifact_patterns }}
           draft: true
           name: "Draft Release ${{ github.sha }}"
           tag_name: "draft-${{ github.run_number }}"
-          files: |
-            src-tauri/target/release/bundle/**/${{ matrix.artifact_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

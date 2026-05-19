@@ -1,8 +1,13 @@
 __pycache__
-app
 data
+.venv
 .env
+.github
 .DS_Store
 .pytest_cache
 .vscode
+.github
 *.log
+*.local
+dist/
+static/

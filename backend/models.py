@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text, BigInteger
+from sqlalchemy import text, BigInteger, DateTime
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column
@@ -16,6 +16,7 @@ class UserModel(BaseModel):
     id: str = Field(..., examples=["123456789012345678"], description="Айди пользователя")
     username: str = Field(..., examples=["Tralalelo_tralala"], description="Логин пользователя")
     nickname: str = Field(..., examples=["Гигачат 228 котлета 336"], description="Ник пользователя")
+    avatar_url: str = Field("", examples=["https://avatar.url/user-id.jpg"], description="Ссылка на аватар пользователя")
 
 class ChatModel(BaseModel):
     id: str = Field(..., examples=["123456789012345678"], description="Айди чата")
@@ -76,16 +77,17 @@ class CreateChatResponse(BaseModel):
     chat_id: str = Field(..., description="Айди чата", examples=["123456789012345678"])
 
 class UserResponse(UserModel):
-    chats: dict[str, dict] = Field(
+    avatar_url: str = Field("", examples=["https://avatar.url/user-id.jpg"], description="Ссылка на аватар пользователя")
+    chats: list[dict] = Field(
         ...,
         description="Чаты пользователя",
-        examples=[{
+        examples=[[{
             "id": "123456789012345678",
             "last_message_text": "лох",
             "last_message_time": "2026-01-31T21:35:10.161344",
             "last_message_author": "123456789012345678",
-            "permissions": {"123456789012345678": "owner", '123456789012345677': "user"}
-        }]
+            "permissions": ["123456789012345678", '123456789012345677']
+        }]]
     )
 
 class UsersResponse(BaseModel):
@@ -101,14 +103,13 @@ class UsersBase(Base):
     username: Mapped[str] = mapped_column(unique=True, index=True, nullable=False)
     nickname: Mapped[str] = mapped_column(nullable=False)
     password_hash: Mapped[str] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(nullable=False, unique=True)
 
 class ChatsBase(Base):
     __tablename__ = "chats"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
     last_message_text: Mapped[str] = mapped_column(server_default=text("'_Чат создан_'"))
-    last_message_time: Mapped[datetime] = mapped_column(server_default=text("now()"))
+    last_message_time: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
     last_message_author: Mapped[int] = mapped_column(BigInteger, server_default=text("0"))
     permissions: Mapped[dict[str, str]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
-

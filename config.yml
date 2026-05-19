@@ -1,6 +1,6 @@
 # основные настройки
 avatars:
-  default_count: 5
+  default_count: 1
 
 limits:
   nickname_len: 42
@@ -108,8 +108,8 @@ docs:
         description: "Неверный формат тела / токена"
 
   chats:
-    summary: "Создать новый чат или группу"
-    description: "Создать группу из 2х и более пользователей (до 7)"
+    summary: "Создать новый чат"
+    description: "Создать чат между 2 пользователями"
     responses:
       201:
         description: "Чат успешно создан"
@@ -145,10 +145,6 @@ docs:
         description: "Неверная длянна никнейма"
       422:
         description: "Неверный формат тела / токена"
-
-  config:
-    summary: "Получить необходимые переменные"
-    description: "Получить адресс бэкэнда и адресс s3 хранилища"
 
   health:
     summary: "Проверить работоспособность бэкэнда"

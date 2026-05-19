@@ -1,0 +1,21 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default", "http:default", "http:allow-fetch",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        { "url": "http://localhost*" }, { "url": "http://pubertat.fun*" }, { "url": "http://w1tish.chat*" },
+        { "url": "ws://localhost*" }, { "url": "ws://pubertat.fun*" }, { "url": "ws://w1tish.chat*" },
+        { "url": "wss://localhost*" }, { "url": "wss://pubertat.fun*" }, { "url": "wss://w1tish.chat*" },
+        { "url": "https://localhost*" }, { "url": "https://pubertat.fun*" }, { "url": "https://w1tish.chat*" },
+        { "url": "http://media.w1tish.chat*" }, { "url": "https://media.w1tish.chat*" }
+      ]
+    }
+  ]
+}

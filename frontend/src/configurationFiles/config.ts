@@ -1,0 +1,201 @@
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+import { persist } from 'zustand/middleware';
+import { produce } from 'immer';
+
+interface DataStoreIntf {
+  accessToken: null | string;
+  setAccessToken: (token: string) => void;
+}
+
+interface NotificationStoreIntf {
+  notificationActivity: boolean;
+  setNotificationActivity: (activity: boolean) => void;
+  notificationContent: {
+    typeNotification: 'error' | 'success' | '';
+    content: string;
+  };
+  setNotificationContent: (content: ['error' | 'success', string]) => void;
+}
+
+interface ProfileIntf {
+  username: string;
+  nickname: string;
+  avatar_url: string;
+  chats: ContactIntf[];
+  id: string;
+}
+
+interface ContactIntf {
+  chat_id: string;
+  last_message: string;
+  last_message_author: string;
+  last_message_time: string;
+  permissions: string[];
+}
+
+interface ProfileStoreIntf {
+  profile: ProfileIntf | null;
+  setProfile: (data: ProfileIntf) => void;
+  addContact: (data: ContactIntf) => void;
+  addMessage: (data: MessageIntf) => void;
+  setNickname: (newNickname: string) => void;
+  setLastMessage: (newLastMessage: string, chatId: string) => void;
+}
+
+interface OponentIntf {
+  nickname: string;
+  username: string;
+  avatar_url: string;
+  id: string;
+}
+
+interface MessageIntf {
+  chat_id: string;
+  content: string;
+  sender: string;
+  created_at: string;
+}
+
+interface ContactStoreIntf {
+  contacts: OponentIntf[] | null;
+  setContacts: (data: OponentIntf[]) => void;
+  addContact: (data: OponentIntf) => void;
+}
+
+interface ChatStoreIntf {
+  activityChat: null | string;
+  chatStory: null | MessageIntf[];
+  offset: number;
+  setActivityChat: (data: string | null) => void;
+  setChatStory: (data: MessageIntf[]) => void;
+  loadChatStory: (data: MessageIntf[]) => void;
+  addChatStory: (data: MessageIntf) => void;
+  setOffset: (data: number) => void;
+}
+
+export const useDataStore = create<DataStoreIntf>()(
+  persist(
+    immer((set) => ({
+      accessToken: null,
+      setAccessToken: (token) =>
+        set((state) => {
+          state.accessToken = token;
+        }),
+    })),
+    { name: 'DataStore' },
+  ),
+);
+
+export const useNotificationStore = create<NotificationStoreIntf>()(
+  immer((set) => ({
+    notificationActivity: false,
+    setNotificationActivity: (activity) =>
+      set((state) => {
+        state.notificationActivity = activity;
+      }),
+
+    notificationContent: {
+      typeNotification: 'success',
+      content: 'Страница успешно загружена',
+    },
+    setNotificationContent: (content) =>
+      set((state) => {
+        state.notificationContent = { typeNotification: content[0], content: content[1] };
+      }),
+  })),
+);
+
+export const useProfileStore = create<ProfileStoreIntf>()(
+  immer((set) => ({
+    profile: null,
+    setProfile: (data) =>
+      set(
+        produce((state) => {
+          state.profile = data;
+        }),
+      ),
+    addContact: (data) =>
+      set(
+        produce((state) => {
+          state.profile.chats.push(data);
+        }),
+      ),
+    addMessage: (data) =>
+      set(
+        produce((state) => {
+          const chat = state.profile.chats[data['chat_id']];
+
+          chat.last_message_author = data['sender'];
+          chat.last_message = data['content'];
+          chat.last_message_time = data['created_at'];
+        }),
+      ),
+    setNickname: (newNickname) =>
+      set(
+        produce((state) => {
+          state.profile.nickname = newNickname;
+        }),
+      ),
+    setLastMessage: (newLastMessage, chatId) =>
+      set(
+        produce((state) => {
+          state.profile.chats.find((chat) => chat.chat_id == chatId).last_message = newLastMessage;
+        }),
+      ),
+  })),
+);
+
+export const useContactStore = create<ContactStoreIntf>()(
+  immer((set) => ({
+    contacts: [],
+    setContacts: (data) =>
+      set((state) => {
+        state.contacts = data;
+      }),
+    addContact: (data) =>
+      set(
+        produce((state) => {
+          state.contacts.push(data);
+        }),
+      ),
+  })),
+);
+
+export const useChatStore = create<ChatStoreIntf>()(
+  immer((set) => ({
+    activityChat: null,
+    chatStory: null,
+    offset: 50,
+    setActivityChat: (data) =>
+      set(
+        produce((state) => {
+          state.activityChat = data;
+        }),
+      ),
+    setChatStory: (data) =>
+      set(
+        produce((state) => {
+          state.chatStory = data;
+        }),
+      ),
+    loadChatStory: (data) =>
+      set(
+        produce((state) => {
+          state.chatStory = [...(state.chatStory || []), ...(data || [])];
+        }),
+      ),
+    addChatStory: (data) =>
+      set(
+        produce((state) => {
+          state.chatStory = [data, ...state.chatStory];
+        }),
+      ),
+    setOffset: (data) =>
+      set(
+        produce((state) => {
+          state.offset = data;
+        }),
+      ),
+  })),
+);

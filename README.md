@@ -5,19 +5,22 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
 
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=coverage)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=bugs)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=KIriLOsck_w1tish&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=KIriLOsck_w1tish)
 
-# w1tish - Легковесный, высоконагружаемый мессенджер
+# w1tish - Легковесный мессенджер
 
 **Стек технологий**
 - **Backend**: Python 3.12+, FastAPI (Asynchronous API)
 - **Database (Core)**: PostgreSQL + SQLAlchemy 2.0 (Users, Chats, Metadata)
 - **Database (History)**: MongoDB + PyMongo (Message storage)
-- **Storage**: S3-compatible (via aioboto3) for media and avatars
+- **Storage**: S3-compatible (via aioboto3) for avatars
 - **Infrastructure**: Docker, Docker Compose
-- **Frontend**: Vanilla JS / HTML / CSS (Mounted via FastAPI StaticFiles)
+- **Frontend**: Vite + React + TypeScript + Zustand + TailwindCSS
+
+## Requirements
+- **Rust** (Cargo)
+- **Node.js 20+** (npm)
+- **Docker** (Docker-compose)
 
 ## Quick start (Docker, кросс-платформенно)
 
@@ -30,22 +33,43 @@ cd w1tish
 2. Переименуйте файл `.env.example` в `.env` и вставьте необходимые ключи
 ```bash
 cp .env.example .env
+nano .env
 ```
 
-3. Поднимите сервисы:
+3. Поднимите бекенд:
 ```bash
 docker-compose up --build
 ```
 
-4. После старта сервисов:
-- **Frontend**: http://localhost/
-- **API Docs**: http://localhost/docs
-- **PostgreSQL**: `localhost:5432`
+4. Если тип сборки указан `development` после старта сервисов:
+- **Frontend**: http://localhost:8000
+- **Docs swagger**: http://localhost:8000/docs
 
 5. Остановка и удаление контейнеров:
 ```bash
-docker-compose down
+docker-compose down -v
 ```
+
+Если необходимо собрать frontend отдельно (для nginx):
+1. Перейдите в директорию `frontend`:
+```bash
+cd frontend
+```
+
+2. Установите зависимости Node.js:
+```bash
+npm install
+```
+
+3. Соберите frontend или приложение
+```bash
+npm run vite build
+
+# или для сборки под desktop (требует cargo):
+npm run tauri build
+```
+
+Скомпилированные файлы frontend будут в корне проекта в каталоге `static`. Приложение будет в `frontend/src-tauri/target/release`.
 
 ### Архитектура данных
 
@@ -60,32 +84,33 @@ docker-compose down
 ### Структура backend:
 ```
 backend
-├── api                         # Содержит роутеры приложения
+│
+├── errors.py                   # Кастомные исключения
+├── models.py                   # Датаклассы и модели БД
+│
+├── api
 │   ├── auth.py                 # Ручки аутентификации
 │   ├── broadcast.py            # Вебсокеты
 │   └── data.py                 # Ручки взаимодействия с пользователями
 │
-├── core                        # Базовые настройки и управление сессиями
+├── core
 │   ├── config.py               # Критические настройки и подгрузка .env
 │   ├── engine.py               # Создание и управление сессиями бд
-│   ├── init.sql                # Инициализация таблиц PostgreSQL
 │   └── logger.py               # Конфиг логгера
 │
-├── dependencies                # Зависимости и разделение ответственности
+├── dependencies
 │   ├── annotations.py          # Анотации сервисов
 │   └── dependencies.py         # Разрешение зависимостей и lifespan менеджер
 │
-├── errors.py                   # Кастомные исключения
 ├── interfaces
 │   └── protocols.py            # Интерфейсы сервисов
 │
-├── models.py                   # Модели данных и баз
 ├── repositories                # Репозитории для сборки сервисов
 │   ├── __init__.py
 │   ├── mongo_methods.py        # Работа с NoSQL
 │   └── postgress_methods.py    # Работа с PostgreSQL
 │
-└── utils                       # Утилиты обработки данных и исключений
+└── utils
     ├── cloud.py                # Загрузка данных в S3
     ├── exceptions_handlers.py  # Глобальная обработка исключений
     ├── security                # Утилиты безопасности

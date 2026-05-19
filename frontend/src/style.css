@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Inter';
+  src: url(./assets/font/Inter/Inter-V.ttf);
+}
+
+@font-face {
+  font-family: 'Jost';
+  src: url(./assets/font/Jost/Jost-VariableFont_wght.ttf);
+}
+
+@theme {
+  --animate-running-left: running-left 840s linear infinite;
+  --animate-running-right: running-right 840s linear infinite;
+  --animate-running-chatBG-left: running-left 2520s linear infinite;
+  --animate-running-chatBG-right: running-right 2520s linear infinite;
+
+  @keyframes running-left {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+  @keyframes running-right {
+    0% {
+      transform: translate3d(-50%, 0, 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+  --color-plate-bg: #f3f3f3;
+  --color-text-bg: #efefef;
+  --color-title: #4d4d4d;
+
+  --color-border: #e6e6e6;
+
+  --color-plate-accent: #f8f8f8;
+  --color-plate-muted: #ffffff;
+
+  --color-plate-hover: #e5e5e5;
+
+  --color-danger-zone: #ff9c9c;
+  --color-nothing-yet: #b4b4b4;
+}
+
+:root {
+  --color-notification-error-plate: #d4abab;
+  --color-notification-error-text: #b52222;
+  --color-notification-success-plate: #bad4ab;
+  --color-notification-success-text: #31b522;
+}
+
+#root {
+  font-family: 'Inter';
+}

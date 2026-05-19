@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from backend.core.config import settings
 from contextlib import asynccontextmanager
 
+from backend import models
+
 from logging import getLogger
 logger = getLogger(__name__)
 
@@ -25,10 +27,14 @@ async def bases_lifespan(app: FastAPI):
     logger.info("Creating db sessions & index...")
 
     engine = create_async_engine(P_URL, pool_size=20, max_overflow=10)
-    mongo_session = AsyncMongoClient(M_URL)
+    mongo_session = AsyncMongoClient(M_URL, tz_aware=True)
 
     app.state.pg_session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
     app.state.mg_session = mongo_session[M_NAME]
+
+    async with engine.begin() as connection:
+        await connection.run_sync(models.UsersBase.metadata.create_all)
+        await connection.run_sync(models.ChatsBase.metadata.create_all)
     
     await app.state.mg_session["messages"].create_index([("chat_id", 1)], name="idx_chat_id")
     await app.state.mg_session["messages"].create_index([("created_at", -1)], name="idx_created_at")

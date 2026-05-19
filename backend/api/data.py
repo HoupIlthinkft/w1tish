@@ -14,12 +14,12 @@ http_bearer = HTTPBearer(auto_error=True)
 def get_userid_from_bearer(token: str = Security(http_bearer)):
     return get_id_by_jwt(token.credentials)
 
-CurrentUser = Annotated[int, Depends(get_userid_from_bearer)]
+CurrentUser = Annotated[str, Depends(get_userid_from_bearer)]
 data_router = APIRouter(prefix="/web/data", tags=["Data методы"])
 
 @data_router.get(
     "/user",
-    response_model=models.UsersResponse,
+    response_model=list[models.UserModel],
     summary=config.docs.user.summary,
     description=config.docs.user.description,
     responses=config.docs.user.responses

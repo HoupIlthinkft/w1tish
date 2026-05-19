@@ -60,7 +60,9 @@ class DataService:
         self.user_avatars = avatars_repo
         self.sock_manager = sock_manager
 
-    async def add_message(self, user_id: int, request: models.MessageModel) -> None:
+    async def add_message(self, user_id: str, request: models.MessageModel) -> None:
+        if user_id != request.sender: 
+            raise err.NoWritePermissionError("Cant send message from another user!")
         if request.chat_id:
             avarible_chats = await self.user_chats.get_user_chats(user_id)
             logger.info("Checking permissions...")
@@ -80,7 +82,7 @@ class DataService:
         
         permissions = {str(member): "user" for member in request.members_ids}
         permissions[str(user_id)] = "owner"
-        if len(permissions) < 2 or len(permissions) > 7: raise err.InvalidArgumentsError("You should create chat with 2 - 7 users")
+        if len(permissions) != 2: raise err.InvalidArgumentsError("You should create chat with 2 users")
 
         chat_id = await self.user_chats.add_chat(permissions)
         await self.sock_manager.new_chat(models.ChatModel(id=chat_id, permissions=permissions))
@@ -99,24 +101,26 @@ class DataService:
 
     async def get_user_data(self, user_id: int) -> models.UserResponse:
         data = await self.user_data.get_user_data(user_id)
+        data.avatar_url = f"{settings.S3_AVATARS}/avatars/{data.id}.jpeg"
         return data
     
     async def get_users_data(
             self,
             users_ids: list[int] = None,
             users_usernames: list[str] = None
-    ) -> models.UsersResponse:
+    ) -> list[models.UserModel]:
         if users_ids and users_usernames: raise err.InvalidArgumentsError("Too many arguments. Select usernames or ids")
+        if not (users_ids or users_usernames): raise err.InvalidArgumentsError("Noone argument was getted")
 
         if users_ids:
             data = await self.user_data.get_users_by_ids(users_ids)
-            return data
         
         elif users_usernames:
             data = await self.user_data.get_users_by_usernames(users_usernames)
-            return data
         
-        raise err.InvalidArgumentsError("Noone argument was getted")
+        for user in data:
+            user.avatar_url = f"{settings.S3_AVATARS}/avatars/{user.id}.jpeg"
+        return data
         
     async def set_avatar(self, file: BinaryIO, user_id: int) -> None:
         avatar_bytes = file.read(settings.MAX_AVATAR)

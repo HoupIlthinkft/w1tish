@@ -35,6 +35,7 @@ class Settings(BaseSettings):
 
     LOGS_FILE: str = f"{datetime.now().strftime("%d-%m-%Y_%H:%M")}.log"
     API_URL: str = "http://localhost"
+    VITE_API_URL: str = ""
 
     JWT_ALGORITHM: str = "HS256"
 
@@ -44,6 +45,7 @@ class Settings(BaseSettings):
     APP_EPOCH: int = 1235030400
     WORKERS_COUNT: int = 8
     SERVER_ID: int = 1
+    APP_BUILD_TARGET: str = "development"
 
     model_config = SettingsConfigDict(env_file=".env")
 
